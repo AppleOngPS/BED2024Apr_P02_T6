@@ -1,0 +1,46 @@
+/* Color need to be changed */
+/* menus for all pages */
+.menu {
+  color: black;
+  font-size: 25px;
+  display: flex;
+  justify-content: space-evenly;
+  cursor: pointer;
+  flex-direction: row;
+  margin-bottom: 0px;
+}
+
+.header {
+  background-color: beige;
+  display: flex;
+  justify-content: center;
+
+  width: 100px;
+}
+
+#all {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#login-form {
+  background-color: lightgray;
+  height: 200px;
+  border: 5px black;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+}
+
+/* footer for all pages*/
+.footer {
+  display: flex;
+  flex-direction: row;
+  font-size: 30px;
+  justify-content: space-between;
+  height: 100px;
+  padding: 20px;
+  color: white;
+  background-color: darkgray;
+}
