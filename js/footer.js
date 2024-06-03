@@ -3,25 +3,13 @@ function createFooter() {
   var footerContent = document.createElement("div");
   footerContent.classList.add("footer-content");
 
-  //var aboutUs = createContentBox(
-  //"About Us",
-  // "At AMA Health Hub, we believe that healthy living should be more than just a goal – it should be a lifestyle. Our mission is to provide a seamless and enjoyable online health and wellness experience for individuals of all backgrounds and fitness levels.."
-  //);
-  //footerContent.appendChild(aboutUs);
-
-  // var businessHours = createContentBox(
-  // "Business Hours",
-  // "Monday - Sunday<br>7am - 10pm<br>You may call us anytime of the day at <a href='tel:+6512345678'>+65 1234 5678</a>"
-  //);
-  // footerContent.appendChild(businessHours);
+  var socialIcons = createContentBox("Connect", null);
+  socialIcons.appendChild(createSocialIcons());
+  footerContent.appendChild(socialIcons);
 
   var quickLinks = createContentBox("Quick Links", null);
   quickLinks.appendChild(createLinks());
   footerContent.appendChild(quickLinks);
-
-  var socialIcons = createContentBox("Connect", null);
-  socialIcons.appendChild(createSocialIcons());
-  footerContent.appendChild(socialIcons);
 
   footer.appendChild(footerContent);
   document.body.appendChild(footer);
@@ -36,9 +24,11 @@ function createFooter() {
 function createContentBox(title, content) {
   var box = document.createElement("div");
   box.classList.add("content-box");
-  var titleElement = document.createElement("h3");
-  titleElement.textContent = title;
-  box.appendChild(titleElement);
+  if (title) {
+    var titleElement = document.createElement("h3");
+    titleElement.textContent = title;
+    box.appendChild(titleElement);
+  }
   if (content) {
     var contentElement = document.createElement("p");
     contentElement.innerHTML = content;
@@ -57,6 +47,7 @@ function createLinks() {
     "Meal Planning",
     "Food Database",
     "Credits",
+    "Login",
   ];
   linkNames.forEach(function (name) {
     var link = document.createElement("a");
