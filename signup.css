@@ -10,14 +10,6 @@
   margin-bottom: 0px;
 }
 
-.header {
-  background-color: beige;
-  display: flex;
-  justify-content: center;
-
-  width: 100px;
-}
-
 #all {
   display: flex;
   flex-direction: column;
@@ -26,21 +18,36 @@
 
 #login-form {
   background-color: lightgray;
-  height: 200px;
+  height: 300px;
   border: 5px black;
   display: flex;
   flex-direction: column;
   width: 500px;
+  font-size: 22px;
 }
 
-/* footer for all pages*/
-.footer {
-  display: flex;
-  flex-direction: row;
-  font-size: 30px;
-  justify-content: space-between;
-  height: 100px;
-  padding: 20px;
-  color: white;
-  background-color: darkgray;
+.header{
+  background-color: lightgrey;
+  display:flex;
+  justify-content: center;
+  width:500px;
+  font-size: 28px;
+
+
+
 }
+
+input[type="submit"] {
+  background-color: green; /* Change this color to your desired color */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+ 
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: green; 
+}
+
