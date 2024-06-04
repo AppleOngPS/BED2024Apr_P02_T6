@@ -54,9 +54,12 @@ function createLinks() {
     if (name === "Home") {
       link.textContent = name;
       link.href = "../index.html"; // Set the href to index.html for the "Home" link
+    } else if (name === "Meal Planning") {
+      link.textContent = name;
+      link.href = "../html/meal_planning.html";
     } else {
       link.textContent = name;
-      link.href = name.toLowerCase().replace(" ", "") + ".html";
+      link.href = "../html/" + name.toLowerCase().replace(" ", "") + ".html";
     }
     links.appendChild(link);
   });
