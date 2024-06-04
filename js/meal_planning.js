@@ -4,6 +4,9 @@ const meals = {
   dinner: [],
 };
 
+const apiKey = "665edb3cb526657bc4efd77e";
+const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning?max=2";
+
 function openAddFoodModal(mealType) {
   document.getElementById("addFoodModal").style.display = "block";
   document.getElementById("addFoodForm").onsubmit = function (event) {
@@ -31,20 +34,22 @@ function addFood(mealType) {
     protein,
     fats,
     sodium,
+    mealType, // Added mealType to the food item
     image: "path/to/placeholder.jpg", // Placeholder image, replace with actual image path
   };
 
   // Adding the food item to RestDB
-  fetch("https://yourdatabase.restdb.io/rest/foods", {
+  fetch(baseUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-apikey": "your-api-key",
+      "x-apikey": apiKey,
     },
     body: JSON.stringify(foodItem),
   })
     .then((response) => response.json())
     .then((data) => {
+      console.log("Added food item:", data);
       meals[mealType].push(data); // Using the returned data
       displayFood(mealType);
       updateTotals();
@@ -68,9 +73,9 @@ function displayFood(mealType) {
     const details = document.createElement("div");
     details.classList.add("details");
     details.innerHTML = `
-              <p>${food.name}</p>
-              <p>kcal: ${food.calories} | c: ${food.carbs}g | p: ${food.protein}g | f: ${food.fats}g | sodium: ${food.sodium}mg</p>
-          `;
+                  <p>${food.name}</p>
+                  <p>kcal: ${food.calories} | c: ${food.carbs}g | p: ${food.protein}g | f: ${food.fats}g | sodium: ${food.sodium}mg</p>
+              `;
     foodItem.appendChild(details);
 
     mealList.appendChild(foodItem);
@@ -108,17 +113,21 @@ function updateTotals() {
 }
 
 function fetchFoodItems() {
-  fetch("https://yourdatabase.restdb.io/rest/foods", {
+  fetch(baseUrl, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "x-apikey": "your-api-key",
+      "x-apikey": apiKey,
     },
   })
     .then((response) => response.json())
     .then((data) => {
+      console.log("Fetched food items:", data); // Log fetched data
       data.forEach((food) => {
         // Assuming each food item has a `mealType` property indicating breakfast, lunch, or dinner
-        meals[food.mealType].push(food);
+        if (meals[food.mealType]) {
+          meals[food.mealType].push(food);
+        }
       });
       displayFood("breakfast");
       displayFood("lunch");
