@@ -1,3 +1,5 @@
+
+
 .header-full{
   border: black hidden;
   display: flex;
@@ -10,8 +12,7 @@
   background-color: lightgrey;
   border-radius: 20px;
   width:400px;
-
-  
+  font-size: 28px;  
   border:5px black hidden;
   
 }
@@ -28,14 +29,15 @@
   background-color: lightgrey;
   width:400px;
   height:300px;
-
   padding: 20px;
-  
   border: 10px black hidden;
-  
+  font-size: 18px;
 
 }
 
+#loginForm input{
+  width:100%;
+}
 .form-group{
   display: flex ;
   justify-content: left;

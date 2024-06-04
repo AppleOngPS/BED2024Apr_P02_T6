@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="login.css" />
+    <link rel="stylesheet" href="signup.css" />
 
     <meta charset="UTF-8" />
-    <title>FoodStore: Login</title>
+    <title>FoodStore: signup</title>
   </head>
   <body>
 
@@ -16,7 +16,7 @@
       
       <div class="header-full">
         <header class="header">
-          <h4>Log In</h4>
+          <h4>Sign Up</h4>
         </header>
         </div>
         <br/><br/>
@@ -27,6 +27,7 @@
           <div class="form-group">
             
             <label for="exampleInputUsername">Username:</label>
+            
             <input
               type="text"
               class="form-control"
@@ -46,10 +47,34 @@
               id="exampleInputPassword1"
             />
           </div>
+          <br/>
+          <div class="form-group">
+            
+            <label for="exampleInputEmail">Email: </label>
+            
+            <input
+              type="email"
+              class="form-control"
+              id="exampleInputEmail"
+            />
+          </div>
+          <br/>
+          <div class="form-group">
+            
+            <label for="exampleInputMobileNumber">Mobile Number: </label>
+            
+            <input
+              type="mobileNumber"
+              class="form-control"
+              id="exampleInputMobileNumber"
+            />
+          </div>
+
+      
           <br/><br/>
-          <button type="submit" class="btn btn-primary"><a href="profile.html" id="profile"></a>Log In</button>
+          <button type="submit" class="btn btn-primary"><a href="signup.html" id="profile"></a>submit</button>
           <p class="mb-4">
-            <u><a href="signup.html" id="signup">Register Here</a></u>
+            <u><a href="login.html" id="signup">Login Here</a></u>
           </p>
           
         </form>
