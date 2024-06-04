@@ -1,0 +1,44 @@
+.header-full{
+  border: black hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.header{
+  display:flex;
+  justify-content: center;
+  background-color: lightgrey;
+  border-radius: 20px;
+  width:400px;
+
+  
+  border:5px black hidden;
+  
+}
+
+.container{
+  border: 3px purple hidden;
+  display: flex;
+  justify-content: center;
+}
+
+#loginForm {
+  display:flex;
+  flex-direction: column;
+  background-color: lightgrey;
+  width:400px;
+  height:300px;
+
+  padding: 20px;
+  
+  border: 10px black hidden;
+  
+
+}
+
+.form-group{
+  display: flex ;
+  justify-content: left;
+  
+  
+}
