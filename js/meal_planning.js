@@ -26,6 +26,7 @@ function addFood(mealType) {
   const protein = parseFloat(document.getElementById("food-protein").value);
   const fats = parseFloat(document.getElementById("food-fats").value);
   const sodium = parseFloat(document.getElementById("food-sodium").value);
+  const image = "path/to/your/image"; // Placeholder, as no image field is provided in the HTML
 
   const foodItem = {
     name,
@@ -34,8 +35,8 @@ function addFood(mealType) {
     protein,
     fats,
     sodium,
-    mealType, // Added mealType to the food item
-    image: "path/to/placeholder.jpg", // Placeholder image, replace with actual image path
+    mealType, // Add the meal type
+    image, // Placeholder image
   };
 
   // Adding the food item to RestDB
@@ -50,7 +51,7 @@ function addFood(mealType) {
     .then((response) => response.json())
     .then((data) => {
       console.log("Added food item:", data);
-      meals[mealType].push(data); // Using the returned data
+      meals[mealType].push(data);
       displayFood(mealType);
       updateTotals();
       closeAddFoodModal();
