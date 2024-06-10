@@ -9,11 +9,6 @@
     <link rel="stylesheet" href="../css/footer.css" />
   </head>
   <body>
-    <!-- Include navbar -->
-    <header>
-      <!-- Insert your existing navbar code here -->
-    </header>
-
     <main>
       <section class="meal-summary">
         <h2>Meal Plan</h2>
@@ -57,6 +52,16 @@
             </div>
           </div>
         </div>
+
+        <div class="meal-category">
+          <h3>Extra's (snacks, drinks)</h3>
+          <div class="meal-list" id="extras-list">
+            <!-- Food items for extra's will be dynamically inserted here -->
+            <div class="add-item" onclick="openAddFoodModal('extras')">
+              + Add Item
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Modal for adding new food item -->
@@ -92,6 +97,15 @@
 
             <label for="food-sodium">Sodium:</label>
             <input type="number" id="food-sodium" name="food-sodium" required />
+
+            <label for="food-image">Image:</label>
+            <input
+              type="file"
+              id="food-image"
+              name="food-image"
+              accept="image/*"
+              required
+            />
 
             <button type="submit">Add Food</button>
           </form>

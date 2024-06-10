@@ -2,10 +2,58 @@ const meals = {
   breakfast: [],
   lunch: [],
   dinner: [],
+  extras: [], // Add extras category
 };
 
 const apiKey = "665edb3cb526657bc4efd77e";
 const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning?max=2";
+
+// Check if it's a new day and reset data if necessary
+function checkDateAndResetData() {
+  const currentDate = new Date().toLocaleDateString();
+  const lastAccessDate = localStorage.getItem("lastAccessDate");
+
+  if (currentDate !== lastAccessDate) {
+    localStorage.setItem("lastAccessDate", currentDate);
+    resetMealData();
+  } else {
+    loadStoredMeals();
+  }
+}
+
+// Reset meal data
+function resetMealData() {
+  meals.breakfast = [];
+  meals.lunch = [];
+  meals.dinner = [];
+  meals.extras = [];
+  updateTotals();
+  displayFood("breakfast");
+  displayFood("lunch");
+  displayFood("dinner");
+  displayFood("extras");
+}
+
+// Load stored meals from local storage
+function loadStoredMeals() {
+  const storedMeals = JSON.parse(localStorage.getItem("meals"));
+  if (storedMeals) {
+    meals.breakfast = storedMeals.breakfast || [];
+    meals.lunch = storedMeals.lunch || [];
+    meals.dinner = storedMeals.dinner || [];
+    meals.extras = storedMeals.extras || [];
+  }
+  displayFood("breakfast");
+  displayFood("lunch");
+  displayFood("dinner");
+  displayFood("extras");
+  updateTotals();
+}
+
+// Save meals to local storage
+function saveMeals() {
+  localStorage.setItem("meals", JSON.stringify(meals));
+}
 
 function openAddFoodModal(mealType) {
   document.getElementById("addFoodModal").style.display = "block";
@@ -26,37 +74,71 @@ function addFood(mealType) {
   const protein = parseFloat(document.getElementById("food-protein").value);
   const fats = parseFloat(document.getElementById("food-fats").value);
   const sodium = parseFloat(document.getElementById("food-sodium").value);
-  const image = "path/to/your/image"; // Placeholder, as no image field is provided in the HTML
+  const imageFile = document.getElementById("food-image").files[0];
 
-  const foodItem = {
-    name,
-    calories,
-    carbs,
-    protein,
-    fats,
-    sodium,
-    mealType, // Add the meal type
-    image, // Placeholder image
-  };
-
-  // Adding the food item to RestDB
-  fetch(baseUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-apikey": apiKey,
-    },
-    body: JSON.stringify(foodItem),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Added food item:", data);
-      meals[mealType].push(data);
+  // Check if the item already exists
+  const existingItem = meals[mealType].find((item) => item.name === name);
+  if (existingItem) {
+    const additionalQuantity = parseInt(
+      prompt("Item already exists. Enter additional quantity:")
+    );
+    if (!isNaN(additionalQuantity) && additionalQuantity > 0) {
+      existingItem.quantity += additionalQuantity;
+      existingItem.calories += additionalQuantity * existingItem.calories;
+      existingItem.carbs += additionalQuantity * existingItem.carbs;
+      existingItem.protein += additionalQuantity * existingItem.protein;
+      existingItem.fats += additionalQuantity * existingItem.fats;
+      existingItem.sodium += additionalQuantity * existingItem.sodium;
       displayFood(mealType);
       updateTotals();
+      saveMeals(); // Save meals to local storage
       closeAddFoodModal();
+      return;
+    }
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = function () {
+    const image = reader.result;
+
+    const foodItem = {
+      name,
+      calories,
+      carbs,
+      protein,
+      fats,
+      sodium,
+      mealType, // Add the meal type
+      image, // Base64 encoded image
+      quantity: 1,
+    };
+
+    // Adding the food item to RestDB
+    fetch(baseUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-apikey": apiKey,
+      },
+      body: JSON.stringify(foodItem),
     })
-    .catch((error) => console.error("Error:", error));
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Added food item:", data);
+        meals[mealType].push(data);
+        displayFood(mealType);
+        updateTotals();
+        saveMeals(); // Save meals to local storage
+        closeAddFoodModal();
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
+  if (imageFile) {
+    reader.readAsDataURL(imageFile);
+  } else {
+    console.error("No image file selected.");
+  }
 }
 
 function displayFood(mealType) {
@@ -69,14 +151,16 @@ function displayFood(mealType) {
 
     const foodImage = document.createElement("img");
     foodImage.src = food.image;
+    foodImage.classList.add("food-image");
     foodItem.appendChild(foodImage);
 
     const details = document.createElement("div");
     details.classList.add("details");
     details.innerHTML = `
-                  <p>${food.name}</p>
-                  <p>kcal: ${food.calories} | c: ${food.carbs}g | p: ${food.protein}g | f: ${food.fats}g | sodium: ${food.sodium}mg</p>
-              `;
+      <p>${food.name}</p>
+      <p>kcal: ${food.calories} | c: ${food.carbs}g | p: ${food.protein}g | f: ${food.fats}g | sodium: ${food.sodium}mg</p>
+      <p>Quantity: ${food.quantity}</p>
+    `;
     foodItem.appendChild(details);
 
     mealList.appendChild(foodItem);
@@ -125,7 +209,7 @@ function fetchFoodItems() {
     .then((data) => {
       console.log("Fetched food items:", data); // Log fetched data
       data.forEach((food) => {
-        // Assuming each food item has a `mealType` property indicating breakfast, lunch, or dinner
+        // Assuming each food item has a `mealType` property indicating breakfast, lunch, dinner, or extras
         if (meals[food.mealType]) {
           meals[food.mealType].push(food);
         }
@@ -133,6 +217,7 @@ function fetchFoodItems() {
       displayFood("breakfast");
       displayFood("lunch");
       displayFood("dinner");
+      displayFood("extras"); // Display extra's category
       updateTotals();
     })
     .catch((error) => console.error("Error:", error));
@@ -176,6 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const currentDate = new Date();
   document.getElementById("current-date").textContent = formatDate(currentDate);
 
+  checkDateAndResetData(); // Check the date and reset data if necessary
   fetchFoodItems(); // Fetch and display food items after the page loads
 });
 
