@@ -23,57 +23,58 @@ app.get("/users", signupController.getAllUserAccount); // Get all users
 app.get("/users/:id", signupController.getUserAccountById); // Get user by ID
 app.put("/users/:id", signupController.updateUserAcccount); // Update user
 
-const signupForm = document.getElementById('signupForm');
+// const signupForm = document.getElementById('signupForm');
 
-signupForm.addEventListener('submit', async (event) => {
-  event.preventDefault(); // Prevent default form submission
+// signupForm.addEventListener('submit', async (event) => {
+//   event.preventDefault(); // Prevent default form submission
   
-  const formData = {
-    name: signupForm.name.value,
-    password: signupForm.password.value,
-    email: signupForm.email.value,
-    contactNumber: signupForm.contactNumber.value
-  };
+//   const formData = {
+//     name: signupForm.name.value,
+//     password: signupForm.password.value,
+//     email: signupForm.email.value,
+//     contactNumber: signupForm.contactNumber.value
+//   };
   
-  try {
-    const response = await fetch('http://localhost:3000/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
+//   try {
+//     const response = await fetch('http://localhost:3000/users', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify(formData)
+//     });
     
-    if (!response.ok) {
-      throw new Error('Failed to create user account');
-    }
+//     if (!response.ok) {
+//       throw new Error('Failed to create user account');
+//     }
     
-    const newUser = await response.json();
-    console.log('New user created:', newUser);
+//     const newUser = await response.json();
+//     console.log('New user created:', newUser);
     
-    // Optionally redirect or show success message
-  } catch (error) {
-    console.error('Error creating user:', error);
-    // Handle error: show error message to user
-  }
-});
+//     // Optionally redirect or show success message
+//   } catch (error) {
+//     console.error('Error creating user:', error);
+//     // Handle error: show error message to user
+//   }
+// });
 
 
-module.exports = app;
+// module.exports = app;
 
-app.listen(port, async () => {
-  try {
-    // Connect to the database
-    await sql.connect(dbConfig);
-    console.log("Database connection established successfully");
-  } catch (err) {
+ app.listen(port, async () => {
+   try {
+     // Connect to the database
+     await sql.connect(dbConfig);
+     console.log("Database connection established successfully");
+   } catch (err) {
     console.error("Database connection error:", err);
-    // Terminate the application with an error code (optional)
+     // Terminate the application with an error code (optional)
     process.exit(1); // Exit with code 1 indicating an error
-  }
+   }
 
+   
   console.log(`Server listening on port ${port}`);
-});
+ });
 
 // Close the connection pool on SIGINT signal
 process.on("SIGINT", async () => {
