@@ -15,7 +15,7 @@ const getUserAccountById = async (req, res) => {
   try {
     const Account = await account.getUserAccountById(UserAccountId);
     if (!Account) {
-      return res.status(404).send("Book not found");
+      return res.status(404).send("User Account not found");
     }
     res.json(book);
   } catch (error) {

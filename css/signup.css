@@ -34,3 +34,13 @@
   
   }
  
+ 
+#loginForm input{
+  width:100%;
+}
+.form-group{
+  display: flex ;
+  justify-content: left;
+  
+  
+}
