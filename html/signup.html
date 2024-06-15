@@ -1,97 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="../css/signup.css" />
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="signup.css" />
+  <title>AMA Health Hub: signup</title>
+</head>
+<body>
 
-    <meta charset="UTF-8" />
-    <title>AMA Health Hub: signup</title>
-  </head>
-  <body>
+  <h2>Sign up</h2>
 
+  <form id="signupForm">
+    <label for="exampleInputName">Name:</label>
+    <input type="text" id="exampleInputName" name="name" required><br><br>
 
-    <body>
-      <br/><br/><br/>
-      
-      <div class="header-full">
-        <header class="header">
-          <h4>Sign Up</h4>
-        </header>
-        </div>
-        <br/><br/>
+    <label for="exampleInputPassword">Password:</label>
+    <input type="password" id="exampleInputPassword" name="password" required><br><br>
 
-<div class ="container">
-        <form id="loginForm">
-          
-          <div class="form-group">
-            <label for="exampleInputUsername">Username:</label>
-        </div>
-        <div class="form-group">
-            <input
-              type="text"
-              class="form-control"
-              id="exampleInputUsername"
-              aria-describedby="usernameHelp"
-            />
-        </div>
-        
-            
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputPassword1">Password: </label>
-            </div>
-            <div class="form-group">
-            <input
-              type="password"
-              class="form-control"
-              id="exampleInputPassword1"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputEmail">Email: </label>
-        </div>
-            <div class="form-group">
-            <input
-              type="email"
-              class="form-control"
-              id="exampleInputEmail"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputMobileNumber">Mobile Number: </label>
-        </div>
-            <div class="form-group">
-            <input
-              type="mobileNumber"
-              class="form-control"
-              id="exampleInputMobileNumber"
-            />
-          </div>
+    <label for="exampleInputEmail">Email:</label>
+    <input type="email" id="exampleInputEmail" name="email" required><br><br>
 
-      
-          <br/><br/>
-          <button type="submit" class="btn btn-primary"><a href="../html/signup.html" id="profile"></a>submit</button>
-          <p class="mb-4">
-            <u><a href="../html/login.html" id="signup">Login Here</a></u>
-          </p>
-          
-        </form>
-          
-        </div>
-      </div>
+    <label for="exampleInputContactNumber">Contact Number:</label>
+    <input type="tel" id="exampleInputContactNumber" name="contactNumber" required><br><br>
 
-      <script src="../js/signup.js"></script>
-      
-    
+    <button type="submit">Sign Up</button>
+  </form>
 
-    <br />
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent default form submission
 
+      const formData = {
+        name: document.getElementById('exampleInputName').value,
+        password: document.getElementById('exampleInputPassword').value,
+        email: document.getElementById('exampleInputEmail').value,
+        contactNumber: document.getElementById('exampleInputContactNumber').value
+      };
 
-  </body>
+      try {
+        const response = await fetch('/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create user account');
+        }
+
+        const newUser = await response.json();
+        console.log('New user created:', newUser);
+        alert('User created successfully!'); // Example of success message to user
+        document.getElementById('signupForm').reset(); // Reset the form after successful submission
+      } catch (error) {
+        console.error('Error creating user:', error);
+        alert('Failed to create user account. Please try again.'); // Example of error handling for user
+        // Handle error: show error message to user
+      }
+    });
+  </script>
+
+</body>
 </html>
