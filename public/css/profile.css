@@ -8,7 +8,7 @@
   .header{
     display:flex;
     justify-content: center;
-    background-color: lightgrey;
+    background-color: lightgrey hidden;
     border-radius: 20px;
     width:500px;
     font-size: 28px;  
@@ -20,12 +20,13 @@
     border: 3px purple hidden;
     display: flex;
     justify-content: center;
+    height: 600px;
   }
 
-  #loginForm {
+  #profileForm {
     display:flex;
     flex-direction: column;
-    background-color: lightgrey;
+    
     width:500px;
     height:400px;
     padding: 20px;
@@ -40,6 +41,11 @@
   .form-group{
     display: flex ;
     justify-content: left;
-    
-    
+    border: black hidden;
   }
+
+.form-group-input input{
+    display: flex;
+    
+    width:100%;
+}
