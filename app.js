@@ -1,12 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql');
+const cors = require('cors');
 const dbConfig = require('./dbConfig'); // Ensure dbconfig.js is correctly defined
+const path = require('path');
 
 const app = express();
 const port = 3001;
-
+// Serve static files (CSS, JS, images, etc.) from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 // Middleware
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -24,6 +28,22 @@ async function startServer() {
 }
 
 startServer();
+//GET endpoint to retreive user account
+app.get('/users', async (req, res) => {
+  try {
+    const request = pool.request();
+
+    const result = await request.query(`
+      SELECT * FROM AccountUser;
+    `);
+
+    console.log('Retrieved users:', result.recordset);
+    res.json(result.recordset); // Send retrieved users as JSON response
+  } catch (error) {
+    console.error('Error retrieving users:', error);
+    res.status(500).json({ error: 'Failed to retrieve users' });
+  }
+});
 
 // POST endpoint for user creation
 app.post('/users', async (req, res) => {
@@ -49,8 +69,8 @@ app.post('/users', async (req, res) => {
   }
 });
 
-// Serve static files from the 'public' directory
-app.use(express.static('../html'));
+
+
 
 // Start the server
 app.listen(port, () => {
