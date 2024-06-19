@@ -1,5 +1,3 @@
-
-
 document.getElementById('signupForm').addEventListener('submit', async (event) => {
   event.preventDefault(); // Prevent default form submission
 
@@ -12,7 +10,7 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
   };
 
   try {
-    const response = await fetch('http://localhost:3001/users', {
+    const response = await fetch('http://localhost:3000/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -26,9 +24,8 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
 
     const newUser = await response.json();
     console.log('New user created:', newUser);
- // Redirect to the login page
- window.location.href = 'login.html';
-    // Optionally redirect or show success message
+    // Redirect to the login page or show a success message
+    window.location.href = 'login.html';
   } catch (error) {
     console.error('Error creating user:', error);
     // Handle error: show error message to user
