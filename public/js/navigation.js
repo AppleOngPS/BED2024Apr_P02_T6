@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   isCurrentDirectory() ? "html/food.html" : "food.html"
                 }">Food</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "html/profile.html" : "../profile.html"
+                  isCurrentDirectory() ? "html/profile.html" : "profile.html"
                 }">Profile</a></li>
                 <li id="points-display" style="color: white;"></li>
                 <div class="main-icon">

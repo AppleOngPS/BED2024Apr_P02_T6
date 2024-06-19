@@ -45,6 +45,34 @@ app.get('/users', async (req, res) => {
   }
 });
 
+
+// GET endpoint for retrieving user data by name
+app.get('/users/search', async (req, res) => {
+  const { name } = req.query;
+
+  try {
+    const request = pool.request();
+    request.input('name', sql.NVarChar, name);
+
+    const result = await request.query(`
+      SELECT * FROM AccountUser WHERE name = @name;
+    `);
+    
+
+    if (result.recordset.length > 0) {
+      res.json(result.recordset); // Return user data as JSON array
+    } else {
+      res.status(404).json({ error: 'No users found with that name' });
+    }
+  } catch (error) {
+    console.error('Error retrieving users by name:', error);
+    res.status(500).json({ error: 'Failed to retrieve users by name' });
+  }
+});
+
+
+
+
 // POST endpoint for user creation
 app.post('/users', async (req, res) => {
   const { name, password, email, contactNumber } = req.body;
