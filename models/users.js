@@ -80,6 +80,46 @@ class User {
       throw error; // Throw error to be caught by the controller
     }
   }
+
+  static async getUsersWithDetails() {
+    const connection = await sql.connect(dbConfig);
+
+    try {
+      const query = `
+SELECT au.name, au.email,au.contactNumber,ud.age, ud.height, ud.weight, ud.weightGoal, ud.TargetCalarieIntake
+FROM AccountUser au
+INNER JOIN UserDetails ud ON ud.name = au.name;   
+      `;
+
+      const result = await connection.request().query(query);
+
+      // Group users and their details
+      const usersWithDetails = {};
+      for (const row of result.recordset) {
+        const name = row.name;
+        if (!usersWithDetails[name]) {
+          usersWithDetails[name] = {
+            name: row.name,
+            email: row.email,
+            contactNumber: row.contactNumber,
+            age: row.age,
+            height: row.height,
+            weight: row.weight,
+            weightGoal: row.weightGoal,
+            TargetCalarieIntake: row.TargetCalarieIntake,
+          };
+        }
+        
+      }
+
+      return Object.values(usersWithDetails);
+    } catch (error) {
+      throw new Error("Error fetching users with details");
+    } finally {
+      await connection.close();
+    }
+  }
+
 }
 
 module.exports = User;
