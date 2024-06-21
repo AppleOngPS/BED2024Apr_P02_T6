@@ -6,7 +6,7 @@ const meals = {
 };
 
 const apiKey = "665edb3cb526657bc4efd77e";
-const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning?max=2";
+const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
 
 // Check if it's a new day and reset data if necessary
 function checkDateAndResetData() {
@@ -17,7 +17,7 @@ function checkDateAndResetData() {
     localStorage.setItem("lastAccessDate", currentDate);
     resetMealData();
   } else {
-    loadStoredMeals();
+    fetchFoodItems();
   }
 }
 
@@ -32,27 +32,7 @@ function resetMealData() {
   displayFood("lunch");
   displayFood("dinner");
   displayFood("extras");
-}
-
-// Load stored meals from local storage
-function loadStoredMeals() {
-  const storedMeals = JSON.parse(localStorage.getItem("meals"));
-  if (storedMeals) {
-    meals.breakfast = storedMeals.breakfast || [];
-    meals.lunch = storedMeals.lunch || [];
-    meals.dinner = storedMeals.dinner || [];
-    meals.extras = storedMeals.extras || [];
-  }
-  displayFood("breakfast");
-  displayFood("lunch");
-  displayFood("dinner");
-  displayFood("extras");
-  updateTotals();
-}
-
-// Save meals to local storage
-function saveMeals() {
-  localStorage.setItem("meals", JSON.stringify(meals));
+  deleteAllMealsFromDB(); // Delete all meals from the database at the start of a new day
 }
 
 function openAddFoodModal(mealType) {
@@ -75,27 +55,6 @@ function addFood(mealType) {
   const fats = parseFloat(document.getElementById("food-fats").value);
   const sodium = parseFloat(document.getElementById("food-sodium").value);
   const imageFile = document.getElementById("food-image").files[0];
-
-  // Check if the item already exists
-  const existingItem = meals[mealType].find((item) => item.name === name);
-  if (existingItem) {
-    const additionalQuantity = parseInt(
-      prompt("Item already exists. Enter additional quantity:")
-    );
-    if (!isNaN(additionalQuantity) && additionalQuantity > 0) {
-      existingItem.quantity += additionalQuantity;
-      existingItem.calories += additionalQuantity * existingItem.calories;
-      existingItem.carbs += additionalQuantity * existingItem.carbs;
-      existingItem.protein += additionalQuantity * existingItem.protein;
-      existingItem.fats += additionalQuantity * existingItem.fats;
-      existingItem.sodium += additionalQuantity * existingItem.sodium;
-      displayFood(mealType);
-      updateTotals();
-      saveMeals(); // Save meals to local storage
-      closeAddFoodModal();
-      return;
-    }
-  }
 
   const reader = new FileReader();
   reader.onloadend = function () {
@@ -128,7 +87,6 @@ function addFood(mealType) {
         meals[mealType].push(data);
         displayFood(mealType);
         updateTotals();
-        saveMeals(); // Save meals to local storage
         closeAddFoodModal();
       })
       .catch((error) => console.error("Error:", error));
@@ -208,6 +166,12 @@ function fetchFoodItems() {
     .then((response) => response.json())
     .then((data) => {
       console.log("Fetched food items:", data); // Log fetched data
+      // Clear current meals
+      meals.breakfast = [];
+      meals.lunch = [];
+      meals.dinner = [];
+      meals.extras = [];
+
       data.forEach((food) => {
         // Assuming each food item has a `mealType` property indicating breakfast, lunch, dinner, or extras
         if (meals[food.mealType]) {
@@ -219,6 +183,22 @@ function fetchFoodItems() {
       displayFood("dinner");
       displayFood("extras"); // Display extra's category
       updateTotals();
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+// Function to delete all meals from the database
+function deleteAllMealsFromDB() {
+  fetch(baseUrl, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Deleted all meals:", data);
     })
     .catch((error) => console.error("Error:", error));
 }
