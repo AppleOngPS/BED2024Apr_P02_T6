@@ -4,35 +4,85 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recipe Page</title>
-
     <link rel="stylesheet" href="../css/recipe.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <link rel="stylesheet" href="../css/footer.css" />
   </head>
   <body>
+    <header>
+      <!-- Include your navigation bar here -->
+    </header>
     <main>
       <section class="categories">
         <h2>Categories</h2>
         <div class="category-buttons">
-          <button class="category" data-category="lowcarb">Low Carb</button>
+          <button class="category" data-category="low carb">Low Carb</button>
           <button class="category" data-category="vegetarian">
             Vegetarian
           </button>
-          <button class="category" data-category="glutenfree">
+          <button class="category" data-category="gluten free">
             Gluten Free
           </button>
           <button class="category" data-category="local">Local</button>
-          <button class="category" data-category="smoothiesandshakes">
+          <button class="category" data-category="smoothies and shakes">
             Smoothies and Shakes
           </button>
         </div>
       </section>
       <section class="results">
         <h2>Results</h2>
-        <div class="recipe-list">
+        <div class="recipe-list" id="recipe-list">
           <!-- Recipe items will be dynamically added here -->
         </div>
       </section>
+      <section class="add-recipe">
+        <button onclick="openAddRecipeModal()">Add Recipe</button>
+      </section>
+      <div id="addRecipeModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeAddRecipeModal()">&times;</span>
+          <h2>Add Recipe</h2>
+          <form id="addRecipeForm">
+            <label for="recipe-name">Name:</label>
+            <input type="text" id="recipe-name" name="name" required />
+            <label for="recipe-category">Category:</label>
+            <input type="text" id="recipe-category" name="category" required />
+            <label for="recipe-description">Description:</label>
+            <textarea
+              id="recipe-description"
+              name="description"
+              required
+            ></textarea>
+            <label for="recipe-ingredients">Ingredients:</label>
+            <textarea
+              id="recipe-ingredients"
+              name="ingredients"
+              required
+            ></textarea>
+            <label for="recipe-image">Image:</label>
+            <input
+              type="file"
+              id="recipe-image"
+              name="image"
+              accept="image/*"
+            />
+            <button type="submit">Add Recipe</button>
+          </form>
+        </div>
+      </div>
+      <div id="recipeModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeRecipeModal()">&times;</span>
+          <h2 id="modal-recipe-name"></h2>
+          <p>
+            <strong>Category:</strong> <span id="modal-recipe-category"></span>
+          </p>
+          <p><strong>Description:</strong></p>
+          <p id="modal-recipe-description"></p>
+          <p><strong>Ingredients:</strong></p>
+          <p id="modal-recipe-ingredients"></p>
+        </div>
+      </div>
     </main>
 
     <script src="../js/recipe.js"></script>

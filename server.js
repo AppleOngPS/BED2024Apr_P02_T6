@@ -3,7 +3,8 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
-const db = require("./js/dbConfig");
+const dbConfig = require("./dbConfig");
+const sql = require("mssql");
 
 const app = express();
 const port = 3000;
@@ -26,87 +27,108 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// CRUD operations for recipes
+let pool;
+
+async function startServer() {
+  try {
+    pool = await sql.connect(dbConfig);
+    console.log("Database connection established successfully");
+  } catch (err) {
+    console.error("Database connection error:", err);
+    process.exit(1);
+  }
+}
+startServer();
+
+// Serve images from the uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // GET all recipes
-app.get("/api/recipes", (req, res) => {
-  const sql = "SELECT * FROM recipes";
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error("Error fetching recipes:", err);
-      res.status(500).send("Error fetching recipes");
-      return;
-    }
-    res.send(result);
-  });
+app.get("/api/recipes", async (req, res) => {
+  try {
+    const request = pool.request();
+
+    const result = await request.query("SELECT * FROM recipes;");
+    console.log("Retrieved recipes:", result.recordset);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error retrieving recipes:", error);
+    res.status(500).json({ error: "Failed to retrieve recipes" });
+  }
 });
 
 // GET recipe by ID
-app.get("/api/recipes/:id", (req, res) => {
+app.get("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT * FROM recipes WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      console.error("Error fetching recipe:", err);
-      res.status(500).send("Error fetching recipe");
-      return;
-    }
-    res.send(result[0]);
-  });
+  try {
+    const request = pool.request();
+    request.input("id", sql.Int, id);
+    const result = await request.query("SELECT * FROM recipes WHERE id = @id");
+    console.log("Retrieved recipe:", result.recordset[0]);
+    res.json(result.recordset[0]);
+  } catch (error) {
+    console.error("Error retrieving recipe:", error);
+    res.status(500).json({ error: "Failed to retrieve recipe" });
+  }
 });
 
 // POST a new recipe
-app.post("/api/recipes", upload.single("image"), (req, res) => {
+app.post("/api/recipes", upload.single("image"), async (req, res) => {
   const { name, category, description, ingredients } = req.body;
   const image = req.file ? req.file.path : null;
-  const sql =
-    "INSERT INTO recipes (name, category, description, ingredients, image) VALUES (?, ?, ?, ?, ?)";
-  db.query(
-    sql,
-    [name, category, description, ingredients, image],
-    (err, result) => {
-      if (err) {
-        console.error("Error adding recipe:", err);
-        res.status(500).send("Error adding recipe");
-        return;
-      }
-      res.send(result);
-    }
-  );
+  try {
+    const request = pool.request();
+    request.input("name", sql.NVarChar, name);
+    request.input("category", sql.NVarChar, category);
+    request.input("description", sql.NVarChar, description);
+    request.input("ingredients", sql.NVarChar, ingredients);
+    request.input("image", sql.NVarChar, image);
+    const result = await request.query(
+      "INSERT INTO recipes (name, category, description, ingredients, image) VALUES (@name, @category, @description, @ingredients, @image)"
+    );
+    console.log("Added recipe:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error adding recipe:", error);
+    res.status(500).json({ error: "Failed to add recipe" });
+  }
 });
 
 // PUT (update) a recipe by ID
-app.put("/api/recipes/:id", (req, res) => {
+app.put("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
   const { name, category, description, ingredients } = req.body;
-  const sql =
-    "UPDATE recipes SET name = ?, category = ?, description = ?, ingredients = ? WHERE id = ?";
-  db.query(
-    sql,
-    [name, category, description, ingredients, id],
-    (err, result) => {
-      if (err) {
-        console.error("Error updating recipe:", err);
-        res.status(500).send("Error updating recipe");
-        return;
-      }
-      res.send(result);
-    }
-  );
+  try {
+    const request = pool.request();
+    request.input("id", sql.Int, id);
+    request.input("name", sql.NVarChar, name);
+    request.input("category", sql.NVarChar, category);
+    request.input("description", sql.NVarChar, description);
+    request.input("ingredients", sql.NVarChar, ingredients);
+    const result = await request.query(
+      "UPDATE recipes SET name = @name, category = @category, description = @description, ingredients = @ingredients WHERE id = @id"
+    );
+    console.log("Updated recipe:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error updating recipe:", error);
+    res.status(500).json({ error: "Failed to update recipe" });
+  }
 });
 
 // DELETE a recipe by ID
-app.delete("/api/recipes/:id", (req, res) => {
+app.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
-  const sql = "DELETE FROM recipes WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      console.error("Error deleting recipe:", err);
-      res.status(500).send("Error deleting recipe");
-      return;
-    }
-    res.send(result);
-  });
+  try {
+    const request = pool.request();
+    request.input("id", sql.Int, id);
+    const result = await request.query("DELETE FROM recipes WHERE id = @id");
+    console.log("Deleted recipe:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error deleting recipe:", error);
+    res.status(500).json({ error: "Failed to delete recipe" });
+  }
 });
 
 app.listen(port, () => {

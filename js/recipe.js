@@ -4,6 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault();
     addRecipe();
   };
+
+  document.querySelectorAll(".category").forEach((button) => {
+    button.addEventListener("click", function () {
+      const category = this.dataset.category;
+      filterRecipes(category);
+    });
+  });
 });
 
 function fetchRecipes() {
@@ -24,21 +31,34 @@ function displayRecipes(recipes) {
 
     const recipeImage = document.createElement("img");
     recipeImage.src = `http://localhost:3000/${recipe.image}`;
-    recipeItem.appendChild(recipeImage);
+    recipeImage.alt = recipe.name;
+    recipeImage.addEventListener("click", () => showRecipeDetails(recipe)); // Ensure this event listener is properly set
 
     const details = document.createElement("div");
     details.classList.add("details");
     details.innerHTML = `
       <p>${recipe.name}</p>
-      <p>${recipe.category}</p>
-      <p>${recipe.description}</p>
-      <p>${recipe.ingredients}</p>
-      <button onclick="deleteRecipe(${recipe.id})">Delete</button>
+      <p>kcal: ${recipe.calories} | c: ${recipe.carbs}g | p: ${recipe.protein}g | f: ${recipe.fats}g</p>
     `;
-    recipeItem.appendChild(details);
 
+    recipeItem.appendChild(recipeImage);
+    recipeItem.appendChild(details);
     recipeList.appendChild(recipeItem);
   });
+}
+
+function showRecipeDetails(recipe) {
+  document.getElementById("modal-recipe-name").innerText = recipe.name;
+  document.getElementById("modal-recipe-category").innerText = recipe.category;
+  document.getElementById("modal-recipe-description").innerText =
+    recipe.description;
+  document.getElementById("modal-recipe-ingredients").innerText =
+    recipe.ingredients;
+  document.getElementById("recipeModal").style.display = "block";
+}
+
+function closeRecipeModal() {
+  document.getElementById("recipeModal").style.display = "none";
 }
 
 function addRecipe() {
@@ -78,11 +98,11 @@ function closeAddRecipeModal() {
 }
 
 function filterRecipes(category) {
-  fetch(`http://localhost:3000/api/recipes`)
+  fetch("http://localhost:3000/api/recipes")
     .then((response) => response.json())
     .then((data) => {
       const filteredRecipes = data.filter(
-        (recipe) => recipe.category === category
+        (recipe) => recipe.category.toLowerCase() === category
       );
       displayRecipes(filteredRecipes);
     })
