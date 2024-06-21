@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const queryString = `?name=${encodeURIComponent(formData.name)}&password=${encodeURIComponent(formData.password)}`;
-      const response = await fetch(`http://localhost:3000/login${queryString}`, {
+      const response = await fetch(`http://localhost:3001/login${queryString}`, {
         method: 'GET', // Use GET method for login
         headers: {
           'Content-Type': 'application/json'

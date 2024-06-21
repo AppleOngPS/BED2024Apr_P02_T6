@@ -84,4 +84,5 @@ module.exports = {
   getUserById,
   searchUsers,
   loginUser,
+  getUsersWithDetails,
 };
