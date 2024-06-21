@@ -32,7 +32,7 @@ function displayRecipes(recipes) {
     const recipeImage = document.createElement("img");
     recipeImage.src = `http://localhost:3000/${recipe.image}`;
     recipeImage.alt = recipe.name;
-    recipeImage.addEventListener("click", () => showRecipeDetails(recipe)); // Ensure this event listener is properly set
+    recipeImage.addEventListener("click", () => showRecipeDetails(recipe));
 
     const details = document.createElement("div");
     details.classList.add("details");
