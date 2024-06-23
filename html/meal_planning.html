@@ -7,12 +7,29 @@
     <link rel="stylesheet" href="../css/meal_planning.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <link rel="stylesheet" href="../css/footer.css" />
+    <!-- Include FullCalendar library -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.0/main.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.0/main.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@5.11.0/main.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <main>
       <section class="meal-summary">
         <h2>Meal Plan</h2>
         <p id="current-date"></p>
+        <button id="calendar-button" onclick="openCalendarModal()">
+          📅 Calendar
+        </button>
+        <!-- Calendar button -->
         <div class="nutrition-summary">
           <div>Calories: <span id="total-calories">0</span></div>
           <div>Carbs: <span id="total-carbs">0</span></div>
@@ -64,6 +81,17 @@
         </div>
       </section>
 
+      <section class="new-day">
+        <button id="new-day-button">New Day</button>
+      </section>
+
+      <div id="calendarModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeCalendarModal()">&times;</span>
+          <div id="calendar-modal"></div>
+        </div>
+      </div>
+
       <!-- Modal for adding new food item -->
       <div id="addFoodModal" class="modal">
         <div class="modal-content">
@@ -112,7 +140,9 @@
         </div>
       </div>
     </main>
-
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@5.11.0/main.min.js"></script>
     <script src="../js/meal_planning.js"></script>
     <script src="../js/navigation.js"></script>
     <script src="../js/footer.js"></script>

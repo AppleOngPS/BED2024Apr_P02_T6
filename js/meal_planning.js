@@ -8,6 +8,82 @@ const meals = {
 const apiKey = "665edb3cb526657bc4efd77e";
 const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
 
+// Initialization
+document.addEventListener("DOMContentLoaded", function () {
+  setupCalendar();
+
+  document
+    .getElementById("calendar-button")
+    .addEventListener("click", openCalendarModal);
+  document
+    .getElementById("new-day-button")
+    .addEventListener("click", function () {
+      if (
+        confirm(
+          "Are you sure you want to start a new day? This will delete all current food items."
+        )
+      ) {
+        resetMealData();
+        deleteAllMealsFromDB();
+      }
+    });
+});
+
+// Calendar modal functions
+function openCalendarModal() {
+  document.getElementById("calendarModal").style.display = "block";
+}
+
+function closeCalendarModal() {
+  document.getElementById("calendarModal").style.display = "none";
+}
+
+function setupCalendar() {
+  const calendarEl = document.getElementById("calendar");
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: "dayGridMonth",
+    events: function (fetchInfo, successCallback, failureCallback) {
+      fetch(baseUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-apikey": apiKey,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const events = data.map((food) => ({
+            title: `Calories: ${food.calories}`,
+            start: new Date(food._created),
+            extendedProps: {
+              carbs: food.carbs,
+              protein: food.protein,
+              fats: food.fats,
+              sodium: food.sodium,
+            },
+          }));
+          successCallback(events);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          failureCallback(error);
+        });
+    },
+    eventClick: function (info) {
+      const { title, start, extendedProps } = info.event;
+      alert(
+        `Date: ${start.toLocaleDateString()}\n` +
+          `${title}\n` +
+          `Carbs: ${extendedProps.carbs}g\n` +
+          `Protein: ${extendedProps.protein}g\n` +
+          `Fats: ${extendedProps.fats}g\n` +
+          `Sodium: ${extendedProps.sodium}mg`
+      );
+    },
+  });
+  calendar.render();
+}
+
 // Check if it's a new day and reset data if necessary
 function checkDateAndResetData() {
   const currentDate = new Date().toLocaleDateString();
@@ -252,3 +328,47 @@ window.onclick = function (event) {
     closeAddFoodModal();
   }
 };
+document
+  .getElementById("new-day-button")
+  .addEventListener("click", function () {
+    if (
+      confirm(
+        "Are you sure you want to start a new day? This will delete all current food items."
+      )
+    ) {
+      resetMealData(); // Reset meal data in the app
+      deleteAllMealsFromDB(); // Delete all meals from the database
+    }
+  });
+
+// Function to reset meal data (clear meals object and update display)
+function resetMealData() {
+  meals.breakfast = [];
+  meals.lunch = [];
+  meals.dinner = [];
+  meals.extras = [];
+  updateTotals();
+  displayFood("breakfast");
+  displayFood("lunch");
+  displayFood("dinner");
+  displayFood("extras");
+}
+
+// Function to delete all meals from the database
+function deleteAllMealsFromDB() {
+  fetch(baseUrl, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log("Deleted all meals successfully.");
+      } else {
+        console.error("Failed to delete meals.");
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+}
