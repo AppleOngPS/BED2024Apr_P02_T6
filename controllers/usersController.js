@@ -1,18 +1,16 @@
-const express = require("express");
-const router = express.Router();
+const sql = require("mssql");
 const User = require("../models/users");
 
 const createUser = async (req, res) => {
   try {
-    const { name, password, email, contactNumber } = req.body;
-    const newUser = await User.createUserAccount({ name, password, email, contactNumber });
+    const { name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake } = req.body;
+    const newUser = await User.createUserAccount({ name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake });
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).send("Error creating user");
   }
 };
-
 
 const getAllUsers = async (req, res) => {
   try {
@@ -41,7 +39,6 @@ const getUserById = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   const searchTerm = req.query.searchTerm;
-
   try {
     const users = await User.searchUsers(searchTerm);
     res.json(users);
@@ -52,15 +49,13 @@ const searchUsers = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { name, password } = req.query; // Retrieve username and password from query params
-
+  const { name, password } = req.query;
   try {
-    const user = await User.getUserByNameAndPassword(name, password); // Assuming a method to fetch user by name and password
-
+    const user = await User.getUserByNameAndPassword(name, password);
     if (user) {
-      res.status(200).json(user); // Return user data if found
+      res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'User not found' }); // User not found
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
     console.error('Error logging in:', error);
@@ -68,15 +63,21 @@ const loginUser = async (req, res) => {
   }
 };
 
-async function getUsersWithDetails(req, res) {
+const getUserByName = async (req, res) => {
+  const { name } = req.query;
   try {
-    const users = await User.getUsersWithDetails();
-    res.json(users);
+    const user = await User.getUserByName(name); // Implement this method in your User model
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error fetching users with details" });
+    console.error('Error retrieving user by name:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
 
 module.exports = {
   createUser,
@@ -84,5 +85,5 @@ module.exports = {
   getUserById,
   searchUsers,
   loginUser,
-  getUsersWithDetails,
+  getUserByName,
 };

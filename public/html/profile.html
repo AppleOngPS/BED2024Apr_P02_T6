@@ -1,160 +1,75 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="../css/navigation.css" />
-    <link rel="stylesheet" href="../css/footer.css" />
-    <link rel="stylesheet" href="../css/profile.css" />
-    <!-- <link rel="stylesheet" href="../css/login.css" /> -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="../css/navigation.css" />
+  <link rel="stylesheet" href="../css/footer.css" />
+  <link rel="stylesheet" href="../css/profile.css" />
+  <link rel="stylesheet" href="../css/login.css" /> 
+</head>
+<br/><br/><br/><br/><br/>
+<body>
+  <div class="header-full">
+    <header class="header">
+      <h4>Personal Information</h4>
+    </header>
+  </div>
 
-    <meta charset="UTF-8" />
-    <title>AMA Health Hub: Personal Infomation</title>
-  </head>
-  <body>
 
-
-    <body>
-      <br/><br/><br/>
-      
-      <div class="header-full">
-        <header class="header">
-          <h4>Personal Infomation</h4>
-        </header>
-        </div>
-        
-
-<div class ="container">
-        <form id="profileForm">
-          
-          <div class="form-group">
-            
-            <label for="exampleInputUsername">Username:</label>
-          </div>
-            <div class="form-group-input">
-            <input
-              type="text"
-              class="form-control"
-              id="exampleInputUsername"
-              aria-describedby="usernameHelp"
-            />
-            
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputGender">Gender: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="gender"
-              class="form-control"
-              id="exampleInputGender"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputEmail">Email: </label>
-          </div>
-          
-          <div class="form-group-input">
-            <input
-              type="email"
-              class="form-control"
-              id="exampleInputEmail"
-            />
-          </div>
-          <br/>
-
-          <div class="form-group">
-            
-            <label for="exampleInputMobileNumber">Mobile Number: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="mobileNumber"
-              class="form-control"
-              id="exampleInputMobileNumber"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputHeight">Height: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="height"
-              class="form-control"
-              id="exampleInputHeight"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputHeight">Weight: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="weight"
-              class="form-control"
-              id="exampleInputHeight"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputWeightGoal">Weight Goal: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="weightGoal"
-              class="form-control"
-              id="exampleInputWeightGoal"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputWeightGoal">Weight Goal: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="weightGoal"
-              class="form-control"
-              id="exampleInputWeightGoal"
-            />
-          </div>
-          <br/>
-          <div class="form-group">
-            
-            <label for="exampleInputTargetCalorieGoal">Target Calorie Goal: </label>
-          </div>
-          <div class="form-group-input">
-            <input
-              type="targetCalorieGoal"
-              class="form-control"
-              id="exampleInputTargetCalorieGoal"
-            />
-          </div>
-          <br/><br/>
-          <button type="save" class="btn btn-primary">Save</button>
-          <br/>
-          <button type="delete" class="btn btn-primary">Delete Account</button>
-          
-        </form>
-          
-        </div>
+  <div class="container">
+    <form id="profileForm">
+      <div class="form-group">
+        <label for="usernameInput">Username:</label>
+        <input type="text" class="form-control" id="usernameInput" >
       </div>
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-         <script src="../js/navigation.js"></script>
-    <script src="../js/footer.js"></script>
-      
-    
 
-    <br />
+      <div class="form-group">
+        <label for="exampleInputEmail">Email:</label>
+        <input type="email" class="form-control" id="exampleInputEmail" >
+      </div>
 
+      <div class="form-group">
+        <label for="exampleInputMobileNumber">Mobile Number:</label>
+        <input type="text" class="form-control" id="exampleInputMobileNumber" >
+      </div>
 
-  </body>
+      <div class="form-group">
+        <label for="exampleInputAge">Age:</label>
+        <input type="text" class="form-control" id="exampleInputAge" >
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputHeight">Height:</label>
+        <input type="text" class="form-control" id="exampleInputHeight" >
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputWeight">Weight:</label>
+        <input type="text" class="form-control" id="exampleInputWeight" >
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputWeightGoal">Weight Goal:</label>
+        <input type="text" class="form-control" id="exampleInputWeightGoal" >
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputTargetCalorieGoal">Target Calorie Goal:</label>
+        <input type="text" class="form-control" id="exampleInputTargetCalorieGoal" >
+      </div>
+
+      <br />
+      <button type="button" id="logoutButton" class="btn btn-primary">Logout</button>
+      <br />
+      <button type="button" id="deleteButton" class="btn btn-danger">Delete Account</button> 
+    </form> 
+  </div>
+  <script src="../js/navigation.js"></script>
+  
+  <script src="../js/footer.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
 </html>

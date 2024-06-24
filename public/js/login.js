@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const queryString = `?name=${encodeURIComponent(formData.name)}&password=${encodeURIComponent(formData.password)}`;
-      const response = await fetch(`http://localhost:3001/login${queryString}`, {
+      const response = await fetch(`http://localhost:3000/login${queryString}`, {
         method: 'GET', // Use GET method for login
         headers: {
           'Content-Type': 'application/json'
@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const loggedInUser = await response.json();
       console.log('Logged in user:', loggedInUser);
+      // Store user data in local storage
+      localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
       // Redirect or perform actions upon successful login
       window.location.href = 'profile.html'; // Example redirect to profile page
     } catch (error) {
