@@ -44,7 +44,7 @@
     border: black hidden;
   }
 
-.form-group-input input{
+.form-group input{
     display: flex;
     
     width:100%;
