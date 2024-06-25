@@ -6,7 +6,12 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
     name: signupForm.querySelector('#exampleInputName').value,
     password: signupForm.querySelector('#exampleInputPassword').value,
     email: signupForm.querySelector('#exampleInputEmail').value,
-    contactNumber: signupForm.querySelector('#exampleInputContactNumber').value
+    contactNumber: signupForm.querySelector('#exampleInputContactNumber').value,
+    age: signupForm.querySelector('#exampleInputAge').value,
+    height: signupForm.querySelector('#exampleInputHeight').value,
+    weight: signupForm.querySelector('#exampleInputWeight').value,
+    weightGoal: signupForm.querySelector('#exampleInputWeightGoal').value,
+    TargetCalarieIntake: signupForm.querySelector('#exampleInputTargetCalarieIntake').value
   };
 
   try {

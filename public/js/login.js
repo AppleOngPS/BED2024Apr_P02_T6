@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const loggedInUser = await response.json();
       console.log('Logged in user:', loggedInUser);
+      // Store user data in local storage
+      localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
       // Redirect or perform actions upon successful login
       window.location.href = 'profile.html'; // Example redirect to profile page
     } catch (error) {

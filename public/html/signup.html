@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>AMA Health Hub: signup</title>
-  <link rel="stylesheet" href="../css/signupNlogin.css">
+  <link rel="stylesheet" href="../css/signup.css">
+  
 </head>
 <body>
   <div class="header-full">
@@ -12,36 +13,46 @@
       <h2>Sign up</h2>
     </div>
   </div>
-  <br><br>
   <div class="container">
     <form id="signupForm">
       <div class="form-group">
-        <br><br>
         <label for="exampleInputName">Name:</label>
-      </div>
-      <div class="form-group1">
         <input type="text" id="exampleInputName" name="name" required><br><br>
       </div>
       <div class="form-group">
         <label for="exampleInputPassword">Password:</label>
-      </div>
-      <div class="form-group1">
         <input type="password" id="exampleInputPassword" name="password" required><br><br>
       </div>
       <div class="form-group">
         <label for="exampleInputEmail">Email:</label>
-      </div>
-      <div class="form-group1">
         <input type="email" id="exampleInputEmail" name="email" required><br><br>
       </div>
       <div class="form-group">
         <label for="exampleInputContactNumber">Contact Number:</label>
-      </div>
-      <div class="form-group1">
         <input type="tel" id="exampleInputContactNumber" name="contactNumber" required><br><br>
       </div>
-      <br>
-      <div class="form-group1">
+
+      <div class="form-group">
+        <label for="exampleInputAge">Age:</label>
+        <input type="number" id="exampleInputAge" name="Age" required><br><br>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputHeight">Height (cm):</label>
+        <input type="number" id="exampleInputHeight" name="Height" required><br><br>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputWeight">Weight (kg):</label>
+        <input type="number" id="exampleInputWeight" name="Weight" required><br><br>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputWeightGoal">Weight Goal (kg):</label>
+        <input type="number" id="exampleInputWeightGoal" name="WeightGoal" required><br><br>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputTargetCalarieIntake">Target Calorie Intake:</label>
+        <input type="number" id="exampleInputTargetCalarieIntake" name="TargetCalarieIntake" required><br><br>
+      </div>
+      <div class="form-group">
         <button type="submit">Sign Up</button>
       </div>
     </form>
@@ -49,3 +60,4 @@
   <script src="../js/signup.js"></script>
 </body>
 </html>
+

@@ -1,106 +1,55 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const sql = require('mssql');
-const cors = require('cors');
-const dbConfig = require('./dbConfig'); // Ensure dbconfig.js is correctly defined
-const path = require('path');
+
+
+const express = require("express");
+const bodyParser = require("body-parser");
+const sql = require("mssql");
+const dbConfig = require("./dbConfig");
+const cors = require("cors");
+
+const usersController = require("./controllers/usersController");
 
 const app = express();
-const port = 3001;
-// Serve static files (CSS, JS, images, etc.) from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+const port = 3000;
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
-// Database connection pool
-let pool;
+// Routes
+app.post("/users", usersController.createUser); // Create user
+app.get("/users", usersController.getAllUsers); // Get all users
+app.get("/users/:id", usersController.getUserById); // Get user by ID
+app.get("/users/search", usersController.searchUsers); // Search users
+app.get('/login', usersController.loginUser); // Login user
+app.get('/user/:userId', usersController.getUserById); // Get user details by ID
+app.get('/users', usersController.getUserByName);// Get user by Name
+app.put("/users", usersController.updateUser); // Update user
+app.delete("/users", usersController.deleteUser); // Delete user
 
-async function startServer() {
+// Start server and connect to database
+app.listen(port, async () => {
   try {
-    pool = await sql.connect(dbConfig);
-    console.log('Database connection established successfully');
+    await sql.connect(dbConfig);
+    console.log("Database connection established successfully");
   } catch (err) {
-    console.error('Database connection error:', err);
+    console.error("Database connection error:", err);
     process.exit(1);
   }
-}
 
-startServer();
-//GET endpoint to retreive user account
-app.get('/users', async (req, res) => {
-  try {
-    const request = pool.request();
-
-    const result = await request.query(`
-      SELECT * FROM AccountUser;
-    `);
-
-    console.log('Retrieved users:', result.recordset);
-    res.json(result.recordset); // Send retrieved users as JSON response
-  } catch (error) {
-    console.error('Error retrieving users:', error);
-    res.status(500).json({ error: 'Failed to retrieve users' });
-  }
+  console.log(`Server listening on port ${port}`);
 });
 
-
-// GET endpoint for retrieving user data by name
-app.get('/users/search', async (req, res) => {
-  const { name } = req.query;
-
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("Server is gracefully shutting down");
   try {
-    const request = pool.request();
-    request.input('name', sql.NVarChar, name);
-
-    const result = await request.query(`
-      SELECT * FROM AccountUser WHERE name = @name;
-    `);
-    
-
-    if (result.recordset.length > 0) {
-      res.json(result.recordset); // Return user data as JSON array
-    } else {
-      res.status(404).json({ error: 'No users found with that name' });
-    }
-  } catch (error) {
-    console.error('Error retrieving users by name:', error);
-    res.status(500).json({ error: 'Failed to retrieve users by name' });
+    await sql.close();
+    console.log("Database connection closed");
+    process.exit(0);
+  } catch (err) {
+    console.error("Error closing database connection:", err);
+    process.exit(1);
   }
-});
-
-
-
-
-// POST endpoint for user creation
-app.post('/users', async (req, res) => {
-  const { name, password, email, contactNumber } = req.body;
-
-  try {
-    const request = pool.request();
-    request.input('name', sql.NVarChar, name);
-    request.input('password', sql.Int, password); // Assuming password is stored as integer
-    request.input('email', sql.NVarChar, email);
-    request.input('contactNumber', sql.Int, contactNumber);
-
-    const result = await request.query(`
-      INSERT INTO AccountUser (name, password, email, contactNumber)
-      VALUES (@name, @password, @email, @contactNumber);
-    `);
-
-    console.log('User created successfully:', result);
-    res.json({ message: 'User created successfully' });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Failed to create user' });
-  }
-});
-
-
-
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
 });
