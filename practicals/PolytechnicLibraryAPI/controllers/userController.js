@@ -1,18 +1,21 @@
-const express = require("express");
-const router = express.Router();
-const User = require("../models/users");
+
+const sql = require("mssql");
+
+const dbConfig = require("../dbConfig");
+
+const User = require("../models/user");
 
 const createUser = async (req, res) => {
   try {
-    const { username,passwordHash,role } = req.body;
-    const newUser = await User.createUserAccount({ username,passwordHash,role });
+    const { name, password } = req.body;
+    console.log("Received data:", { name, password });
+    const newUser = await User.createUserAccount({ username: name, passwordHash: password });
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).send("Error creating user");
   }
 };
-
 
 const getAllUsers = async (req, res) => {
   try {
@@ -41,7 +44,6 @@ const getUserById = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   const searchTerm = req.query.searchTerm;
-
   try {
     const users = await User.searchUsers(searchTerm);
     res.json(users);
@@ -52,19 +54,32 @@ const searchUsers = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { name, password } = req.query; // Retrieve username and password from query params
-
+  const { name, password } = req.query;
   try {
-    const user = await User.getUserByNameAndPassword(name, password); // Assuming a method to fetch user by name and password
-
+    const user = await User.getUserByNameAndPassword(name, password);
     if (user) {
-      res.status(200).json(user); // Return user data if found
+      res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'User not found' }); // User not found
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getUserByName = async (req, res) => {
+  const { name } = req.query;
+  try {
+    const user = await User.getUserByName(name);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error retrieving user by name:', error);
+    res.status500().json({ message: 'Internal server error' });
   }
 };
 
@@ -74,4 +89,5 @@ module.exports = {
   getUserById,
   searchUsers,
   loginUser,
+  getUserByName,
 };

@@ -1,12 +1,13 @@
+
+
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
 class User {
-  constructor(username,passwordHash,role) {
+  constructor(username, passwordHash, role) {
     this.username = username;
     this.passwordHash = passwordHash;
     this.role = role;
-    
   }
 
   static async getAllUsers() {
@@ -20,19 +21,18 @@ class User {
     );
   }
 
-  static async getUserById(id) {
+  static async getUserById(userId) {
     const connection = await sql.connect(dbConfig);
-    const sqlQuery = `SELECT * FROM users WHERE id = @id`;
+    const sqlQuery = `SELECT * FROM users WHERE user_id = @userId`;
     const request = connection.request();
-    request.input("id", id);
+    request.input("userId", sql.Int, userId);
     const result = await request.query(sqlQuery);
     connection.close();
     return result.recordset[0]
       ? new User(
           result.recordset[0].username,
           result.recordset[0].passwordHash,
-          result.recordset[0].role,
-          
+          result.recordset[0].role
         )
       : null;
   }
@@ -40,43 +40,39 @@ class User {
   static async createUserAccount(newUserAccount) {
     try {
       const connection = await sql.connect(dbConfig);
-      
       const sqlQuery = `
-        INSERT INTO users (username,passwordHash)
-        VALUES (@username, @passwordHash);
-        SELECT SCOPE_IDENTITY() AS userId;`;
-  
+        INSERT INTO users (username, passwordHash, role)
+        VALUES (@username, @passwordHash, @role);
+        SELECT SCOPE_IDENTITY() AS user_id;
+      `;
       const request = connection.request();
-      request.input("username", newUserAccount.username);
-      request.input("passwordHash", newUserAccount.passwordHash);
+      request.input("username", sql.NVarChar, newUserAccount.username);
+      request.input("passwordHash", sql.NVarChar, newUserAccount.passwordHash);
+      request.input("role", sql.NVarChar, newUserAccount.role || 'member'); // Default role
 
-  
       const result = await request.query(sqlQuery);
-  
       connection.close();
-  
-      const userId = result.recordset[0].userId; // Access the userId from the result
-  
-      return this.getUserById(userId); // Return the newly created user
+      const userId = result.recordset[0].user_id;
+      return this.getUserById(userId);
     } catch (error) {
       console.error("Error creating user:", error);
-      throw error; // Re-throw the error to be caught by the caller (usersController)
+      throw error;
     }
   }
 
-  static async getUserByNameAndPassword(username, passwordHash) {
+  static async getUserByNameAndPassword(name, password) {
     try {
       const connection = await sql.connect(dbConfig);
       const sqlQuery = 'SELECT * FROM users WHERE username = @username AND passwordHash = @passwordHash';
       const request = connection.request();
-      request.input('name', sql.NVarChar, username);
-      request.input('password', sql.NVarChar, passwordHash);
+      request.input('username', sql.NVarChar, name);
+      request.input('passwordHash', sql.NVarChar, password);
       const result = await request.query(sqlQuery);
       connection.close();
       return result.recordset.length > 0 ? result.recordset[0] : null;
     } catch (error) {
       console.error('Error retrieving user:', error);
-      throw error; // Throw error to be caught by the controller
+      throw error;
     }
   }
 }
