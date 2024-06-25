@@ -1,3 +1,5 @@
+
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const sql = require("mssql");
@@ -23,6 +25,8 @@ app.get("/users/search", usersController.searchUsers); // Search users
 app.get('/login', usersController.loginUser); // Login user
 app.get('/user/:userId', usersController.getUserById); // Get user details by ID
 app.get('/users', usersController.getUserByName);// Get user by Name
+app.put("/users", usersController.updateUser); // Update user
+app.delete("/users", usersController.deleteUser); // Delete user
 
 // Start server and connect to database
 app.listen(port, async () => {

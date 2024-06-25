@@ -90,6 +90,56 @@ class User {
       throw error;
     }
   }
+
+  static async updateUserAccount(name, updateUser) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const sqlQuery = `
+        UPDATE AccountUser 
+        SET name = @name, 
+            email = @email,
+            contactNumber = @contactNumber,
+            age = @age,
+            height = @height,
+            weight = @weight,
+            weightGoal = @weightGoal,
+            TargetCalarieIntake = @TargetCalarieIntake
+        WHERE name = @name`; // Assuming 'name' is the primary key or unique identifier
+  
+      const request = connection.request();
+      request.input("name", sql.NVarChar, updateUser.name || name);
+      request.input("email", sql.NVarChar, updateUser.email);
+      request.input("contactNumber", sql.NVarChar, updateUser.contactNumber);
+      request.input("age", sql.Int, updateUser.age);
+      request.input("height", sql.Float, updateUser.height);
+      request.input("weight", sql.Float, updateUser.weight);
+      request.input("weightGoal", sql.Float, updateUser.weightGoal);
+      request.input("TargetCalarieIntake", sql.Float, updateUser.TargetCalarieIntake);
+  
+      await request.query(sqlQuery);
+  
+      connection.close();
+  
+      return this.getUserByNameAndPassword(updateUser.name, updateUser.password); // Return updated user data
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  }
+  static async deleteUser(name) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const sqlQuery = `DELETE FROM AccountUser WHERE name = @name`;
+      const request = connection.request();
+      request.input("name", sql.NVarChar, name);
+      const result = await request.query(sqlQuery);
+      connection.close();
+      return result.rowsAffected > 0; // Indicate success based on affected rows
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = User;
