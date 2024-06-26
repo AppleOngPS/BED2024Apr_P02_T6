@@ -73,8 +73,9 @@ body {
 }
 
 .recipe-item img {
-  width: 100%;
-  height: auto;
+  width: 100%; /* Ensure the image fills the width of its container */
+  height: 150px; /* Set a fixed height for the images */
+  object-fit: cover; /* Ensure the image covers the entire area without stretching */
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
   border-radius: 10px 10px 0 0;

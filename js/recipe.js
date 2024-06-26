@@ -8,7 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".category").forEach((button) => {
     button.addEventListener("click", function () {
       const category = this.dataset.category;
-      filterRecipes(category);
+      if (category === "all") {
+        fetchRecipes(); // Fetch all recipes if "All" is selected
+      } else {
+        filterRecipes(category);
+      }
     });
   });
 });
@@ -28,11 +32,11 @@ function displayRecipes(recipes) {
   recipes.forEach((recipe) => {
     const recipeItem = document.createElement("div");
     recipeItem.classList.add("recipe-item");
+    recipeItem.addEventListener("click", () => showRecipeDetails(recipe));
 
     const recipeImage = document.createElement("img");
     recipeImage.src = `../images/recipe-${recipe.id}.avif`;
     recipeImage.alt = recipe.name;
-    recipeImage.addEventListener("click", () => showRecipeDetails(recipe)); // Ensure this event listener is properly set
 
     const details = document.createElement("div");
     details.classList.add("details");
@@ -68,7 +72,14 @@ function addRecipe() {
     method: "POST",
     body: formData,
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((data) => {
+          throw new Error(data.error || "Unknown error");
+        });
+      }
+      return response.json();
+    })
     .then((data) => {
       console.log("Added recipe:", data);
       fetchRecipes();

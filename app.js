@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 const dbConfig = require("./dbConfig");
 const sql = require("mssql");
 
@@ -13,9 +14,15 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Ensure images directory exists
+const imagesDir = "./images";
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/");
+    cb(null, imagesDir);
   },
   filename: function (req, file, cb) {
     cb(
@@ -40,8 +47,8 @@ async function startServer() {
 }
 startServer();
 
-// Serve images from the uploads directory
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve images from the images directory
+app.use("/images", express.static(imagesDir));
 
 // GET all recipes
 app.get("/api/recipes", async (req, res) => {
@@ -74,23 +81,50 @@ app.get("/api/recipes/:id", async (req, res) => {
 
 // POST a new recipe
 app.post("/api/recipes", upload.single("image"), async (req, res) => {
-  const { name, category, description, ingredients } = req.body;
-  const image = req.file ? req.file.path : null;
+  const {
+    name,
+    category,
+    description,
+    ingredients,
+    calories,
+    carbs,
+    protein,
+    fats,
+  } = req.body;
+  const image = req.file ? req.file.filename : null; // Store only the filename
+
   try {
     const request = pool.request();
+
+    // Get the current max ID
+    const maxIdResult = await request.query(
+      "SELECT MAX(id) AS maxId FROM recipes"
+    );
+    const maxId = maxIdResult.recordset[0].maxId || 0;
+    const newId = maxId + 1;
+
+    request.input("id", sql.Int, newId);
     request.input("name", sql.NVarChar, name);
     request.input("category", sql.NVarChar, category);
     request.input("description", sql.NVarChar, description);
     request.input("ingredients", sql.NVarChar, ingredients);
+    request.input("calories", sql.Int, calories);
+    request.input("carbs", sql.Int, carbs);
+    request.input("protein", sql.Int, protein);
+    request.input("fats", sql.Int, fats);
     request.input("image", sql.NVarChar, image);
+
     const result = await request.query(
-      "INSERT INTO recipes (name, category, description, ingredients, image) VALUES (@name, @category, @description, @ingredients, @image)"
+      "INSERT INTO recipes (id, name, category, description, ingredients, calories, carbs, protein, fats, image) VALUES (@id, @name, @category, @description, @ingredients, @calories, @carbs, @protein, @fats, @image)"
     );
+
     console.log("Added recipe:", result);
     res.json(result);
   } catch (error) {
     console.error("Error adding recipe:", error);
-    res.status(500).json({ error: "Failed to add recipe" });
+    res
+      .status(500)
+      .json({ error: "Failed to add recipe", details: error.message });
   }
 });
 
