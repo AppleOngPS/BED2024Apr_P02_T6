@@ -91,17 +91,18 @@ app.post("/api/recipes", upload.single("image"), async (req, res) => {
     protein,
     fats,
   } = req.body;
-  const image = req.file ? req.file.filename : null; // Store only the filename
+
+  const request = pool.request();
+
+  // Get the current max ID
+  const maxIdResult = await request.query(
+    "SELECT MAX(id) AS maxId FROM recipes"
+  );
+  const maxId = maxIdResult.recordset[0].maxId || 0;
+  const newId = maxId + 1;
 
   try {
     const request = pool.request();
-
-    // Get the current max ID
-    const maxIdResult = await request.query(
-      "SELECT MAX(id) AS maxId FROM recipes"
-    );
-    const maxId = maxIdResult.recordset[0].maxId || 0;
-    const newId = maxId + 1;
 
     request.input("id", sql.Int, newId);
     request.input("name", sql.NVarChar, name);
@@ -112,11 +113,26 @@ app.post("/api/recipes", upload.single("image"), async (req, res) => {
     request.input("carbs", sql.Int, carbs);
     request.input("protein", sql.Int, protein);
     request.input("fats", sql.Int, fats);
-    request.input("image", sql.NVarChar, image);
+    request.input("image", sql.NVarChar, null); // Initially, set image to null
 
+    // Insert the recipe without the image
     const result = await request.query(
-      "INSERT INTO recipes (id, name, category, description, ingredients, calories, carbs, protein, fats, image) VALUES (@id, @name, @category, @description, @ingredients, @calories, @carbs, @protein, @fats, @image)"
+      "INSERT INTO recipes (name, category, description, ingredients, calories, carbs, protein, fats, image) OUTPUT INSERTED.id VALUES (@name, @category, @description, @ingredients, @calories, @carbs, @protein, @fats, @image)"
     );
+
+    if (req.file) {
+      const newImageName = `recipe-${newId}.avif`;
+      const oldPath = path.join(imagesDir, req.file.filename);
+      const newPath = path.join(imagesDir, newImageName);
+
+      fs.renameSync(oldPath, newPath); // Rename the file to the new image name
+
+      // Update the recipe with the new image name
+      await request.query("UPDATE recipes SET image = @image WHERE id = @id", {
+        image: newImageName,
+        id: newId,
+      });
+    }
 
     console.log("Added recipe:", result);
     res.json(result);
