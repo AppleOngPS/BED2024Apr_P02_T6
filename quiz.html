@@ -4,47 +4,87 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quiz Page</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <nav class="navbar">
+      <div class="navbar-brand">MyWebsite</div>
+      <ul class="navbar-menu">
+        <li class="navbar-item"><a href="quiz.html">Quiz</a></li>
+        <li class="navbar-item"><a href="community-page.html">Community</a></li>
+        <li class="navbar-item"><a href="community.html">Post</a></li>
+      </ul>
+    </nav>
     <div class="quiz-container">
       <h1 class="quiz-title">Quiz</h1>
-      <form id="quizForm" class="quiz-form">
-        <div class="quiz-question">
-          <p class="question-text">1. What is the capital of France?</p>
-          <input type="radio" id="q1a" name="q1" value="Paris" />
-          <label for="q1a">Paris</label><br />
-          <input type="radio" id="q1b" name="q1" value="London" />
-          <label for="q1b">London</label><br />
-          <input type="radio" id="q1c" name="q1" value="Berlin" />
-          <label for="q1c">Berlin</label>
-        </div>
-        <div class="quiz-question">
-          <p class="question-text">2. What is 2 + 2?</p>
-          <input type="radio" id="q2a" name="q2" value="3" />
-          <label for="q2a">3</label><br />
-          <input type="radio" id="q2b" name="q2" value="4" />
-          <label for="q2b">4</label><br />
-          <input type="radio" id="q2c" name="q2" value="5" />
-          <label for="q2c">5</label>
-        </div>
-        <div class="quiz-question">
-          <p class="question-text">
-            3. What is the largest planet in our solar system?
-          </p>
-          <input type="radio" id="q3a" name="q3" value="Earth" />
-          <label for="q3a">Earth</label><br />
-          <input type="radio" id="q3b" name="q3" value="Jupiter" />
-          <label for="q3b">Jupiter</label><br />
-          <input type="radio" id="q3c" name="q3" value="Mars" />
-          <label for="q3c">Mars</label>
-        </div>
-        <button type="button" class="submit-button" onclick="submitQuiz()">
-          Submit
-        </button>
-      </form>
+      <form id="quizForm" class="quiz-form"></form>
+      <button type="button" class="submit-button" onclick="submitQuiz()">
+        Submit
+      </button>
       <div id="quizResult" class="quiz-result"></div>
     </div>
-    <script src="scripts.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:3000/fetch_quiz")
+          .then((response) => response.json())
+          .then((data) => {
+            const quizForm = document.getElementById("quizForm");
+            let currentQuestionId = null;
+
+            data.forEach((item) => {
+              if (item.question_id !== currentQuestionId) {
+                currentQuestionId = item.question_id;
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("quiz-question");
+                const questionText = document.createElement("p");
+                questionText.classList.add("question-text");
+                questionText.innerText = item.question_text;
+                questionDiv.appendChild(questionText);
+                quizForm.appendChild(questionDiv);
+              }
+
+              const answerInput = document.createElement("input");
+              answerInput.type = "radio";
+              answerInput.id = `q${item.question_id}a${item.answer_id}`;
+              answerInput.name = `q${item.question_id}`;
+              answerInput.value = item.answer_id;
+
+              const answerLabel = document.createElement("label");
+              answerLabel.htmlFor = answerInput.id;
+              answerLabel.innerText = item.answer_text;
+
+              quizForm.appendChild(answerInput);
+              quizForm.appendChild(answerLabel);
+              quizForm.appendChild(document.createElement("br"));
+            });
+          })
+          .catch((error) => console.error("Error fetching quiz data:", error));
+      });
+
+      function submitQuiz() {
+        const quizForm = document.getElementById("quizForm");
+        const formData = new FormData(quizForm);
+        let score = 0;
+        const totalQuestions = new Set();
+
+        fetch("http://localhost:3000/fetch_quiz")
+          .then((response) => response.json())
+          .then((data) => {
+            data.forEach((item) => {
+              totalQuestions.add(item.question_id);
+              if (
+                item.is_correct &&
+                formData.get(`q${item.question_id}`) == item.answer_id
+              ) {
+                score++;
+              }
+            });
+            document.getElementById(
+              "quizResult"
+            ).innerText = `Your score is: ${score}/${totalQuestions.size}`;
+          })
+          .catch((error) => console.error("Error calculating score:", error));
+      }
+    </script>
   </body>
 </html>

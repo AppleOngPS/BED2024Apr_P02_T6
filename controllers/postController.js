@@ -118,3 +118,19 @@ exports.deletePost = async (req, res) => {
     res.status(500).send(err.message);
   }
 };
+
+// Function to get quiz questions
+async function getQuizQuestions() {
+  const pool = await poolPromise;
+  const query = `
+      SELECT q.question_id, q.question_text, a.answer_id, a.answer_text, a.is_correct
+      FROM quiz_questions q
+      JOIN quiz_answers a ON q.question_id = a.question_id
+  `;
+  const result = await pool.request().query(query);
+  return result.recordset;
+}
+
+module.exports = {
+  getQuizQuestions,
+};
