@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Page</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .post {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: #fff;
+      }
+      .post img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Community Posts</h1>
+      <div id="posts-container"></div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const response = await fetch("/posts");
+        const posts = await response.json();
+        const postsContainer = document.getElementById("posts-container");
+
+        posts.forEach((post) => {
+          const postElement = document.createElement("div");
+          postElement.classList.add("post");
+
+          const titleElement = document.createElement("h2");
+          titleElement.textContent = post.title;
+          postElement.appendChild(titleElement);
+
+          const categoryElement = document.createElement("p");
+          categoryElement.textContent = `Category: ${post.category}`;
+          postElement.appendChild(categoryElement);
+
+          if (post.content) {
+            const imgElement = document.createElement("img");
+            imgElement.src = `/uploads/${post.content}`;
+            postElement.appendChild(imgElement);
+          }
+
+          const messageElement = document.createElement("p");
+          messageElement.textContent = post.message;
+          postElement.appendChild(messageElement);
+
+          postsContainer.appendChild(postElement);
+        });
+      });
+    </script>
+  </body>
+</html>
