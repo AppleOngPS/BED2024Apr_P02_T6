@@ -6,6 +6,8 @@ const postRoutes = require("./routes/postRoutes");
 
 const app = express();
 
+app.use(express.static(__dirname));
+
 // Ensure the uploads directory exists
 const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -35,6 +37,16 @@ app.get("/community", (req, res) => {
   res.sendFile(path.join(__dirname, "community-page.html"));
 });
 
+// Endpoint to fetch quiz data
+app.get("/fetch_quiz", async (req, res) => {
+  try {
+    const questions = await getQuizQuestions();
+    res.json(questions);
+  } catch (err) {
+    console.error("Error fetching quiz questions:", err);
+    res.status(500).send("Server error");
+  }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
