@@ -72,9 +72,8 @@
                 score++;
               }
             });
-            document.getElementById(
-              "quizResult"
-            ).innerText = `Your score is: ${score}/${totalQuestions.size}`;
+            // Redirect to a new page with the score
+            window.location.href = `/html/quiz-result.html?score=${score}&total=${totalQuestions.size}`;
           })
           .catch((error) => console.error("Error calculating score:", error));
       }

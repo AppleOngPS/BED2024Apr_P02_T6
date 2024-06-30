@@ -28,8 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
                   }">Meal Planning</a></li>
                   <li><a href="${
                     isCurrentDirectory()
-                      ? "html/community.html"
-                      : "community.html"
+                      ? "html/community-page.html"
+                      : "community-page.html"
                   }">Community</a></li>
                   <li><a href="${
                     isCurrentDirectory() ? "html/food.html" : "food.html"
