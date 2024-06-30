@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const postController = require("../controllers/postController");
-const validatePost = require("../middlewares/validatepost");
+const postController = require("../controllers/postController"); // Ensure the path is correct
+
 // CRUD routes
 router.post("/", postController.createPost);
 router.get("/", postController.getPosts);

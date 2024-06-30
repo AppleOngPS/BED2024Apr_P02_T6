@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).single("image");
 
 // Create a new post
-exports.createPost = async (req, res) => {
+const createPost = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -46,8 +46,8 @@ exports.createPost = async (req, res) => {
   });
 };
 
-// Other CRUD operations remain the same
-exports.getPosts = async (req, res) => {
+// Get all posts
+const getPosts = async (req, res) => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query("SELECT * FROM Posts");
@@ -57,7 +57,8 @@ exports.getPosts = async (req, res) => {
   }
 };
 
-exports.getPostById = async (req, res) => {
+// Get post by ID
+const getPostById = async (req, res) => {
   try {
     const { id } = req.params;
     const pool = await poolPromise;
@@ -72,7 +73,8 @@ exports.getPostById = async (req, res) => {
   }
 };
 
-exports.updatePost = async (req, res) => {
+// Update a post
+const updatePost = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
       return res.status(500).send(err.message);
@@ -104,7 +106,8 @@ exports.updatePost = async (req, res) => {
   });
 };
 
-exports.deletePost = async (req, res) => {
+// Delete a post
+const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
     const pool = await poolPromise;
@@ -120,7 +123,7 @@ exports.deletePost = async (req, res) => {
 };
 
 // Function to get quiz questions
-async function getQuizQuestions() {
+const getQuizQuestions = async () => {
   const pool = await poolPromise;
   const query = `
       SELECT q.question_id, q.question_text, a.answer_id, a.answer_text, a.is_correct
@@ -129,8 +132,13 @@ async function getQuizQuestions() {
   `;
   const result = await pool.request().query(query);
   return result.recordset;
-}
+};
 
 module.exports = {
+  createPost,
+  getPosts,
+  getPostById,
+  updatePost,
+  deletePost,
   getQuizQuestions,
 };
