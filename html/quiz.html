@@ -4,17 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quiz Page</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/navigation.css" />
   </head>
   <body>
-    <nav class="navbar">
-      <div class="navbar-brand">MyWebsite</div>
-      <ul class="navbar-menu">
-        <li class="navbar-item"><a href="quiz.html">Quiz</a></li>
-        <li class="navbar-item"><a href="community-page.html">Community</a></li>
-        <li class="navbar-item"><a href="community.html">Post</a></li>
-        <link rel="stylesheet" href="/css/styles.css" />
-      </ul>
-    </nav>
     <div class="quiz-container">
       <h1 class="quiz-title">Quiz</h1>
       <form id="quizForm" class="quiz-form"></form>
@@ -86,5 +79,6 @@
           .catch((error) => console.error("Error calculating score:", error));
       }
     </script>
+    <script src="/navigation.js"></script>
   </body>
 </html>
