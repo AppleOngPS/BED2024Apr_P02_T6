@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 const postRoutes = require("./routes/postRoutes");
+const postController = require("./controllers/postController");
 
 const app = express();
 
@@ -10,7 +11,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static(__dirname));
+// Serve static files from the css directory
+app.use("/css", express.static(path.join(__dirname, "css")));
 
 // Ensure the uploads directory exists
 const uploadsDir = path.join(__dirname, "uploads");
@@ -23,17 +25,21 @@ app.use("/uploads", express.static(uploadsDir));
 // Routes
 app.use("/posts", postRoutes);
 
-// Serve HTML and CSS files
+// Serve HTML files
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "community.html"));
+  res.sendFile(path.join(__dirname, "html", "community.html"));
 });
 
-app.get("/community", (req, res) => {
-  res.sendFile(path.join(__dirname, "community-page.html"));
+app.get("/community-page.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "community-page.html"));
 });
 
-app.get("/styles.css", (req, res) => {
-  res.sendFile(path.join(__dirname, "styles.css"));
+app.get("/community.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "community.html"));
+});
+
+app.get("/quiz.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "quiz.html"));
 });
 
 // Endpoint to fetch quiz data
