@@ -20,6 +20,17 @@
         display: block;
         margin-bottom: 1rem;
       }
+      .post-buttons {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .post-buttons button {
+        margin-left: 0.5rem;
+      }
+      .edit-form {
+        display: none;
+        margin-top: 1rem;
+      }
     </style>
   </head>
   <body>
@@ -47,7 +58,7 @@
 
           if (post.content) {
             const imgElement = document.createElement("img");
-            imgElement.src = `/uploads/${post.content}`;
+            imgElement.src = `/uploads/${post.content}`; // Ensure the correct path
             postElement.appendChild(imgElement);
           }
 
@@ -55,9 +66,111 @@
           messageElement.textContent = post.message;
           postElement.appendChild(messageElement);
 
+          const buttonsContainer = document.createElement("div");
+          buttonsContainer.classList.add("post-buttons");
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => showEditForm(post));
+          buttonsContainer.appendChild(editButton);
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => deletePost(post.id));
+          buttonsContainer.appendChild(deleteButton);
+
+          postElement.appendChild(buttonsContainer);
+
+          const editForm = createEditForm(post);
+          postElement.appendChild(editForm);
+
           postsContainer.appendChild(postElement);
         });
       });
+
+      function showEditForm(post) {
+        const editForm = document.getElementById(`edit-form-${post.id}`);
+        editForm.style.display =
+          editForm.style.display === "none" ? "block" : "none";
+      }
+
+      function createEditForm(post) {
+        const form = document.createElement("form");
+        form.classList.add("edit-form");
+        form.id = `edit-form-${post.id}`;
+
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Title:";
+        form.appendChild(titleLabel);
+
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.name = "title";
+        titleInput.value = post.title;
+        form.appendChild(titleInput);
+
+        const categoryLabel = document.createElement("label");
+        categoryLabel.textContent = "Category:";
+        form.appendChild(categoryLabel);
+
+        const categoryInput = document.createElement("input");
+        categoryInput.type = "text";
+        categoryInput.name = "category";
+        categoryInput.value = post.category;
+        form.appendChild(categoryInput);
+
+        const messageLabel = document.createElement("label");
+        messageLabel.textContent = "Message:";
+        form.appendChild(messageLabel);
+
+        const messageTextarea = document.createElement("textarea");
+        messageTextarea.name = "message";
+        messageTextarea.value = post.message;
+        form.appendChild(messageTextarea);
+
+        const submitButton = document.createElement("button");
+        submitButton.type = "button";
+        submitButton.textContent = "Save";
+        submitButton.addEventListener("click", () => editPost(post.id, form));
+        form.appendChild(submitButton);
+
+        return form;
+      }
+
+      async function editPost(postId, form) {
+        const formData = new FormData(form);
+        const updatedPost = {};
+        formData.forEach((value, key) => {
+          updatedPost[key] = value;
+        });
+
+        const response = await fetch(`/posts/${postId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedPost),
+        });
+
+        if (response.ok) {
+          alert(`Post with ID: ${postId} has been updated.`);
+          location.reload();
+        } else {
+          alert(`Failed to update post with ID: ${postId}`);
+        }
+      }
+
+      async function deletePost(postId) {
+        const response = await fetch(`/posts/${postId}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          alert(`Post with ID: ${postId} has been deleted.`);
+          location.reload();
+        } else {
+          alert(`Failed to delete post with ID: ${postId}`);
+        }
+      }
     </script>
     <script src="/navigation.js"></script>
   </body>
