@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Page</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h1 class="quiz-title">Quiz</h1>
+      <form id="quizForm" class="quiz-form">
+        <div class="quiz-question">
+          <p class="question-text">1. What is the capital of France?</p>
+          <input type="radio" id="q1a" name="q1" value="Paris" />
+          <label for="q1a">Paris</label><br />
+          <input type="radio" id="q1b" name="q1" value="London" />
+          <label for="q1b">London</label><br />
+          <input type="radio" id="q1c" name="q1" value="Berlin" />
+          <label for="q1c">Berlin</label>
+        </div>
+        <div class="quiz-question">
+          <p class="question-text">2. What is 2 + 2?</p>
+          <input type="radio" id="q2a" name="q2" value="3" />
+          <label for="q2a">3</label><br />
+          <input type="radio" id="q2b" name="q2" value="4" />
+          <label for="q2b">4</label><br />
+          <input type="radio" id="q2c" name="q2" value="5" />
+          <label for="q2c">5</label>
+        </div>
+        <div class="quiz-question">
+          <p class="question-text">
+            3. What is the largest planet in our solar system?
+          </p>
+          <input type="radio" id="q3a" name="q3" value="Earth" />
+          <label for="q3a">Earth</label><br />
+          <input type="radio" id="q3b" name="q3" value="Jupiter" />
+          <label for="q3b">Jupiter</label><br />
+          <input type="radio" id="q3c" name="q3" value="Mars" />
+          <label for="q3c">Mars</label>
+        </div>
+        <button type="button" class="submit-button" onclick="submitQuiz()">
+          Submit
+        </button>
+      </form>
+      <div id="quizResult" class="quiz-result"></div>
+    </div>
+    <script src="scripts.js"></script>
+  </body>
+</html>
