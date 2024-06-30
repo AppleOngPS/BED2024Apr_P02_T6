@@ -2,7 +2,7 @@ const meals = {
   breakfast: [],
   lunch: [],
   dinner: [],
-  extras: [], // Add extras category
+  extras: [],
 };
 
 const apiKey = "665edb3cb526657bc4efd77e";
@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteAllMealsFromDB();
       }
     });
+
+  checkDateAndResetData();
 });
 
 // Calendar modal functions
@@ -84,7 +86,6 @@ function setupCalendar() {
   calendar.render();
 }
 
-// Check if it's a new day and reset data if necessary
 function checkDateAndResetData() {
   const currentDate = new Date().toLocaleDateString();
   const lastAccessDate = localStorage.getItem("lastAccessDate");
@@ -97,7 +98,6 @@ function checkDateAndResetData() {
   }
 }
 
-// Reset meal data
 function resetMealData() {
   meals.breakfast = [];
   meals.lunch = [];
@@ -108,7 +108,7 @@ function resetMealData() {
   displayFood("lunch");
   displayFood("dinner");
   displayFood("extras");
-  deleteAllMealsFromDB(); // Delete all meals from the database at the start of a new day
+  deleteAllMealsFromDB();
 }
 
 function openAddFoodModal(mealType) {
@@ -143,12 +143,11 @@ function addFood(mealType) {
       protein,
       fats,
       sodium,
-      mealType, // Add the meal type
-      image, // Base64 encoded image
+      mealType,
+      image,
       quantity: 1,
     };
 
-    // Adding the food item to RestDB
     fetch(baseUrl, {
       method: "POST",
       headers: {
@@ -179,7 +178,7 @@ function displayFood(mealType) {
   const mealList = document.getElementById(`${mealType}-list`);
   mealList.innerHTML = ""; // Clear previous items
 
-  meals[mealType].forEach((food) => {
+  meals[mealType].forEach((food, index) => {
     const foodItem = document.createElement("div");
     foodItem.classList.add("meal-item");
 
@@ -193,7 +192,7 @@ function displayFood(mealType) {
     details.innerHTML = `
       <p>${food.name}</p>
       <p>kcal: ${food.calories} | c: ${food.carbs}g | p: ${food.protein}g | f: ${food.fats}g | sodium: ${food.sodium}mg</p>
-      <p>Quantity: ${food.quantity}</p>
+      <p>Quantity: <button onclick="changeQuantity('${mealType}', ${index}, -1)">-</button> ${food.quantity} <button onclick="changeQuantity('${mealType}', ${index}, 1)">+</button></p>
     `;
     foodItem.appendChild(details);
 
@@ -207,6 +206,15 @@ function displayFood(mealType) {
   mealList.appendChild(addItemDiv);
 }
 
+function changeQuantity(mealType, index, change) {
+  meals[mealType][index].quantity += change;
+  if (meals[mealType][index].quantity < 1) {
+    meals[mealType][index].quantity = 1;
+  }
+  displayFood(mealType);
+  updateTotals();
+}
+
 function updateTotals() {
   let totalCalories = 0;
   let totalCarbs = 0;
@@ -216,11 +224,11 @@ function updateTotals() {
 
   for (let mealType in meals) {
     meals[mealType].forEach((food) => {
-      totalCalories += food.calories;
-      totalCarbs += food.carbs;
-      totalProtein += food.protein;
-      totalFats += food.fats;
-      totalSodium += food.sodium;
+      totalCalories += food.calories * food.quantity;
+      totalCarbs += food.carbs * food.quantity;
+      totalProtein += food.protein * food.quantity;
+      totalFats += food.fats * food.quantity;
+      totalSodium += food.sodium * food.quantity;
     });
   }
 
@@ -241,15 +249,13 @@ function fetchFoodItems() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("Fetched food items:", data); // Log fetched data
-      // Clear current meals
+      console.log("Fetched food items:", data);
       meals.breakfast = [];
       meals.lunch = [];
       meals.dinner = [];
       meals.extras = [];
 
       data.forEach((food) => {
-        // Assuming each food item has a `mealType` property indicating breakfast, lunch, dinner, or extras
         if (meals[food.mealType]) {
           meals[food.mealType].push(food);
         }
@@ -257,7 +263,7 @@ function fetchFoodItems() {
       displayFood("breakfast");
       displayFood("lunch");
       displayFood("dinner");
-      displayFood("extras"); // Display extra's category
+      displayFood("extras");
       updateTotals();
     })
     .catch((error) => console.error("Error:", error));
@@ -272,11 +278,27 @@ function deleteAllMealsFromDB() {
       "x-apikey": apiKey,
     },
   })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Deleted all meals:", data);
+    .then((response) => {
+      if (response.ok) {
+        console.log("Deleted all meals successfully.");
+      } else {
+        console.error("Failed to delete meals.");
+      }
     })
     .catch((error) => console.error("Error:", error));
+}
+
+// Function to reset meal data (clear meals object and update display)
+function resetMealData() {
+  meals.breakfast = [];
+  meals.lunch = [];
+  meals.dinner = [];
+  meals.extras = [];
+  updateTotals();
+  displayFood("breakfast");
+  displayFood("lunch");
+  displayFood("dinner");
+  displayFood("extras");
 }
 
 // Add event listener to format and display current date
@@ -317,8 +339,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const currentDate = new Date();
   document.getElementById("current-date").textContent = formatDate(currentDate);
 
-  checkDateAndResetData(); // Check the date and reset data if necessary
-  fetchFoodItems(); // Fetch and display food items after the page loads
+  checkDateAndResetData();
+  fetchFoodItems();
 });
 
 // Close modal when clicking outside of it
@@ -336,39 +358,7 @@ document
         "Are you sure you want to start a new day? This will delete all current food items."
       )
     ) {
-      resetMealData(); // Reset meal data in the app
-      deleteAllMealsFromDB(); // Delete all meals from the database
+      resetMealData();
+      deleteAllMealsFromDB();
     }
   });
-
-// Function to reset meal data (clear meals object and update display)
-function resetMealData() {
-  meals.breakfast = [];
-  meals.lunch = [];
-  meals.dinner = [];
-  meals.extras = [];
-  updateTotals();
-  displayFood("breakfast");
-  displayFood("lunch");
-  displayFood("dinner");
-  displayFood("extras");
-}
-
-// Function to delete all meals from the database
-function deleteAllMealsFromDB() {
-  fetch(baseUrl, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "x-apikey": apiKey,
-    },
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log("Deleted all meals successfully.");
-      } else {
-        console.error("Failed to delete meals.");
-      }
-    })
-    .catch((error) => console.error("Error:", error));
-}
