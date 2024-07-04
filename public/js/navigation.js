@@ -13,29 +13,31 @@ document.addEventListener("DOMContentLoaded", function () {
             </label>
             <ul>
                 <li><a href="${
-                  isCurrentDirectory() ? "index.html" : "../index.html"
+                  isCurrentDirectory() ? "index.html" : "../../index.html"
                 }">Home</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "html/recipe.html" : "recipe.html"
+                  isCurrentDirectory()
+                    ? "public/html/recipe.html"
+                    : "recipe.html"
                 }">Recipe</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "html/quiz.html" : "quiz.html"
+                  isCurrentDirectory() ? "public/html/quiz.html" : "quiz.html"
                 }">Quiz</a></li>
                 <li><a href="${
                   isCurrentDirectory()
-                    ? "html/meal_planning.html"
+                    ? "public/html/meal_planning.html"
                     : "meal_planning.html"
                 }">Meal Planning</a></li>
                 <li><a href="${
                   isCurrentDirectory()
-                    ? "html/community.html"
+                    ? "public/html/community.html"
                     : "community.html"
                 }">Community</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "html/food.html" : "food.html"
+                  isCurrentDirectory() ? "public/html/food.html" : "food.html"
                 }">Food</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "html/login.html" : "login.html"
+                  isCurrentDirectory() ? "public/html/login.html" : "login.html"
                 }">Login</a></li>
                 <li id="points-display" style="color: white;"></li>
                 <div class="main-icon">
