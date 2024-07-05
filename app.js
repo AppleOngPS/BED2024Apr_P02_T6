@@ -184,7 +184,6 @@
 // app.listen(port, () => {
 //   console.log(`Server running on port ${port}`);
 // });
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
@@ -192,6 +191,8 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const recipeController = require("./controllers/recipeController");
+const dbConfig = require("./dbConfig");
+const sql = require("mssql");
 
 const app = express();
 const port = 3000;
@@ -202,7 +203,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Ensure images directory exists
-const imagesDir = "./images";
+const imagesDir = path.join(__dirname, "public", "images");
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
@@ -222,7 +223,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Serve images from the images directory
-app.use("/images", express.static(imagesDir));
+app.use("/public/images", express.static(imagesDir));
 
 // Routes
 app.get("/api/recipes", recipeController.getAllRecipes);

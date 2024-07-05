@@ -2,6 +2,7 @@ const sql = require("mssql");
 const fs = require("fs");
 const path = require("path");
 const dbConfig = require("../dbConfig");
+const imagesDir = path.join(__dirname, "../public/images");
 
 let pool;
 async function connectToDb() {
@@ -40,6 +41,9 @@ const getRecipeById = async (req, res) => {
 
 const createRecipe = async (req, res) => {
   await connectToDb();
+  console.log("Request body:", req.body);
+  console.log("File:", req.file);
+
   const {
     name,
     category,
@@ -50,43 +54,50 @@ const createRecipe = async (req, res) => {
     protein,
     fats,
   } = req.body;
-  const request = pool.request();
-  const maxIdResult = await request.query(
-    "SELECT MAX(id) AS maxId FROM recipes"
-  );
-  const maxId = maxIdResult.recordset[0].maxId || 0;
-  const newId = maxId + 1;
 
   try {
-    request.input("id", sql.Int, newId);
-    request.input("name", sql.NVarChar, name);
-    request.input("category", sql.NVarChar, category);
-    request.input("description", sql.NVarChar, description);
-    request.input("ingredients", sql.NVarChar, ingredients);
-    request.input("calories", sql.Int, calories);
-    request.input("carbs", sql.Int, carbs);
-    request.input("protein", sql.Int, protein);
-    request.input("fats", sql.Int, fats);
-    request.input("image", sql.NVarChar, null);
+    const insertRequest = pool.request();
+    insertRequest.input("name", sql.NVarChar, name);
+    insertRequest.input("category", sql.NVarChar, category);
+    insertRequest.input("description", sql.NVarChar, description);
+    insertRequest.input("ingredients", sql.NVarChar, ingredients);
+    insertRequest.input("calories", sql.Int, parseInt(calories));
+    insertRequest.input("carbs", sql.Int, parseInt(carbs));
+    insertRequest.input("protein", sql.Int, parseInt(protein));
+    insertRequest.input("fats", sql.Int, parseInt(fats));
+    insertRequest.input("image", sql.NVarChar, null);
 
-    const result = await request.query(
-      "INSERT INTO recipes (id, name, category, description, ingredients, calories, carbs, protein, fats, image) VALUES (@id, @name, @category, @description, @ingredients, @calories, @carbs, @protein, @fats, @image)"
+    // Insert the recipe and get the inserted ID
+    const result = await insertRequest.query(
+      "INSERT INTO recipes (name, category, description, ingredients, calories, carbs, protein, fats, image) OUTPUT INSERTED.id VALUES (@name, @category, @description, @ingredients, @calories, @carbs, @protein, @fats, @image);"
     );
+
+    console.log("Inserted recipe result:", result);
+
+    const newId = result.recordset[0].id;
 
     if (req.file) {
       const newImageName = `recipe-${newId}.avif`;
-      const oldPath = path.join("./images", req.file.filename);
-      const newPath = path.join("./images", newImageName);
+      const oldPath = path.join(imagesDir, req.file.filename);
+      const newPath = path.join(imagesDir, newImageName);
+
+      console.log("Renaming image from", oldPath, "to", newPath);
+
       fs.renameSync(oldPath, newPath);
 
-      await request.query("UPDATE recipes SET image = @image WHERE id = @id", {
-        image: newImageName,
-        id: newId,
-      });
+      const updateRequest = pool.request();
+      updateRequest.input("image", sql.NVarChar, newImageName);
+      updateRequest.input("id", sql.Int, newId);
+
+      // Update the recipe with the new image name
+      const updateResult = await updateRequest.query(
+        "UPDATE recipes SET image = @image WHERE id = @id"
+      );
+
+      console.log("Updated recipe image result:", updateResult);
     }
 
-    console.log("Added recipe:", result);
-    res.json(result);
+    res.json({ id: newId, message: "Recipe added successfully" });
   } catch (error) {
     console.error("Error adding recipe:", error);
     res

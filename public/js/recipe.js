@@ -66,26 +66,20 @@ function closeRecipeModal() {
 }
 
 function addRecipe() {
-  const formData = new FormData(document.getElementById("addRecipeForm"));
+  const form = document.getElementById("addRecipeForm");
+  const formData = new FormData(form);
 
   fetch("http://localhost:3000/api/recipes", {
     method: "POST",
     body: formData,
   })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((data) => {
-          throw new Error(data.error || "Unknown error");
-        });
-      }
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      console.log("Added recipe:", data);
+      console.log("Recipe added:", data);
       fetchRecipes();
       closeAddRecipeModal();
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => console.error("Error adding recipe:", error));
 }
 
 function deleteRecipe(id) {
