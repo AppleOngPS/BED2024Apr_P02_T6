@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .title{
+    display: flex;
+    justify-content: center;
+
+  }
+  
+  .rewards-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: 4px black hidden;
+    padding: 20px;
+  }
+  
+  .reward-box {
+    display: flex;
+    flex-direction: column;
+    border: 2px black solid;
+    width: 30%; /* Adjust width as needed */
+  }
+  
+  .reward-details {
+    margin-top: 10px;
+    border: 1px solid hidden; /* Example styling */
+    padding: 10px;
+  }
+  
