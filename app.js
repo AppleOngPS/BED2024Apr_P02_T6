@@ -191,18 +191,16 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const recipeController = require("./controllers/recipeController");
-const dbConfig = require("./dbConfig");
+const validateRecipe = require("./middlewares/validateRecipe");
 const sql = require("mssql");
 
 const app = express();
 const port = 3000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Ensure images directory exists
 const imagesDir = path.join(__dirname, "public", "images");
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
@@ -222,30 +220,28 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Serve images from the images directory
 app.use("/public/images", express.static(imagesDir));
 
-// Routes
 app.get("/api/recipes", recipeController.getAllRecipes);
 app.get("/api/recipes/:id", recipeController.getRecipeById);
-app.post("/api/recipes", upload.single("image"), recipeController.createRecipe);
-app.put("/api/recipes/:id", recipeController.updateRecipe);
+app.post(
+  "/api/recipes",
+  upload.single("image"),
+  validateRecipe,
+  recipeController.createRecipe
+);
+app.put("/api/recipes/:id", validateRecipe, recipeController.updateRecipe);
 app.delete("/api/recipes/:id", recipeController.deleteRecipe);
 
-// Start server
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
 
-// Graceful shutdown
 process.on("SIGINT", async () => {
-  console.log("Server is gracefully shutting down");
   try {
     await sql.close();
-    console.log("Database connection closed");
     process.exit(0);
   } catch (err) {
-    console.error("Error closing database connection:", err);
     process.exit(1);
   }
 });
