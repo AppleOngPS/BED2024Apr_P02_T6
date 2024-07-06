@@ -56,6 +56,22 @@ const createRecipe = async (req, res) => {
   } = req.body;
 
   try {
+    // Check if a recipe with the same name already exists (case-insensitive)
+    const checkRequest = pool.request();
+    checkRequest.input("name", sql.NVarChar, name.toLowerCase());
+    const checkResult = await checkRequest.query(
+      "SELECT COUNT(*) AS count FROM recipes WHERE LOWER(name) = @name"
+    );
+
+    if (checkResult.recordset[0].count > 0) {
+      return res
+        .status(409)
+        .json({
+          error: "A recipe with this name already exists in the database.",
+        });
+    }
+
+    // If the name is unique, proceed with adding the recipe
     const insertRequest = pool.request();
     insertRequest.input("name", sql.NVarChar, name);
     insertRequest.input("category", sql.NVarChar, category);
@@ -100,6 +116,15 @@ const createRecipe = async (req, res) => {
     res.json({ id: newId, message: "Recipe added successfully" });
   } catch (error) {
     console.error("Error adding recipe:", error);
+
+    // If an error occurred, remove the uploaded image if it exists
+    if (req.file) {
+      const filePath = path.join(imagesDir, req.file.filename);
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Error deleting uploaded file:", err);
+      });
+    }
+
     res
       .status(500)
       .json({ error: "Failed to add recipe", details: error.message });

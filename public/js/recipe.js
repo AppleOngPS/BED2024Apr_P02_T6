@@ -51,14 +51,27 @@ function displayRecipes(recipes) {
   });
 }
 
-function showRecipeDetails(recipe) {
-  document.getElementById("modal-recipe-name").innerText = recipe.name;
-  document.getElementById("modal-recipe-category").innerText = recipe.category;
-  document.getElementById("modal-recipe-description").innerText =
-    recipe.description;
-  document.getElementById("modal-recipe-ingredients").innerText =
-    recipe.ingredients;
-  document.getElementById("recipeModal").style.display = "block";
+function showModal(modalId, message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById(modalId);
+    const span = modal.getElementsByClassName("close")[0];
+    document.getElementById(
+      modalId === "successModal" ? "successMessage" : "errorMessage"
+    ).textContent = message;
+    modal.style.display = "block";
+
+    function closeModal() {
+      modal.style.display = "none";
+      resolve();
+    }
+
+    span.onclick = closeModal;
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        closeModal();
+      }
+    };
+  });
 }
 
 function closeRecipeModal() {
@@ -73,13 +86,36 @@ function addRecipe() {
     method: "POST",
     body: formData,
   })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Recipe added:", data);
-      fetchRecipes();
-      closeAddRecipeModal();
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((err) => {
+          throw err;
+        });
+      }
+      return response.json();
     })
-    .catch((error) => console.error("Error adding recipe:", error));
+    .then((data) => {
+      showModal("successModal", "Recipe added successfully!").then(() => {
+        fetchRecipes();
+        closeAddRecipeModal();
+      });
+    })
+    .catch((error) => {
+      if (
+        error.error ===
+        "A recipe with this name already exists in the database."
+      ) {
+        showModal(
+          "errorModal",
+          "A recipe with this name already exists in the database. Please choose a different name."
+        );
+      } else {
+        showModal(
+          "errorModal",
+          "An error occurred while adding the recipe. Please try again."
+        );
+      }
+    });
 }
 
 function deleteRecipe(id) {
