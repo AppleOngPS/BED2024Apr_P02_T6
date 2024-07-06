@@ -222,8 +222,18 @@ const upload = multer({ storage: storage });
 
 app.use("/public/images", express.static(imagesDir));
 
+app.get("/api/recipes/random", recipeController.getRandomRecipe);
+app.get("/api/recipes/count", recipeController.getRecipeCount);
+app.get("/api/recipes/name/:name", recipeController.getRecipeByName);
+app.get(
+  "/api/recipes/category/:category",
+  recipeController.getRecipesByCategory
+);
+
+// General routes after
 app.get("/api/recipes", recipeController.getAllRecipes);
 app.get("/api/recipes/:id", recipeController.getRecipeById);
+
 app.post(
   "/api/recipes",
   upload.single("image"),

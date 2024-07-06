@@ -235,11 +235,9 @@ const createRecipe = async (req, res) => {
     );
 
     if (checkResult.recordset[0].count > 0) {
-      return res
-        .status(409)
-        .json({
-          error: "A recipe with this name already exists in the database.",
-        });
+      return res.status(409).json({
+        error: "A recipe with this name already exists in the database.",
+      });
     }
 
     const insertRequest = pool.request();
@@ -321,10 +319,84 @@ const deleteRecipe = async (req, res) => {
   }
 };
 
+const getRecipeByName = async (req, res) => {
+  await connectToDb();
+  const { name } = req.params;
+  try {
+    const request = pool.request();
+    request.input("name", sql.NVarChar, name);
+    const result = await request.query(
+      "SELECT * FROM recipes WHERE name = @name"
+    );
+    if (result.recordset.length === 0) {
+      res.status(404).json({ error: "Recipe not found" });
+    } else {
+      res.json(result.recordset[0]);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve recipe" });
+  }
+};
+
+const getRecipesByCategory = async (req, res) => {
+  await connectToDb();
+  const { category } = req.params;
+  try {
+    const request = pool.request();
+    request.input("category", sql.NVarChar, category);
+    const result = await request.query(
+      "SELECT * FROM recipes WHERE category = @category"
+    );
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve recipes" });
+  }
+};
+
+const getRandomRecipe = async (req, res) => {
+  try {
+    await connectToDb();
+    const request = pool.request();
+    const result = await request.query(
+      "SELECT TOP 1 * FROM recipes ORDER BY NEWID()"
+    );
+    if (result.recordset.length === 0) {
+      res.status(404).json({ error: "No recipes found" });
+    } else {
+      res.json(result.recordset[0]);
+    }
+  } catch (error) {
+    console.error("Error in getRandomRecipe:", error);
+    res.status(500).json({
+      error: "Failed to retrieve random recipe",
+      details: error.message,
+    });
+  }
+};
+
+const getRecipeCount = async (req, res) => {
+  try {
+    await connectToDb();
+    const request = pool.request();
+    const result = await request.query("SELECT COUNT(*) AS count FROM recipes");
+    res.json({ count: result.recordset[0].count });
+  } catch (error) {
+    console.error("Error in getRecipeCount:", error);
+    res.status(500).json({
+      error: "Failed to retrieve recipe count",
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllRecipes,
   getRecipeById,
   createRecipe,
   updateRecipe,
   deleteRecipe,
+  getRecipeByName,
+  getRecipesByCategory,
+  getRandomRecipe,
+  getRecipeCount,
 };

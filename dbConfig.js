@@ -9,5 +9,3 @@ module.exports = {
     connectionTimeout: 60000, // Connection timeout in milliseconds
   },
 };
-
-//module.exports = db;
