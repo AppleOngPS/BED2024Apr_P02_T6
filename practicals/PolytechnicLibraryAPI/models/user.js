@@ -1,6 +1,5 @@
-
-
 const sql = require("mssql");
+const bcrypt = require("bcrypt");
 const dbConfig = require("../dbConfig");
 
 class User {
@@ -40,6 +39,7 @@ class User {
   static async createUserAccount(newUserAccount) {
     try {
       const connection = await sql.connect(dbConfig);
+      const hashedPassword = await bcrypt.hash(newUserAccount.passwordHash, 10); // Hash password with a salt rounds of 10
       const sqlQuery = `
         INSERT INTO users (username, passwordHash, role)
         VALUES (@username, @passwordHash, @role);
@@ -47,8 +47,8 @@ class User {
       `;
       const request = connection.request();
       request.input("username", sql.NVarChar, newUserAccount.username);
-      request.input("passwordHash", sql.NVarChar, newUserAccount.passwordHash);
-      request.input("role", sql.NVarChar, newUserAccount.role || 'member'); // Default role
+      request.input("passwordHash", sql.NVarChar, hashedPassword); // Store hashed password
+      request.input("role", sql.NVarChar, newUserAccount.role || "member"); // Default role
 
       const result = await request.query(sqlQuery);
       connection.close();
@@ -63,15 +63,19 @@ class User {
   static async getUserByNameAndPassword(name, password) {
     try {
       const connection = await sql.connect(dbConfig);
-      const sqlQuery = 'SELECT * FROM users WHERE username = @username AND passwordHash = @passwordHash';
+      const sqlQuery = "SELECT * FROM users WHERE username = @username";
       const request = connection.request();
-      request.input('username', sql.NVarChar, name);
-      request.input('passwordHash', sql.NVarChar, password);
+      request.input("username", sql.NVarChar, name);
       const result = await request.query(sqlQuery);
       connection.close();
-      return result.recordset.length > 0 ? result.recordset[0] : null;
+      const user = result.recordset[0];
+      if (user && (await bcrypt.compare(password, user.passwordHash))) {
+        // Compare hashed passwords
+        return new User(user.username, user.passwordHash, user.role);
+      }
+      return null;
     } catch (error) {
-      console.error('Error retrieving user:', error);
+      console.error("Error retrieving user:", error);
       throw error;
     }
   }
