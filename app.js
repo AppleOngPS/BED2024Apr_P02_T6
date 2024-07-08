@@ -222,15 +222,17 @@ const upload = multer({ storage: storage });
 
 app.use("/public/images", express.static(imagesDir));
 
+// Existing routes
 app.get("/api/recipes/random", recipeController.getRandomRecipe);
 app.get("/api/recipes/count", recipeController.getRecipeCount);
-app.get("/api/recipes/name/:name", recipeController.getRecipeByName);
+app.get("/api/recipes/calories", recipeController.getRecipesByCalorieRange);
+app.get("/api/recipes/nutrient", recipeController.getRecipesByNutrientRange);
 app.get(
   "/api/recipes/category/:category",
   recipeController.getRecipesByCategory
 );
+app.get("/api/recipes/name/:name", recipeController.getRecipeByName);
 
-// General routes after
 app.get("/api/recipes", recipeController.getAllRecipes);
 app.get("/api/recipes/:id", recipeController.getRecipeById);
 
@@ -242,6 +244,10 @@ app.post(
 );
 app.put("/api/recipes/:id", validateRecipe, recipeController.updateRecipe);
 app.delete("/api/recipes/:id", recipeController.deleteRecipe);
+
+// New routes
+app.get("/api/recipes/ingredient", recipeController.searchRecipesByIngredient);
+app.get("/api/recipes/top", recipeController.getTopNRecipesByNutrient);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

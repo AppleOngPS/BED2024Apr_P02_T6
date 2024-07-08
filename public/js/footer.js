@@ -40,6 +40,7 @@ function createContentBox(title, content) {
 function createLinks() {
   var links = document.createElement("div");
   links.classList.add("links");
+
   var linkNames = [
     "Home",
     "Recipe",
@@ -49,21 +50,32 @@ function createLinks() {
     "Credits",
     "Login",
   ];
+
+  // Get the current URL
+  var currentPath = window.location.pathname;
+
+  // Check if the current path includes 'public/html' to determine the correct path
+  var basePath = currentPath.includes("public/html") ? "./" : "public/html/";
+
   linkNames.forEach(function (name) {
     var link = document.createElement("a");
+
     if (name === "Home") {
       link.textContent = name;
-      link.href = "../../index.html"; // Set the href to index.html for the "Home" link
+      link.href = currentPath.includes("public/html")
+        ? "../../index.html"
+        : "index.html";
     } else if (name === "Meal Planning") {
       link.textContent = name;
-      link.href = "../public/html/meal_planning.html";
+      link.href = basePath + "meal_planning.html";
     } else {
       link.textContent = name;
-      link.href =
-        "../public/html/" + name.toLowerCase().replace(" ", "") + ".html";
+      link.href = basePath + name.toLowerCase().replace(" ", "") + ".html";
     }
+
     links.appendChild(link);
   });
+
   return links;
 }
 

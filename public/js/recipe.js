@@ -51,6 +51,30 @@ function displayRecipes(recipes) {
   });
 }
 
+function showRecipeDetails(recipe) {
+  const modal = document.getElementById("recipeModal");
+  document.getElementById("modal-recipe-name").textContent = recipe.name;
+  document.getElementById("modal-recipe-category").textContent =
+    recipe.category;
+  document.getElementById("modal-recipe-description").textContent =
+    recipe.description;
+  document.getElementById("modal-recipe-ingredients").textContent =
+    recipe.ingredients;
+
+  modal.style.display = "block";
+
+  const closeBtn = modal.querySelector(".close");
+  closeBtn.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+}
+
 function showModal(modalId, message) {
   return new Promise((resolve) => {
     const modal = document.getElementById(modalId);

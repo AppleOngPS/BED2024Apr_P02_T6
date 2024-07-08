@@ -389,6 +389,92 @@ const getRecipeCount = async (req, res) => {
   }
 };
 
+const getRecipesByCalorieRange = async (req, res) => {
+  await connectToDb();
+  const { min, max } = req.query;
+  try {
+    const request = pool.request();
+    request.input("min", sql.Int, parseInt(min));
+    request.input("max", sql.Int, parseInt(max));
+    const result = await request.query(
+      "SELECT * FROM recipes WHERE calories BETWEEN @min AND @max"
+    );
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error in getRecipesByCalorieRange:", error);
+    res.status(500).json({ error: "Failed to retrieve recipes" });
+  }
+};
+
+const getRecipesByNutrientRange = async (req, res) => {
+  await connectToDb();
+  const { nutrient, min, max } = req.query;
+  try {
+    const request = pool.request();
+    request.input("min", sql.Int, parseInt(min));
+    request.input("max", sql.Int, parseInt(max));
+
+    // Validate the nutrient name to prevent SQL injection
+    const validNutrients = ["calories", "carbs", "protein", "fats"];
+    if (!validNutrients.includes(nutrient)) {
+      return res.status(400).json({ error: "Invalid nutrient specified" });
+    }
+
+    const result = await request.query(
+      `SELECT * FROM recipes WHERE ${nutrient} BETWEEN @min AND @max`
+    );
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error in getRecipesByNutrientRange:", error);
+    res.status(500).json({ error: "Failed to retrieve recipes" });
+  }
+};
+
+const searchRecipesByIngredient = async (req, res) => {
+  await connectToDb();
+  const { ingredient } = req.query;
+  try {
+    console.log("Searching for ingredient:", ingredient);
+    const request = pool.request();
+    request.input("ingredient", sql.NVarChar, "%" + ingredient + "%");
+    const query = "SELECT * FROM recipes WHERE ingredients LIKE @ingredient";
+    console.log("Executing query:", query);
+    const result = await request.query(query);
+    console.log("Query result:", result);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error in searchRecipesByIngredient:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to search recipes", details: error.message });
+  }
+};
+
+const getTopNRecipesByNutrient = async (req, res) => {
+  await connectToDb();
+  const { nutrient, limit } = req.query;
+  try {
+    const request = pool.request();
+    request.input("limit", sql.Int, parseInt(limit));
+
+    // Validate the nutrient name to prevent SQL injection
+    const validNutrients = ["calories", "carbs", "protein", "fats"];
+    if (!validNutrients.includes(nutrient)) {
+      return res.status(400).json({ error: "Invalid nutrient specified" });
+    }
+
+    const result = await request.query(
+      `SELECT TOP (@limit) * FROM recipes ORDER BY ${nutrient} DESC`
+    );
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error in getTopNRecipesByNutrient:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve recipes", details: error.message });
+  }
+};
+
 module.exports = {
   getAllRecipes,
   getRecipeById,
@@ -399,4 +485,8 @@ module.exports = {
   getRecipesByCategory,
   getRandomRecipe,
   getRecipeCount,
+  getRecipesByCalorieRange,
+  getRecipesByNutrientRange,
+  searchRecipesByIngredient,
+  getTopNRecipesByNutrient,
 };
