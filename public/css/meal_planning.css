@@ -155,26 +155,135 @@ form button:hover {
 .new-day button:hover {
   background-color: #00a619;
 }
-#calendar-button {
-  background-color: #00bfff;
-  color: white;
-  padding: 10px;
-  border: none;
+/* Calendar improvements */
+#calendarModal {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#calendar-body td {
   border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+#calendar-body td:hover {
+  background-color: #e0e0e0;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-#calendar-button:hover {
-  background-color: #009acd;
+.calendar-day {
+  font-weight: bold;
+  color: #333;
 }
 
-.modal-content #calendar {
-  max-width: 800px;
+.calendar-calories {
+  font-size: 0.8em;
+  color: #666;
+}
+
+/* Nutrition modal */
+#nutritionModal {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.nutrition-modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-nutrition {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-nutrition:hover,
+.close-nutrition:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.nutrition-table th,
+.nutrition-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.nutrition-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* General improvements */
+body {
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
-#calendarModal .modal-content {
-  width: 90%;
-  max-width: 900px;
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.meal-item {
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.food-image {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+body {
+  overflow-x: hidden;
 }

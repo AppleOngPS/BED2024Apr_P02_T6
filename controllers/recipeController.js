@@ -433,11 +433,15 @@ const getRecipesByNutrientRange = async (req, res) => {
 const searchRecipesByIngredient = async (req, res) => {
   await connectToDb();
   const { ingredient } = req.query;
+  if (!ingredient) {
+    return res.status(400).json({ error: "Ingredient parameter is required" });
+  }
   try {
     console.log("Searching for ingredient:", ingredient);
     const request = pool.request();
-    request.input("ingredient", sql.NVarChar, "%" + ingredient + "%");
-    const query = "SELECT * FROM recipes WHERE ingredients LIKE @ingredient";
+    request.input("ingredient", sql.NVarChar, ingredient);
+    const query =
+      "SELECT * FROM recipes WHERE CHARINDEX(@ingredient, ingredients) > 0";
     console.log("Executing query:", query);
     const result = await request.query(query);
     console.log("Query result:", result);
@@ -450,43 +454,17 @@ const searchRecipesByIngredient = async (req, res) => {
   }
 };
 
-const getTopNRecipesByNutrient = async (req, res) => {
-  await connectToDb();
-  const { nutrient, limit } = req.query;
-  try {
-    const request = pool.request();
-    request.input("limit", sql.Int, parseInt(limit));
-
-    // Validate the nutrient name to prevent SQL injection
-    const validNutrients = ["calories", "carbs", "protein", "fats"];
-    if (!validNutrients.includes(nutrient)) {
-      return res.status(400).json({ error: "Invalid nutrient specified" });
-    }
-
-    const result = await request.query(
-      `SELECT TOP (@limit) * FROM recipes ORDER BY ${nutrient} DESC`
-    );
-    res.json(result.recordset);
-  } catch (error) {
-    console.error("Error in getTopNRecipesByNutrient:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to retrieve recipes", details: error.message });
-  }
-};
-
 module.exports = {
-  getAllRecipes,
-  getRecipeById,
-  createRecipe,
-  updateRecipe,
-  deleteRecipe,
-  getRecipeByName,
-  getRecipesByCategory,
-  getRandomRecipe,
-  getRecipeCount,
-  getRecipesByCalorieRange,
-  getRecipesByNutrientRange,
+  getAllRecipes, //
+  getRecipeById, //
+  createRecipe, //
+  updateRecipe, //
+  deleteRecipe, //
+  getRecipeByName, //
+  getRecipesByCategory, //
+  getRandomRecipe, //
+  getRecipeCount, //
+  getRecipesByCalorieRange, //
+  getRecipesByNutrientRange, //
   searchRecipesByIngredient,
-  getTopNRecipesByNutrient,
 };

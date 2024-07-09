@@ -245,9 +245,7 @@ app.post(
 app.put("/api/recipes/:id", validateRecipe, recipeController.updateRecipe);
 app.delete("/api/recipes/:id", recipeController.deleteRecipe);
 
-// New routes
-app.get("/api/recipes/ingredient", recipeController.searchRecipesByIngredient);
-app.get("/api/recipes/top", recipeController.getTopNRecipesByNutrient);
+app.get("/api/recipes/search", recipeController.searchRecipesByIngredient);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

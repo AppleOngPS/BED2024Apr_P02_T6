@@ -7,19 +7,6 @@
     <link rel="stylesheet" href="../css/meal_planning.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <link rel="stylesheet" href="../css/footer.css" />
-    <!-- Include FullCalendar library -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.0/main.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.0/main.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@5.11.0/main.min.css"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <main>
@@ -38,6 +25,13 @@
           <div>Sodium: <span id="total-sodium">0</span></div>
         </div>
       </section>
+
+      <div id="nutritionModal" class="modal">
+        <div class="nutrition-modal-content">
+          <span class="close-nutrition">&times;</span>
+          <div id="nutritionModalContent"></div>
+        </div>
+      </div>
 
       <section class="meal-planning">
         <div class="meal-category">
@@ -88,7 +82,27 @@
       <div id="calendarModal" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeCalendarModal()">&times;</span>
-          <div id="calendar-modal"></div>
+          <div id="calendar-container">
+            <div id="calendar-header">
+              <button id="prevMonth">&lt;</button>
+              <h2 id="monthYear"></h2>
+              <button id="nextMonth">&gt;</button>
+            </div>
+            <table id="calendar">
+              <thead>
+                <tr>
+                  <th>Sun</th>
+                  <th>Mon</th>
+                  <th>Tue</th>
+                  <th>Wed</th>
+                  <th>Thu</th>
+                  <th>Fri</th>
+                  <th>Sat</th>
+                </tr>
+              </thead>
+              <tbody id="calendar-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -140,9 +154,7 @@
         </div>
       </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.0/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.11.0/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@5.11.0/main.min.js"></script>
+
     <script src="../js/meal_planning.js"></script>
     <script src="../js/navigation.js"></script>
     <script src="../js/footer.js"></script>
