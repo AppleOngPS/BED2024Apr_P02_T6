@@ -6,7 +6,10 @@ const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const cors = require("cors");
 
+
+
 const usersController = require("./controllers/usersController");
+const rewardsController = require("./controllers/rewardController");
 
 const app = express();
 const port = 3000;
@@ -16,6 +19,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
 
 // Routes
 app.post("/users", usersController.createUser); // Create user
@@ -27,6 +31,22 @@ app.get('/user/:userId', usersController.getUserById); // Get user details by ID
 app.get('/users', usersController.getUserByName);// Get user by Name
 app.put("/users", usersController.updateUser); // Update user
 app.delete("/users", usersController.deleteUser); // Delete user
+
+app.get("/rewards", rewardsController.getAllRewards); // Get all rewards
+app.get("/rewards", rewardsController.getRewardsById); // Get all rewards by ID
+app.get("/rewards/:id", rewardsController.updateRewards); // update rewards
+app.delete("/rewards", rewardsController.deleteReward); // Delete rewards
+
+
+
+
+// Serve the HTML file
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+
+
 
 // Start server and connect to database
 app.listen(port, async () => {
