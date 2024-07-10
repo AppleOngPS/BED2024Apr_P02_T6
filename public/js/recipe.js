@@ -176,9 +176,15 @@
 
 document.addEventListener("DOMContentLoaded", function () {
   fetchRecipes();
+  fetchRecipeCount();
   document.getElementById("addRecipeForm").onsubmit = function (event) {
     event.preventDefault();
     addRecipe();
+  };
+
+  document.getElementById("nameSearchForm").onsubmit = function (event) {
+    event.preventDefault();
+    searchByName();
   };
 
   document.querySelectorAll(".category").forEach((button) => {
@@ -207,14 +213,55 @@ function fetchRecipesByCategory(category) {
     .then((response) => response.json())
     .then((data) => {
       displayRecipes(data);
+      updateRecipeCount(data.length);
     })
     .catch((error) => console.error("Error:", error));
 }
 
+// function displayRecipes(recipes) {
+//   const recipeList = document.getElementById("recipe-list");
+//   recipeList.innerHTML = "";
+
+//   // Ensure recipes is always an array
+//   const recipeArray = Array.isArray(recipes) ? recipes : [recipes];
+
+//   recipeArray.forEach((recipe) => {
+//     const recipeItem = document.createElement("div");
+//     recipeItem.classList.add("recipe-item");
+//     recipeItem.addEventListener("click", () => fetchRecipeDetails(recipe.id));
+
+//     const recipeImage = document.createElement("img");
+//     recipeImage.src = `../images/recipe-${recipe.id}.avif`;
+//     recipeImage.alt = recipe.name;
+
+//     const details = document.createElement("div");
+//     details.classList.add("details");
+//     details.innerHTML = `
+//       <p>${recipe.name}</p>
+//       <p>kcal: ${recipe.calories} | c: ${recipe.carbs}g | p: ${recipe.protein}g | f: ${recipe.fats}g</p>
+//     `;
+
+//     recipeItem.appendChild(recipeImage);
+//     recipeItem.appendChild(details);
+//     recipeList.appendChild(recipeItem);
+//   });
+
+//   updateRecipeCount(recipeArray.length);
+// }
+
 function displayRecipes(recipes) {
   const recipeList = document.getElementById("recipe-list");
   recipeList.innerHTML = "";
+
+  if (!recipes || recipes.length === 0) {
+    recipeList.innerHTML = "<p>No recipes found matching your criteria.</p>";
+    updateRecipeCount(0);
+    return;
+  }
+
   recipes.forEach((recipe) => {
+    if (!recipe) return; // Skip if recipe is undefined
+
     const recipeItem = document.createElement("div");
     recipeItem.classList.add("recipe-item");
     recipeItem.addEventListener("click", () => fetchRecipeDetails(recipe.id));
@@ -226,14 +273,18 @@ function displayRecipes(recipes) {
     const details = document.createElement("div");
     details.classList.add("details");
     details.innerHTML = `
-      <p>${recipe.name}</p>
-      <p>kcal: ${recipe.calories} | c: ${recipe.carbs}g | p: ${recipe.protein}g | f: ${recipe.fats}g</p>
+      <p>${recipe.name || "Unnamed Recipe"}</p>
+      <p>kcal: ${recipe.calories || "N/A"} | c: ${
+      recipe.carbs || "N/A"
+    }g | p: ${recipe.protein || "N/A"}g | f: ${recipe.fats || "N/A"}g</p>
     `;
 
     recipeItem.appendChild(recipeImage);
     recipeItem.appendChild(details);
     recipeList.appendChild(recipeItem);
   });
+
+  updateRecipeCount(recipes.length);
 }
 
 function fetchRecipeDetails(id) {
@@ -315,6 +366,7 @@ function addRecipe() {
     .then((data) => {
       showModal("successModal", "Recipe added successfully!").then(() => {
         fetchRecipes();
+        fetchRecipeCount();
         closeAddRecipeModal();
       });
     })
@@ -344,6 +396,7 @@ function deleteRecipe(id) {
     .then((data) => {
       console.log("Deleted recipe:", data);
       fetchRecipes();
+      fetchRecipeCount();
     })
     .catch((error) => console.error("Error:", error));
 }
@@ -371,14 +424,23 @@ function filterByNutrient() {
   const nutrient = document.getElementById("nutrientSelect").value;
   const min = document.getElementById("nutrientMin").value;
   const max = document.getElementById("nutrientMax").value;
+
   fetch(
     `http://localhost:3000/api/recipes/nutrient?nutrient=${nutrient}&min=${min}&max=${max}`
   )
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
     .then((data) => {
       displayRecipes(data);
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => {
+      console.error("Error:", error);
+      displayRecipes([]);
+    });
 }
 
 function searchByIngredient() {
@@ -398,15 +460,28 @@ function searchByIngredient() {
 function searchByName() {
   const name = document.getElementById("nameSearch").value;
   fetch(`http://localhost:3000/api/recipes/name/${encodeURIComponent(name)}`)
-    .then((response) => response.json())
-    .then((recipe) => {
-      if (recipe) {
-        showRecipeDetails(recipe);
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data && (Array.isArray(data) ? data.length > 0 : true)) {
+        displayRecipes(Array.isArray(data) ? data : [data]);
       } else {
-        showModal("errorModal", "Recipe not found.");
+        displayRecipes([]); // This will trigger the "No recipes found" message
       }
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => {
+      console.error("Error:", error);
+      displayRecipes([]); // This will trigger the "No recipes found" message
+    });
+}
+function displayNoResults() {
+  const recipeList = document.getElementById("recipe-list");
+  recipeList.innerHTML = "<p>No recipes found matching your search.</p>";
+  updateRecipeCount(0);
 }
 
 function fetchRandomRecipe() {
@@ -422,9 +497,13 @@ function fetchRecipeCount() {
   fetch("http://localhost:3000/api/recipes/count")
     .then((response) => response.json())
     .then((data) => {
-      document.getElementById(
-        "recipeCount"
-      ).textContent = `Total recipes: ${data.count}`;
+      updateRecipeCount(data.count);
     })
     .catch((error) => console.error("Error:", error));
+}
+
+function updateRecipeCount(count) {
+  document.getElementById("recipeCount").textContent = `Total recipes: ${
+    count || 0
+  }`;
 }

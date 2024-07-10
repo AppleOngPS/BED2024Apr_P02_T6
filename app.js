@@ -226,7 +226,19 @@ app.use("/public/images", express.static(imagesDir));
 app.get("/api/recipes/random", recipeController.getRandomRecipe);
 app.get("/api/recipes/count", recipeController.getRecipeCount);
 app.get("/api/recipes/calories", recipeController.getRecipesByCalorieRange);
-app.get("/api/recipes/nutrient", recipeController.getRecipesByNutrientRange);
+app.get("/api/recipes/nutrient", (req, res) => {
+  const { nutrient, min, max } = req.query;
+  let filteredRecipes = recipes;
+
+  if (nutrient && min && max) {
+    filteredRecipes = recipes.filter((recipe) => {
+      const value = parseFloat(recipe[nutrient]);
+      return value >= parseFloat(min) && value <= parseFloat(max);
+    });
+  }
+
+  res.json(filteredRecipes);
+});
 app.get(
   "/api/recipes/category/:category",
   recipeController.getRecipesByCategory

@@ -158,6 +158,7 @@
               <h3>Nutrient Range</h3>
               <label for="nutrientSelect">Nutrient:</label>
               <select id="nutrientSelect">
+                <option value="calories">Calories</option>
                 <option value="carbs">Carbs</option>
                 <option value="protein">Protein</option>
                 <option value="fats">Fats</option>
@@ -173,14 +174,16 @@
               <label for="ingredientSearch">By Ingredient:</label>
               <input type="text" id="ingredientSearch" />
               <button onclick="searchByIngredient()">Search</button>
-              <label for="nameSearch">By Name:</label>
-              <input type="text" id="nameSearch" />
-              <button onclick="searchByName()">Search</button>
+              <form id="nameSearchForm" onsubmit="event.preventDefault(); searchByName();">
+                <label for="nameSearch">By Name:</label>
+                <input type="text" id="nameSearch" />
+                <button type="submit">Search</button>
+              </form>
             </div>
             <div>
               <h3>Other Options</h3>
               <button onclick="fetchRandomRecipe()">Get Random Recipe</button>
-              <button onclick="fetchRecipeCount()">Get Recipe Count</button>
+ 
               <p id="recipeCount"></p>
             </div>
           </div>
