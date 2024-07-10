@@ -33,3 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Select the Sign Up button
+  const signupButton = document.getElementById('signupButton');
+
+  // Add click event listener
+  signupButton.addEventListener('click', function() {
+    // Navigate to signup.html
+    window.location.href = '../html/signup.html';
+  });
+});
