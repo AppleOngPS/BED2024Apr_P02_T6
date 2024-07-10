@@ -114,7 +114,7 @@ function generateCalendar(month, year) {
         let caloriesDiv = document.createElement("div");
         caloriesDiv.classList.add("calendar-calories");
 
-        // Here you would fetch the calorie data for this date
+        // Use the correct date format here
         let calories = fetchCaloriesForDate(year, month, date);
         caloriesDiv.innerHTML = `${calories} / ${targetNutrition.calories} kcal`;
 
@@ -147,15 +147,84 @@ function getMonthName(monthIndex) {
   return months[monthIndex];
 }
 
+// function fetchCaloriesForDate(year, month, day) {
+//   // Implement this function to fetch calorie data from your database
+//   // For now, we'll return a random number
+//   return Math.floor(Math.random() * targetNutrition.calories);
+// }
 function fetchCaloriesForDate(year, month, day) {
-  // Implement this function to fetch calorie data from your database
-  // For now, we'll return a random number
-  return Math.floor(Math.random() * targetNutrition.calories);
+  const formattedDate = `${year}-${month + 1}-${day}`;
+  const storedData = localStorage.getItem(formattedDate);
+  if (storedData) {
+    const parsedData = JSON.parse(storedData);
+    return parsedData.calories;
+  }
+  return 0; // Return 0 if no data is stored for this date
 }
 
+// function showDayDetails(year, month, day) {
+//   const formattedDate = `${year}-${month + 1}-${day}`;
+//   const dailyNutrition = fetchNutritionForDate(formattedDate);
+
+//   const modalContent = `
+//     <h3>Nutritional Details for ${formattedDate}</h3>
+//     <table class="nutrition-table">
+//       <tr>
+//         <th>Nutrient</th>
+//         <th>Consumed</th>
+//         <th>Target</th>
+//       </tr>
+//       <tr>
+//         <td>Calories</td>
+//         <td>${dailyNutrition.calories} kcal</td>
+//         <td>${targetNutrition.calories} kcal</td>
+//       </tr>
+//       <tr>
+//         <td>Carbs</td>
+//         <td>${dailyNutrition.carbs} g</td>
+//         <td>${targetNutrition.carbs} g</td>
+//       </tr>
+//       <tr>
+//         <td>Protein</td>
+//         <td>${dailyNutrition.protein} g</td>
+//         <td>${targetNutrition.protein} g</td>
+//       </tr>
+//       <tr>
+//         <td>Fats</td>
+//         <td>${dailyNutrition.fats} g</td>
+//         <td>${targetNutrition.fats} g</td>
+//       </tr>
+//       <tr>
+//         <td>Sodium</td>
+//         <td>${dailyNutrition.sodium} mg</td>
+//         <td>${targetNutrition.sodium} mg</td>
+//       </tr>
+//     </table>
+//   `;
+
+//   const modal = document.getElementById("nutritionModal");
+//   const modalContentDiv = document.getElementById("nutritionModalContent");
+//   modalContentDiv.innerHTML = modalContent;
+//   modal.style.display = "block";
+// }
 function showDayDetails(year, month, day) {
-  const formattedDate = `${year}-${month + 1}-${day}`;
-  const dailyNutrition = fetchNutritionForDate(formattedDate);
+  const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+    day
+  ).padStart(2, "0")}`;
+  const storedData = localStorage.getItem(formattedDate);
+  let dailyNutrition;
+
+  if (storedData) {
+    dailyNutrition = JSON.parse(storedData);
+  } else {
+    dailyNutrition = {
+      calories: 0,
+      carbs: 0,
+      protein: 0,
+      fats: 0,
+      sodium: 0,
+    };
+  }
 
   const modalContent = `
     <h3>Nutritional Details for ${formattedDate}</h3>
@@ -199,16 +268,16 @@ function showDayDetails(year, month, day) {
   modal.style.display = "block";
 }
 
-function fetchNutritionForDate(date) {
-  // Implement this function to fetch actual nutrition data from your database
-  // For now, we'll return random values
-  return {
-    calories: Math.floor(Math.random() * targetNutrition.calories),
-    carbs: Math.floor(Math.random() * targetNutrition.carbs),
-    protein: Math.floor(Math.random() * targetNutrition.protein),
-    fats: Math.floor(Math.random() * targetNutrition.fats),
-    sodium: Math.floor(Math.random() * targetNutrition.sodium),
-  };
+function fetchCaloriesForDate(year, month, day) {
+  const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+    day
+  ).padStart(2, "0")}`;
+  const storedData = localStorage.getItem(formattedDate);
+  if (storedData) {
+    const parsedData = JSON.parse(storedData);
+    return parsedData.calories;
+  }
+  return 0; // Return 0 if no data is stored for this date
 }
 
 function closeNutritionModal() {
@@ -227,6 +296,18 @@ function checkDateAndResetData() {
   }
 }
 
+// function resetMealData() {
+//   meals.breakfast = [];
+//   meals.lunch = [];
+//   meals.dinner = [];
+//   meals.extras = [];
+//   updateTotals();
+//   displayFood("breakfast");
+//   displayFood("lunch");
+//   displayFood("dinner");
+//   displayFood("extras");
+//   deleteAllMealsFromDB();
+// }
 function resetMealData() {
   meals.breakfast = [];
   meals.lunch = [];
@@ -238,6 +319,13 @@ function resetMealData() {
   displayFood("dinner");
   displayFood("extras");
   deleteAllMealsFromDB();
+
+  // Clear the stored data for the current date
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.getFullYear()}-${
+    currentDate.getMonth() + 1
+  }-${currentDate.getDate()}`;
+  localStorage.removeItem(formattedDate);
 }
 
 function openAddFoodModal(mealType) {
@@ -252,6 +340,57 @@ function closeAddFoodModal() {
   document.getElementById("addFoodModal").style.display = "none";
 }
 
+// function addFood(mealType) {
+//   const name = document.getElementById("food-name").value;
+//   const calories = parseFloat(document.getElementById("food-calories").value);
+//   const carbs = parseFloat(document.getElementById("food-carbs").value);
+//   const protein = parseFloat(document.getElementById("food-protein").value);
+//   const fats = parseFloat(document.getElementById("food-fats").value);
+//   const sodium = parseFloat(document.getElementById("food-sodium").value);
+//   const imageFile = document.getElementById("food-image").files[0];
+
+//   const reader = new FileReader();
+//   reader.onloadend = function () {
+//     const image = reader.result;
+
+//     const foodItem = {
+//       name,
+//       calories,
+//       carbs,
+//       protein,
+//       fats,
+//       sodium,
+//       mealType,
+//       image,
+//       quantity: 1,
+//     };
+
+//     fetch(baseUrl, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "x-apikey": apiKey,
+//       },
+//       body: JSON.stringify(foodItem),
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         console.log("Added food item:", data);
+//         meals[mealType].push(data);
+//         displayFood(mealType);
+//         updateTotals();
+//         closeAddFoodModal();
+//       })
+//       .catch((error) => console.error("Error:", error));
+//   };
+
+//   if (imageFile) {
+//     reader.readAsDataURL(imageFile);
+//   } else {
+//     console.error("No image file selected.");
+//   }
+// }
+
 function addFood(mealType) {
   const name = document.getElementById("food-name").value;
   const calories = parseFloat(document.getElementById("food-calories").value);
@@ -261,6 +400,66 @@ function addFood(mealType) {
   const sodium = parseFloat(document.getElementById("food-sodium").value);
   const imageFile = document.getElementById("food-image").files[0];
 
+  // First, check if the food item already exists
+  fetch(`${baseUrl}?q={"name":"${name}"}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.length > 0) {
+        // Food item already exists, show prompt
+        showFoodExistsPrompt(name);
+      } else {
+        // Food item doesn't exist, proceed with adding
+        addNewFoodItem(
+          name,
+          calories,
+          carbs,
+          protein,
+          fats,
+          sodium,
+          mealType,
+          imageFile
+        );
+      }
+    })
+    .catch((error) =>
+      console.error("Error checking for existing food:", error)
+    );
+}
+
+function showFoodExistsPrompt(foodName) {
+  const promptDiv = document.createElement("div");
+  promptDiv.classList.add("food-exists-prompt");
+  promptDiv.innerHTML = `
+    <div class="prompt-content">
+      <h3>Food Already Exists</h3>
+      <p>"${foodName}" has already been added to the database.</p>
+      <button id="closePrompt">OK</button>
+    </div>
+  `;
+
+  document.body.appendChild(promptDiv);
+
+  document.getElementById("closePrompt").addEventListener("click", () => {
+    document.body.removeChild(promptDiv);
+  });
+}
+
+function addNewFoodItem(
+  name,
+  calories,
+  carbs,
+  protein,
+  fats,
+  sodium,
+  mealType,
+  imageFile
+) {
   const reader = new FileReader();
   reader.onloadend = function () {
     const image = reader.result;
@@ -335,15 +534,93 @@ function displayFood(mealType) {
   mealList.appendChild(addItemDiv);
 }
 
+// function changeQuantity(mealType, index, change) {
+//   meals[mealType][index].quantity += change;
+//   if (meals[mealType][index].quantity < 1) {
+//     meals[mealType][index].quantity = 1;
+//   }
+//   displayFood(mealType);
+//   updateTotals();
+// }
 function changeQuantity(mealType, index, change) {
-  meals[mealType][index].quantity += change;
-  if (meals[mealType][index].quantity < 1) {
-    meals[mealType][index].quantity = 1;
+  if (meals[mealType][index].quantity === 1 && change === -1) {
+    showDeleteFoodPrompt(mealType, index);
+  } else {
+    meals[mealType][index].quantity += change;
+    if (meals[mealType][index].quantity < 1) {
+      meals[mealType][index].quantity = 1;
+    }
+    displayFood(mealType);
+    updateTotals();
   }
-  displayFood(mealType);
-  updateTotals();
+}
+function showDeleteFoodPrompt(mealType, index) {
+  const foodName = meals[mealType][index].name;
+  const promptDiv = document.createElement("div");
+  promptDiv.classList.add("delete-food-prompt");
+  promptDiv.innerHTML = `
+    <div class="prompt-content">
+      <h3>Delete Food Item</h3>
+      <p>Are you sure you want to remove "${foodName}" from your meal plan?</p>
+      <div class="prompt-buttons">
+        <button id="confirmDelete">Yes, Remove</button>
+        <button id="cancelDelete">No, Keep</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(promptDiv);
+
+  document.getElementById("confirmDelete").addEventListener("click", () => {
+    deleteFoodItem(mealType, index);
+    document.body.removeChild(promptDiv);
+  });
+
+  document.getElementById("cancelDelete").addEventListener("click", () => {
+    document.body.removeChild(promptDiv);
+  });
+}
+function deleteFoodItem(mealType, index) {
+  const foodItem = meals[mealType][index];
+  fetch(`${baseUrl}/${foodItem._id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+  })
+    .then((response) => response.json())
+    .then(() => {
+      meals[mealType].splice(index, 1);
+      displayFood(mealType);
+      updateTotals();
+    })
+    .catch((error) => console.error("Error deleting food item:", error));
 }
 
+// function updateTotals() {
+//   let totalCalories = 0;
+//   let totalCarbs = 0;
+//   let totalProtein = 0;
+//   let totalFats = 0;
+//   let totalSodium = 0;
+
+//   for (let mealType in meals) {
+//     meals[mealType].forEach((food) => {
+//       totalCalories += food.calories * food.quantity;
+//       totalCarbs += food.carbs * food.quantity;
+//       totalProtein += food.protein * food.quantity;
+//       totalFats += food.fats * food.quantity;
+//       totalSodium += food.sodium * food.quantity;
+//     });
+//   }
+
+//   document.getElementById("total-calories").innerText = totalCalories;
+//   document.getElementById("total-carbs").innerText = totalCarbs;
+//   document.getElementById("total-protein").innerText = totalProtein;
+//   document.getElementById("total-fats").innerText = totalFats;
+//   document.getElementById("total-sodium").innerText = totalSodium;
+// }
 function updateTotals() {
   let totalCalories = 0;
   let totalCarbs = 0;
@@ -366,6 +643,20 @@ function updateTotals() {
   document.getElementById("total-protein").innerText = totalProtein;
   document.getElementById("total-fats").innerText = totalFats;
   document.getElementById("total-sodium").innerText = totalSodium;
+
+  // Store the data for the current date
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.getFullYear()}-${String(
+    currentDate.getMonth() + 1
+  ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+  const dailyData = {
+    calories: totalCalories,
+    carbs: totalCarbs,
+    protein: totalProtein,
+    fats: totalFats,
+    sodium: totalSodium,
+  };
+  localStorage.setItem(formattedDate, JSON.stringify(dailyData));
 }
 
 function fetchFoodItems() {
