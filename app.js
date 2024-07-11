@@ -5,8 +5,9 @@ const bodyParser = require("body-parser");
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const cors = require("cors");
-
-
+// const fs = require("fs");
+//  const postRoutes = require("./routes/postRoutes");
+  const postController = require("./controllers/postController");
 
 const usersController = require("./controllers/usersController");
 const rewardsController = require("./controllers/rewardController");
@@ -19,6 +20,48 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+// Serve static files from the css directory
+//app.use("/css", express.static(path.join(__dirname, "css")));
+
+// Ensure the uploads directory exists
+// const uploadsDir = path.join(__dirname, "uploads");
+// if (!fs.existsSync(uploadsDir)) {
+//   fs.mkdirSync(uploadsDir);
+// }
+
+//app.use("/uploads", express.static(uploadsDir));
+
+// Routes
+// app.use("/posts", postRoutes);
+
+// // Serve HTML files
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "html", "community.html"));
+// });
+
+// app.get("/community-page.html", (req, res) => {
+//   res.sendFile(path.join(__dirname, "html", "community-page.html"));
+// });
+
+// app.get("/community.html", (req, res) => {
+//   res.sendFile(path.join(__dirname, "html", "community.html"));
+// });
+
+// app.get("/quiz.html", (req, res) => {
+//   res.sendFile(path.join(__dirname, "html", "quiz.html"));
+// });
+
+// // Endpoint to fetch quiz data
+// app.get("/fetch_quiz", async (req, res) => {
+//   try {
+//     const questions = await postController.getQuizQuestions();
+//     res.json(questions);
+//   } catch (err) {
+//     console.error("Error fetching quiz questions:", err);
+//     res.status(500).send("Server error");
+//   }
+// });
 
 
 // Routes
@@ -37,7 +80,11 @@ app.get("/rewards", rewardsController.getRewardsById); // Get all rewards by ID
 app.get("/rewards/:id", rewardsController.updateRewards); // update rewards
 app.delete("/rewards", rewardsController.deleteReward); // Delete rewards
 
-
+app.post("/community", postController.createPost);
+app.get("/community", postController.getPosts);
+app.get("/community/:id", postController.getPostById);
+app.put("/community/:id", postController.updatePost);
+app.delete("/community/:id", postController.deletePost);
 
 
 // Serve the HTML file

@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
               </label>
               <ul>
                   <li><a href="${
-                    isCurrentDirectory() ? "index.html" : "../index.html"
+                    isCurrentDirectory() ? "index.html" : "index.html"
                   }">Home</a></li>
                   <li><a href="${
                     isCurrentDirectory() ? "html/recipe.html" : "recipe.html"

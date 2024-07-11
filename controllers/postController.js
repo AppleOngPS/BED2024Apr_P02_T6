@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require("../middlewares/db");
+const { sql, poolPromise } = require("../dbConfig");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
