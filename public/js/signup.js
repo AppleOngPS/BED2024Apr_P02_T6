@@ -36,3 +36,13 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
     // Handle error: show error message to user
   }
 });
+document.addEventListener('DOMContentLoaded', function() {
+  // Select the Sign Up button
+  const loginButton = document.getElementById('loginButton');
+
+  // Add click event listener
+  loginButton.addEventListener('click', function() {
+    // Navigate to signup.html
+    window.location.href = '../html/login.html';
+  });
+});

@@ -133,4 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('exampleInputTargetCalorieGoal').value = userData.TargetCalarieIntake;
   }
   
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select the Sign Up button
+    const logoutButton = document.getElementById('logoutButton');
+  
+    // Add click event listener
+    logoutButton.addEventListener('click', function() {
+      // Navigate to signup.html
+      window.location.href = '../html/login.html';
+    });
+  });
   
