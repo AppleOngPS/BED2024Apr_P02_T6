@@ -130,9 +130,30 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // Function to delete redeemed reward (not implemented in backend here)
-  function deleteReward(name) {
-    console.log('Delete reward:', name);
-    // Implement logic to delete redeemed reward (if needed)
+  async function deleteReward(reward) {
+    console.log('Redeem reward:', reward.name);
+    try {
+      const response = await fetch(`http://localhost:3000/redeem/${reward.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ redeemed: true })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to redeem reward');
+        
+      }
+
+      const deleteReward = await response.json();
+      console.log('delete reward:', deleteReward);
+      fetchRewards(); // Fetch updated rewards after redemption
+    } catch (error) {
+      console.error('Error deleting reward:', error);
+      alert('Failed to delete reward.Please try again.');
+    }
+    
   }
 
   // Fetch user points and rewards when DOM is fully loaded
