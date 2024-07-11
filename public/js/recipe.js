@@ -203,14 +203,8 @@ function fetchRecipes(page = 1, limit = 16) {
   fetch(`http://localhost:3000/api/recipes?page=${page}&limit=${limit}`)
     .then((response) => response.json())
     .then((data) => {
-      if (Array.isArray(data)) {
-        displayRecipes(data);
-        // Since we don't have pagination info, we'll just display the current page
-        displayPagination(1, page);
-      } else {
-        console.error("Unexpected data structure:", data);
-        displayRecipes([]);
-      }
+      displayRecipes(data.recipes);
+      displayPagination(data.totalPages, data.currentPage);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -582,7 +576,5 @@ function fetchRecipeCount() {
 }
 
 function updateRecipeCount(count) {
-  document.getElementById("recipeCount").textContent = `Total recipes: ${
-    count || 0
-  }`;
+  //document.getElementById("recipeCount").textContent = `Total recipes: ${count || 0}`;
 }

@@ -189,12 +189,45 @@ async function connectToDb() {
   }
 }
 
+// const getAllRecipes = async (req, res) => {
+//   await connectToDb();
+//   try {
+//     const request = pool.request();
+//     const result = await request.query("SELECT * FROM recipes;");
+//     res.json(result.recordset);
+//   } catch (error) {
+//     res.status(500).json({ error: "Failed to retrieve recipes" });
+//   }
+// };
 const getAllRecipes = async (req, res) => {
   await connectToDb();
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 16;
+    const offset = (page - 1) * limit;
+
     const request = pool.request();
-    const result = await request.query("SELECT * FROM recipes;");
-    res.json(result.recordset);
+    request.input("offset", sql.Int, offset);
+    request.input("limit", sql.Int, limit);
+
+    const countResult = await request.query(
+      "SELECT COUNT(*) AS totalCount FROM recipes"
+    );
+    const totalCount = countResult.recordset[0].totalCount;
+
+    const result = await request.query(`
+      SELECT * FROM recipes
+      ORDER BY id
+      OFFSET @offset ROWS
+      FETCH NEXT @limit ROWS ONLY
+    `);
+
+    res.json({
+      recipes: result.recordset,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalRecipes: totalCount,
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve recipes" });
   }
@@ -439,18 +472,27 @@ const searchRecipesByIngredient = async (req, res) => {
   try {
     console.log("Searching for ingredient:", ingredient);
     const request = pool.request();
-    request.input("ingredient", sql.NVarChar, ingredient);
-    const query =
-      "SELECT * FROM recipes WHERE CHARINDEX(@ingredient, ingredients) > 0";
+    request.input("ingredient", sql.NVarChar, ingredient.trim());
+    const query = `
+      SELECT * FROM recipes 
+      WHERE description LIKE '%' + @ingredient + '%'
+      OR EXISTS (
+        SELECT value 
+        FROM STRING_SPLIT(ingredients, ',') 
+        WHERE TRIM(value) LIKE '%' + @ingredient + '%'
+      )
+    `;
     console.log("Executing query:", query);
     const result = await request.query(query);
     console.log("Query result:", result);
     res.json(result.recordset);
   } catch (error) {
     console.error("Error in searchRecipesByIngredient:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to search recipes", details: error.message });
+    res.status(500).json({
+      error: "Failed to search recipes",
+      details: error.message,
+      stack: error.stack,
+    });
   }
 };
 

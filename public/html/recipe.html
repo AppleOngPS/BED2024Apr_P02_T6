@@ -158,7 +158,7 @@
               <h3>Nutrient Range</h3>
               <label for="nutrientSelect">Nutrient:</label>
               <select id="nutrientSelect">
-                <option value="calories">Calories</option>
+                <!-- <option value="calories">Calories</option> -->
                 <option value="carbs">Carbs</option>
                 <option value="protein">Protein</option>
                 <option value="fats">Fats</option>
@@ -193,12 +193,14 @@
           <div class="recipe-list" id="recipe-list">
             <!-- Recipe items will be dynamically added here -->
           </div>
+          <div id="pagination"></div>
         </section>
       </div>
     </section>
     <section class="add-recipe">
       <button onclick="openAddRecipeModal()">Add Recipe</button>
     </section>
+
     <div id="addRecipeModal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="closeAddRecipeModal()">&times;</span>
@@ -272,8 +274,6 @@
         </div>
       </div>
     </div>
-  <div id="recipe-list"></div>
-  <div id="pagination"></div>
       <!-- Keep your existing modals here -->
     </main>
     <script src="../js/recipe.js"></script>
