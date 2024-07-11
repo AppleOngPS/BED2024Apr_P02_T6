@@ -199,13 +199,23 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-function fetchRecipes() {
-  fetch("http://localhost:3000/api/recipes")
+function fetchRecipes(page = 1, limit = 16) {
+  fetch(`http://localhost:3000/api/recipes?page=${page}&limit=${limit}`)
     .then((response) => response.json())
     .then((data) => {
-      displayRecipes(data);
+      if (Array.isArray(data)) {
+        displayRecipes(data);
+        // Since we don't have pagination info, we'll just display the current page
+        displayPagination(1, page);
+      } else {
+        console.error("Unexpected data structure:", data);
+        displayRecipes([]);
+      }
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => {
+      console.error("Error:", error);
+      displayRecipes([]);
+    });
 }
 
 function fetchRecipesByCategory(category) {
@@ -216,6 +226,21 @@ function fetchRecipesByCategory(category) {
       updateRecipeCount(data.length);
     })
     .catch((error) => console.error("Error:", error));
+}
+function displayPagination(totalPages, currentPage) {
+  const paginationContainer = document.getElementById("pagination");
+  paginationContainer.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.innerText = i;
+    pageButton.classList.add("page-button");
+    if (i === currentPage) {
+      pageButton.classList.add("active");
+    }
+    pageButton.addEventListener("click", () => fetchRecipes(i));
+    paginationContainer.appendChild(pageButton);
+  }
 }
 
 // function displayRecipes(recipes) {
@@ -253,14 +278,19 @@ function displayRecipes(recipes) {
   const recipeList = document.getElementById("recipe-list");
   recipeList.innerHTML = "";
 
-  if (!recipes || recipes.length === 0) {
+  // Move the recipe count beside the results
+  const resultsHeader = document.querySelector(".results h2");
+
+  if (!recipes || !Array.isArray(recipes) || recipes.length === 0) {
+    resultsHeader.innerHTML = `Results <span id="recipeCount">(Total recipes: 0)</span>`;
     recipeList.innerHTML = "<p>No recipes found matching your criteria.</p>";
-    updateRecipeCount(0);
     return;
   }
 
+  resultsHeader.innerHTML = `Results <span id="recipeCount">(Total recipes: ${recipes.length})</span>`;
+
   recipes.forEach((recipe) => {
-    if (!recipe) return; // Skip if recipe is undefined
+    if (!recipe) return;
 
     const recipeItem = document.createElement("div");
     recipeItem.classList.add("recipe-item");
@@ -298,24 +328,72 @@ function fetchRecipeDetails(id) {
 
 function showRecipeDetails(recipe) {
   const modal = document.getElementById("recipeModal");
-  document.getElementById("modal-recipe-name").textContent = recipe.name;
-  document.getElementById("modal-recipe-category").textContent =
-    recipe.category;
-  document.getElementById("modal-recipe-description").textContent =
-    recipe.description;
-  document.getElementById("modal-recipe-ingredients").textContent =
-    recipe.ingredients;
+  const modalContent = modal.querySelector(".modal-content");
+
+  // Clear existing content
+  modalContent.innerHTML = "";
+
+  // Create and append close button
+  const closeBtn = document.createElement("span");
+  closeBtn.className = "close";
+  closeBtn.innerHTML = "&times;";
+  modalContent.appendChild(closeBtn);
+
+  // Create and append recipe details
+  const detailsContainer = document.createElement("div");
+  detailsContainer.className = "recipe-details";
+  detailsContainer.innerHTML = `
+    <h2>${recipe.name}</h2>
+    <p><strong>Category:</strong> ${recipe.category}</p>
+    <h3>Description</h3>
+    <p>${recipe.description}</p>
+    <h3>Ingredients</h3>
+    <p>${recipe.ingredients}</p>
+  `;
+  modalContent.appendChild(detailsContainer);
+
+  // Create and append delete button
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "Delete Recipe";
+  deleteButton.className = "delete-button";
+  modalContent.appendChild(deleteButton);
+
+  // Event listeners
+  closeBtn.onclick = closeRecipeModal;
+  deleteButton.onclick = function () {
+    showConfirmModal(recipe.id);
+  };
 
   modal.style.display = "block";
 
-  const closeBtn = modal.querySelector(".close");
-  closeBtn.onclick = function () {
-    modal.style.display = "none";
+  // Close modal when clicking outside
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      closeRecipeModal();
+    }
+  };
+}
+
+function showConfirmModal(recipeId) {
+  const confirmModal = document.getElementById("confirmModal");
+  const cancelButton = document.getElementById("cancelDelete");
+  const confirmButton = document.getElementById("confirmDelete");
+
+  confirmModal.style.display = "block";
+
+  cancelButton.onclick = function () {
+    confirmModal.style.display = "none";
+  };
+
+  confirmButton.onclick = function () {
+    deleteRecipe(recipeId);
+    closeRecipeModal();
+    confirmModal.style.display = "none";
   };
 
   window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
+    if (event.target == confirmModal) {
+      confirmModal.style.display = "none";
     }
   };
 }
@@ -364,7 +442,7 @@ function addRecipe() {
       return response.json();
     })
     .then((data) => {
-      showModal("successModal", "Recipe added successfully!").then(() => {
+      showModal("successModal", "Food added successfully!").then(() => {
         fetchRecipes();
         fetchRecipeCount();
         closeAddRecipeModal();
@@ -373,16 +451,16 @@ function addRecipe() {
     .catch((error) => {
       if (
         error.error ===
-        "A recipe with this name already exists in the database."
+        "A food item with this name already exists in the database."
       ) {
         showModal(
           "errorModal",
-          "A recipe with this name already exists in the database. Please choose a different name."
+          "A food item with this name already exists in the database. Please choose a different food."
         );
       } else {
         showModal(
           "errorModal",
-          "An error occurred while adding the recipe. Please try again."
+          "An error occurred while adding the food. Please try again."
         );
       }
     });
@@ -396,7 +474,6 @@ function deleteRecipe(id) {
     .then((data) => {
       console.log("Deleted recipe:", data);
       fetchRecipes();
-      fetchRecipeCount();
     })
     .catch((error) => console.error("Error:", error));
 }
@@ -467,15 +544,17 @@ function searchByName() {
       return response.json();
     })
     .then((data) => {
-      if (data && (Array.isArray(data) ? data.length > 0 : true)) {
-        displayRecipes(Array.isArray(data) ? data : [data]);
+      if (data && Array.isArray(data)) {
+        displayRecipes(data);
+      } else if (data && typeof data === "object") {
+        displayRecipes([data]); // Single recipe wrapped in an array
       } else {
-        displayRecipes([]); // This will trigger the "No recipes found" message
+        displayRecipes([]); // Empty array if no recipes found
       }
     })
     .catch((error) => {
       console.error("Error:", error);
-      displayRecipes([]); // This will trigger the "No recipes found" message
+      displayRecipes([]); // Empty array on error
     });
 }
 function displayNoResults() {
