@@ -4,7 +4,7 @@ const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const cors = require("cors");
 
-const usersController = require("./controllers/usersController");
+const usersController = require("./controllers/userController");
 
 const app = express();
 const port = 3000;
@@ -20,11 +20,10 @@ app.post("/users", usersController.createUser); // Create user
 app.get("/users", usersController.getAllUsers); // Get all users
 app.get("/users/:id", usersController.getUserById); // Get user by ID
 app.get("/users/search", usersController.searchUsers); // Search users
-app.get("/login", usersController.loginUser); // Login user
-app.get("/user/:userId", usersController.getUserById); // Get user details by ID
-app.get("/users", usersController.getUserByName); // Get user by Name
-app.put("/users", usersController.updateUser); // Update user
-app.delete("/users", usersController.deleteUser); // Delete user
+app.get('/login', usersController.loginUser); // Login user
+app.get('/user/:userId', usersController.getUserById); // Get user details by ID
+app.get('/users', usersController.getUserByName);// Get user by Name
+
 
 // Start server and connect to database
 app.listen(port, async () => {

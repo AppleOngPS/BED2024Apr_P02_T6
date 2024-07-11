@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Page</title>
+
+    <link rel="stylesheet" href="../css/recipe.css" />
+    <link rel="stylesheet" href="../css/navigation.css" />
+    <link rel="stylesheet" href="../css/footer.css" />
+  </head>
+  <body>
+    <main>
+      <section class="categories">
+        <h2>Recipes</h2>
+        <div class="category-buttons">
+          <button class="category" data-category="lowcarb">Low Carb</button>
+          <button class="category" data-category="vegetarian">
+            Vegetarian
+          </button>
+          <button class="category" data-category="glutenfree">
+            Gluten Free
+          </button>
+          <button class="category" data-category="local">Local</button>
+          <button class="category" data-category="smoothiesandshakes">
+            Smoothies and Shakes
+          </button>
+        </div>
+      </section>
+      <section class="results">
+        <h2>Results</h2>
+        <div class="recipe-list">
+          <!-- Recipe items will be dynamically added here -->
+        </div>
+      </section>
+    </main>
+
+    <script src="../js/recipe.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/footer.js"></script>
+  </body>
+</html>
