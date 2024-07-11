@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Page</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/navigation.css" />
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h1 class="quiz-title">Quiz</h1>
+      <form id="quizForm" class="quiz-form"></form>
+      <button type="button" class="submit-button" onclick="submitQuiz()">
+        Submit
+      </button>
+      <div id="quizResult" class="quiz-result"></div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:3000/fetch_quiz")
+          .then((response) => response.json())
+          .then((data) => {
+            const quizForm = document.getElementById("quizForm");
+            let currentQuestionId = null;
+
+            data.forEach((item) => {
+              if (item.question_id !== currentQuestionId) {
+                currentQuestionId = item.question_id;
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("quiz-question");
+                const questionText = document.createElement("p");
+                questionText.classList.add("question-text");
+                questionText.innerText = item.question_text;
+                questionDiv.appendChild(questionText);
+                quizForm.appendChild(questionDiv);
+              }
+
+              const answerInput = document.createElement("input");
+              answerInput.type = "radio";
+              answerInput.id = `q${item.question_id}a${item.answer_id}`;
+              answerInput.name = `q${item.question_id}`;
+              answerInput.value = item.answer_id;
+
+              const answerLabel = document.createElement("label");
+              answerLabel.htmlFor = answerInput.id;
+              answerLabel.innerText = item.answer_text;
+
+              quizForm.appendChild(answerInput);
+              quizForm.appendChild(answerLabel);
+              quizForm.appendChild(document.createElement("br"));
+            });
+          })
+          .catch((error) => console.error("Error fetching quiz data:", error));
+      });
+
+      function submitQuiz() {
+        const quizForm = document.getElementById("quizForm");
+        const formData = new FormData(quizForm);
+        let score = 0;
+        const totalQuestions = new Set();
+
+        fetch("http://localhost:3000/fetch_quiz")
+          .then((response) => response.json())
+          .then((data) => {
+            data.forEach((item) => {
+              totalQuestions.add(item.question_id);
+              if (
+                item.is_correct &&
+                formData.get(`q${item.question_id}`) == item.answer_id
+              ) {
+                score++;
+              }
+            });
+            // Redirect to a new page with the score
+            window.location.href = `/html/quiz-result.html?score=${score}&total=${totalQuestions.size}`;
+          })
+          .catch((error) => console.error("Error calculating score:", error));
+      }
+    </script>
+    <script src="/navigation.js"></script>
+  </body>
+</html>

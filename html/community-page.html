@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Page</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/navigation.css" />
+    <style>
+      .post {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: #fff;
+      }
+      .post img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 1rem;
+      }
+      .post-buttons {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .post-buttons button {
+        margin-left: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background-color: black;
+        color: white;
+        cursor: pointer;
+      }
+      .edit-form {
+        display: none;
+        margin-top: 1rem;
+      }
+      .share-post-button {
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background-color: black;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Community Posts</h1>
+      <button class="share-post-button" onclick="redirectToShareForm()">
+        Share a New Post
+      </button>
+      <div id="posts-container"></div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const response = await fetch("/posts");
+        const posts = await response.json();
+        const postsContainer = document.getElementById("posts-container");
+
+        posts.forEach((post) => {
+          const postElement = document.createElement("div");
+          postElement.classList.add("post");
+
+          const titleElement = document.createElement("h2");
+          titleElement.textContent = post.title;
+          postElement.appendChild(titleElement);
+
+          const categoryElement = document.createElement("p");
+          categoryElement.textContent = `Category: ${post.category}`;
+          postElement.appendChild(categoryElement);
+
+          if (post.content) {
+            const imgElement = document.createElement("img");
+            imgElement.src = `/uploads/${post.content}`; // Ensure the correct path
+            postElement.appendChild(imgElement);
+          }
+
+          const messageElement = document.createElement("p");
+          messageElement.textContent = post.message;
+          postElement.appendChild(messageElement);
+
+          const buttonsContainer = document.createElement("div");
+          buttonsContainer.classList.add("post-buttons");
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => showEditForm(post));
+          buttonsContainer.appendChild(editButton);
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => deletePost(post.id));
+          buttonsContainer.appendChild(deleteButton);
+
+          postElement.appendChild(buttonsContainer);
+
+          const editForm = createEditForm(post);
+          postElement.appendChild(editForm);
+
+          postsContainer.appendChild(postElement);
+        });
+      });
+
+      function redirectToShareForm() {
+        window.location.href = "/html/community.html";
+      }
+
+      function showEditForm(post) {
+        const editForm = document.getElementById(`edit-form-${post.id}`);
+        editForm.style.display =
+          editForm.style.display === "none" ? "block" : "none";
+      }
+
+      function createEditForm(post) {
+        const form = document.createElement("form");
+        form.classList.add("edit-form");
+        form.id = `edit-form-${post.id}`;
+
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Title:";
+        form.appendChild(titleLabel);
+
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.name = "title";
+        titleInput.value = post.title;
+        form.appendChild(titleInput);
+
+        const categoryLabel = document.createElement("label");
+        categoryLabel.textContent = "Category:";
+        form.appendChild(categoryLabel);
+
+        const categoryInput = document.createElement("input");
+        categoryInput.type = "text";
+        categoryInput.name = "category";
+        categoryInput.value = post.category;
+        form.appendChild(categoryInput);
+
+        const messageLabel = document.createElement("label");
+        messageLabel.textContent = "Message:";
+        form.appendChild(messageLabel);
+
+        const messageTextarea = document.createElement("textarea");
+        messageTextarea.name = "message";
+        messageTextarea.value = post.message;
+        form.appendChild(messageTextarea);
+
+        const submitButton = document.createElement("button");
+        submitButton.type = "button";
+        submitButton.textContent = "Save";
+        submitButton.addEventListener("click", () => editPost(post.id, form));
+        form.appendChild(submitButton);
+
+        return form;
+      }
+
+      async function editPost(postId, form) {
+        const formData = new FormData(form);
+        const updatedPost = {};
+        formData.forEach((value, key) => {
+          updatedPost[key] = value;
+        });
+
+        const response = await fetch(`/posts/${postId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedPost),
+        });
+
+        if (response.ok) {
+          alert(`Post with ID: ${postId} has been updated.`);
+          location.reload();
+        } else {
+          alert(`Failed to update post with ID: ${postId}`);
+        }
+      }
+
+      async function deletePost(postId) {
+        const response = await fetch(`/posts/${postId}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          alert(`Post with ID: ${postId} has been deleted.`);
+          location.reload();
+        } else {
+          alert(`Failed to delete post with ID: ${postId}`);
+        }
+      }
+    </script>
+    <script src="/navigation.js"></script>
+  </body>
+</html>
