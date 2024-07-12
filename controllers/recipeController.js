@@ -359,7 +359,7 @@ const getRecipeByName = async (req, res) => {
     const request = pool.request();
     request.input("name", sql.NVarChar, name);
     const result = await request.query(
-      "SELECT * FROM recipes WHERE name = @name"
+      "SELECT TOP 1 * FROM recipes WHERE name LIKE @name + '%'"
     );
     if (result.recordset.length === 0) {
       res.status(404).json({ error: "Recipe not found" });
@@ -367,6 +367,7 @@ const getRecipeByName = async (req, res) => {
       res.json(result.recordset[0]);
     }
   } catch (error) {
+    console.error("Error in getRecipeByName:", error);
     res.status(500).json({ error: "Failed to retrieve recipe" });
   }
 };
@@ -424,15 +425,35 @@ const getRecipeCount = async (req, res) => {
 
 const getRecipesByCalorieRange = async (req, res) => {
   await connectToDb();
-  const { min, max } = req.query;
+  const { min, max, page = 1, limit = 16 } = req.query;
+  const offset = (page - 1) * limit;
+
   try {
     const request = pool.request();
     request.input("min", sql.Int, parseInt(min));
     request.input("max", sql.Int, parseInt(max));
-    const result = await request.query(
-      "SELECT * FROM recipes WHERE calories BETWEEN @min AND @max"
+    request.input("offset", sql.Int, offset);
+    request.input("limit", sql.Int, parseInt(limit));
+
+    const countResult = await request.query(
+      "SELECT COUNT(*) AS totalCount FROM recipes WHERE calories BETWEEN @min AND @max"
     );
-    res.json(result.recordset);
+    const totalCount = countResult.recordset[0].totalCount;
+
+    const result = await request.query(
+      `SELECT * FROM recipes 
+       WHERE calories BETWEEN @min AND @max 
+       ORDER BY id 
+       OFFSET @offset ROWS 
+       FETCH NEXT @limit ROWS ONLY`
+    );
+
+    res.json({
+      recipes: result.recordset,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalCount / limit),
+      totalRecipes: totalCount,
+    });
   } catch (error) {
     console.error("Error in getRecipesByCalorieRange:", error);
     res.status(500).json({ error: "Failed to retrieve recipes" });
@@ -441,22 +462,40 @@ const getRecipesByCalorieRange = async (req, res) => {
 
 const getRecipesByNutrientRange = async (req, res) => {
   await connectToDb();
-  const { nutrient, min, max } = req.query;
+  const { nutrient, min, max, page = 1, limit = 16 } = req.query;
+  const offset = (page - 1) * limit;
+
   try {
     const request = pool.request();
     request.input("min", sql.Int, parseInt(min));
     request.input("max", sql.Int, parseInt(max));
+    request.input("offset", sql.Int, offset);
+    request.input("limit", sql.Int, parseInt(limit));
 
-    // Validate the nutrient name to prevent SQL injection
     const validNutrients = ["calories", "carbs", "protein", "fats"];
     if (!validNutrients.includes(nutrient)) {
       return res.status(400).json({ error: "Invalid nutrient specified" });
     }
 
-    const result = await request.query(
-      `SELECT * FROM recipes WHERE ${nutrient} BETWEEN @min AND @max`
+    const countResult = await request.query(
+      `SELECT COUNT(*) AS totalCount FROM recipes WHERE ${nutrient} BETWEEN @min AND @max`
     );
-    res.json(result.recordset);
+    const totalCount = countResult.recordset[0].totalCount;
+
+    const result = await request.query(
+      `SELECT * FROM recipes 
+       WHERE ${nutrient} BETWEEN @min AND @max 
+       ORDER BY id 
+       OFFSET @offset ROWS 
+       FETCH NEXT @limit ROWS ONLY`
+    );
+
+    res.json({
+      recipes: result.recordset,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalCount / limit),
+      totalRecipes: totalCount,
+    });
   } catch (error) {
     console.error("Error in getRecipesByNutrientRange:", error);
     res.status(500).json({ error: "Failed to retrieve recipes" });

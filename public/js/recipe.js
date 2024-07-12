@@ -204,12 +204,26 @@ function fetchRecipes(page = 1, limit = 16) {
     .then((response) => response.json())
     .then((data) => {
       displayRecipes(data.recipes);
-      displayPagination(data.totalPages, data.currentPage);
+      displayPagination(
+        data.totalPages,
+        data.currentPage,
+        data.totalRecipes,
+        limit,
+        fetchRecipes
+      );
+      updateTotalRecipeCount(data.totalRecipes);
     })
     .catch((error) => {
       console.error("Error:", error);
       displayRecipes([]);
     });
+}
+
+function updateTotalRecipeCount(count) {
+  const totalRecipesElement = document.getElementById("totalRecipes");
+  if (totalRecipesElement) {
+    totalRecipesElement.textContent = `Total Recipes: ${count}`;
+  }
 }
 
 function fetchRecipesByCategory(category) {
@@ -221,19 +235,38 @@ function fetchRecipesByCategory(category) {
     })
     .catch((error) => console.error("Error:", error));
 }
-function displayPagination(totalPages, currentPage) {
+function displayPagination(
+  totalPages,
+  currentPage,
+  totalRecipes,
+  limit = 16,
+  filterFunction
+) {
   const paginationContainer = document.getElementById("pagination");
   paginationContainer.innerHTML = "";
 
-  for (let i = 1; i <= totalPages; i++) {
+  const maxVisiblePages = 3;
+
+  for (let i = 1; i <= maxVisiblePages; i++) {
     const pageButton = document.createElement("button");
     pageButton.innerText = i;
     pageButton.classList.add("page-button");
     if (i === currentPage) {
       pageButton.classList.add("active");
     }
-    pageButton.addEventListener("click", () => fetchRecipes(i));
+    pageButton.addEventListener("click", () => filterFunction(i, limit));
+
+    if ((i === 2 && totalRecipes < 17) || (i === 3 && totalRecipes < 33)) {
+      pageButton.style.display = "none";
+    }
+
     paginationContainer.appendChild(pageButton);
+  }
+
+  if (totalRecipes <= limit) {
+    paginationContainer.style.display = "none";
+  } else {
+    paginationContainer.style.display = "block";
   }
 }
 
@@ -272,16 +305,15 @@ function displayRecipes(recipes) {
   const recipeList = document.getElementById("recipe-list");
   recipeList.innerHTML = "";
 
-  // Move the recipe count beside the results
   const resultsHeader = document.querySelector(".results h2");
 
   if (!recipes || !Array.isArray(recipes) || recipes.length === 0) {
-    resultsHeader.innerHTML = `Results <span id="recipeCount">(Total recipes: 0)</span>`;
+    resultsHeader.innerHTML = `Results <span id="recipeCount">(Recipes found: 0)</span>`;
     recipeList.innerHTML = "<p>No recipes found matching your criteria.</p>";
     return;
   }
 
-  resultsHeader.innerHTML = `Results <span id="recipeCount">(Total recipes: ${recipes.length})</span>`;
+  resultsHeader.innerHTML = `Results <span id="recipeCount">(Recipes found: ${recipes.length})</span>`;
 
   recipes.forEach((recipe) => {
     if (!recipe) return;
@@ -419,9 +451,54 @@ function closeRecipeModal() {
   document.getElementById("recipeModal").style.display = "none";
 }
 
+// function addRecipe() {
+//   const form = document.getElementById("addRecipeForm");
+//   const formData = new FormData(form);
+
+//   fetch("http://localhost:3000/api/recipes", {
+//     method: "POST",
+//     body: formData,
+//   })
+//     .then((response) => {
+//       if (!response.ok) {
+//         return response.json().then((err) => {
+//           throw err;
+//         });
+//       }
+//       return response.json();
+//     })
+//     .then((data) => {
+//       showModal("successModal", "Food added successfully!").then(() => {
+//         fetchRecipes();
+//         fetchRecipeCount();
+//         closeAddRecipeModal();
+//       });
+//     })
+//     .catch((error) => {
+//       if (
+//         error.error ===
+//         "A food item with this name already exists in the database."
+//       ) {
+//         showModal(
+//           "errorModal",
+//           "A food item with this name already exists in the database. Please choose a different food."
+//         );
+//       } else {
+//         showModal(
+//           "errorModal",
+//           "An error occurred while adding the food. Please try again."
+//         );
+//       }
+//     });
+// }
 function addRecipe() {
   const form = document.getElementById("addRecipeForm");
   const formData = new FormData(form);
+
+  // Log form data
+  for (let [key, value] of formData.entries()) {
+    console.log(key, value);
+  }
 
   fetch("http://localhost:3000/api/recipes", {
     method: "POST",
@@ -429,8 +506,8 @@ function addRecipe() {
   })
     .then((response) => {
       if (!response.ok) {
-        return response.json().then((err) => {
-          throw err;
+        return response.text().then((text) => {
+          throw new Error(text);
         });
       }
       return response.json();
@@ -443,20 +520,11 @@ function addRecipe() {
       });
     })
     .catch((error) => {
-      if (
-        error.error ===
-        "A food item with this name already exists in the database."
-      ) {
-        showModal(
-          "errorModal",
-          "A food item with this name already exists in the database. Please choose a different food."
-        );
-      } else {
-        showModal(
-          "errorModal",
-          "An error occurred while adding the food. Please try again."
-        );
-      }
+      console.error("Error details:", error);
+      showModal(
+        "errorModal",
+        `An error occurred while adding the food: ${error.message}`
+      );
     });
 }
 
@@ -480,24 +548,50 @@ function closeAddRecipeModal() {
   document.getElementById("addRecipeModal").style.display = "none";
 }
 
-function filterByCalories() {
+function filterByCalories(page = 1, limit = 16) {
   const min = document.getElementById("calorieMin").value;
   const max = document.getElementById("calorieMax").value;
-  fetch(`http://localhost:3000/api/recipes/calories?min=${min}&max=${max}`)
+  fetch(
+    `http://localhost:3000/api/recipes/calories?min=${min}&max=${max}&page=${page}&limit=${limit}`
+  )
     .then((response) => response.json())
     .then((data) => {
-      displayRecipes(data);
+      if (Array.isArray(data.recipes)) {
+        displayRecipes(data.recipes);
+        displayPagination(
+          data.totalPages,
+          data.currentPage,
+          data.totalRecipes,
+          limit,
+          (newPage, newLimit) => filterByCalories(newPage, newLimit)
+        );
+        updateTotalRecipeCount(data.totalRecipes);
+      } else {
+        console.error("Unexpected response format:", data);
+        displayRecipes([]);
+        displayPagination(1, 1, 0, limit, (newPage, newLimit) =>
+          filterByCalories(newPage, newLimit)
+        );
+        updateTotalRecipeCount(0);
+      }
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => {
+      console.error("Error:", error);
+      displayRecipes([]);
+      displayPagination(1, 1, 0, limit, (newPage, newLimit) =>
+        filterByCalories(newPage, newLimit)
+      );
+      updateTotalRecipeCount(0);
+    });
 }
 
-function filterByNutrient() {
+function filterByNutrient(page = 1, limit = 16) {
   const nutrient = document.getElementById("nutrientSelect").value;
   const min = document.getElementById("nutrientMin").value;
   const max = document.getElementById("nutrientMax").value;
 
   fetch(
-    `http://localhost:3000/api/recipes/nutrient?nutrient=${nutrient}&min=${min}&max=${max}`
+    `http://localhost:3000/api/recipes/nutrient?nutrient=${nutrient}&min=${min}&max=${max}&page=${page}&limit=${limit}`
   )
     .then((response) => {
       if (!response.ok) {
@@ -506,11 +600,32 @@ function filterByNutrient() {
       return response.json();
     })
     .then((data) => {
-      displayRecipes(data);
+      if (Array.isArray(data.recipes)) {
+        displayRecipes(data.recipes);
+        displayPagination(
+          data.totalPages,
+          data.currentPage,
+          data.totalRecipes,
+          limit,
+          (newPage, newLimit) => filterByNutrient(newPage, newLimit)
+        );
+        updateTotalRecipeCount(data.totalRecipes);
+      } else {
+        console.error("Unexpected response format:", data);
+        displayRecipes([]);
+        displayPagination(1, 1, 0, limit, (newPage, newLimit) =>
+          filterByNutrient(newPage, newLimit)
+        );
+        updateTotalRecipeCount(0);
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
       displayRecipes([]);
+      displayPagination(1, 1, 0, limit, (newPage, newLimit) =>
+        filterByNutrient(newPage, newLimit)
+      );
+      updateTotalRecipeCount(0);
     });
 }
 
@@ -538,19 +653,28 @@ function searchByName() {
       return response.json();
     })
     .then((data) => {
-      if (data && Array.isArray(data)) {
-        displayRecipes(data);
-      } else if (data && typeof data === "object") {
-        displayRecipes([data]); // Single recipe wrapped in an array
+      if (data) {
+        displayRecipes([data]); // Display single recipe as an array
       } else {
-        displayRecipes([]); // Empty array if no recipes found
+        displayRecipes([]); // Empty array if no recipe found
+      }
+      // Remove pagination
+      const paginationContainer = document.getElementById("pagination");
+      if (paginationContainer) {
+        paginationContainer.style.display = "none";
       }
     })
     .catch((error) => {
       console.error("Error:", error);
       displayRecipes([]); // Empty array on error
+      // Remove pagination
+      const paginationContainer = document.getElementById("pagination");
+      if (paginationContainer) {
+        paginationContainer.style.display = "none";
+      }
     });
 }
+
 function displayNoResults() {
   const recipeList = document.getElementById("recipe-list");
   recipeList.innerHTML = "<p>No recipes found matching your search.</p>";
