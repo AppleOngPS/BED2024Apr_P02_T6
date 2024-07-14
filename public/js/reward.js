@@ -103,31 +103,65 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // Function to redeem reward
-  async function redeemReward(reward) {
-    console.log('Redeem reward:', reward.name);
-    try {
-      const response = await fetch(`http://localhost:3000/redeem/${reward.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ redeemed: true })
-      });
+  // async function redeemReward(reward) {
+  //   console.log('Redeem reward:', reward.name);
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/redeem/${reward.id}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({ redeemed: true })
+  //     });
 
-      if (!response.ok) {
-        throw new Error('Failed to redeem reward');
+  //     if (!response.ok) {
+  //       throw new Error('Failed to redeem reward');
         
-      }
+  //     }
 
-      const updatedReward = await response.json();
-      console.log('Redeemed reward:', updatedReward);
-      fetchRewards(); // Fetch updated rewards after redemption
-    } catch (error) {
-      console.error('Error redeeming reward:', error);
-      alert('Failed to redeem reward. Please earn more points.');
-    }
+  //     const updatedReward = await response.json();
+  //     console.log('Redeemed reward:', updatedReward);
+  //     fetchRewards(); // Fetch updated rewards after redemption
+  //   } catch (error) {
+  //     console.error('Error redeeming reward:', error);
+  //     alert('Failed to redeem reward. Please earn more points.');
+  //   }
     
+  // }
+  async function redeemReward(rewardId) {
+    try {
+      console.log("Attempting to redeem reward with ID:", rewardId);
+  
+      const response = await fetch(`http://localhost:3000/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rewardId }),
+      });
+  
+      if (!response.ok) {
+        const errorMessage = `Failed to redeem reward: ${response.status} - ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+  
+      const result = await response.json();
+      console.log("Reward redeemed successfully:", result);
+  
+      alert("Reward redeemed successfully");
+    } catch (error) {
+      console.error("Error redeeming reward:", error);
+      alert("Error redeeming reward. Please try again.");
+    }
   }
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("redeemButton").addEventListener("click", () => {
+      const rewardId = document.getElementById("rewardIdInput").value;
+      redeemReward(rewardId);
+    });
+  });
+  
 
   // Function to delete redeemed reward (not implemented in backend here)
   async function deleteReward(reward) {
