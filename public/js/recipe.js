@@ -182,6 +182,15 @@ document.addEventListener("DOMContentLoaded", function () {
     addRecipe();
   };
 
+  const filterToggles = document.querySelectorAll(".filter-toggle");
+
+  filterToggles.forEach((toggle) => {
+    toggle.addEventListener("click", function () {
+      const filterBox = this.closest(".filter-box");
+      filterBox.classList.toggle("expanded");
+    });
+  });
+
   document.getElementById("nameSearchForm").onsubmit = function (event) {
     event.preventDefault();
     searchByName();
@@ -428,9 +437,10 @@ function showModal(modalId, message) {
   return new Promise((resolve) => {
     const modal = document.getElementById(modalId);
     const span = modal.getElementsByClassName("close")[0];
-    document.getElementById(
+    const messageElement = document.getElementById(
       modalId === "successModal" ? "successMessage" : "errorMessage"
-    ).textContent = message;
+    );
+    messageElement.textContent = message;
     modal.style.display = "block";
 
     function closeModal() {
@@ -439,6 +449,16 @@ function showModal(modalId, message) {
     }
 
     span.onclick = closeModal;
+
+    // Add OK button to both modals
+    const okButton = document.createElement("button");
+    okButton.textContent = "OK";
+    okButton.onclick = closeModal;
+    messageElement.parentNode.insertBefore(
+      okButton,
+      messageElement.nextSibling
+    );
+
     window.onclick = function (event) {
       if (event.target == modal) {
         closeModal();
@@ -451,55 +471,62 @@ function closeRecipeModal() {
   document.getElementById("recipeModal").style.display = "none";
 }
 
-// function addRecipe() {
-//   const form = document.getElementById("addRecipeForm");
-//   const formData = new FormData(form);
-
-//   fetch("http://localhost:3000/api/recipes", {
-//     method: "POST",
-//     body: formData,
-//   })
-//     .then((response) => {
-//       if (!response.ok) {
-//         return response.json().then((err) => {
-//           throw err;
-//         });
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       showModal("successModal", "Food added successfully!").then(() => {
-//         fetchRecipes();
-//         fetchRecipeCount();
-//         closeAddRecipeModal();
-//       });
-//     })
-//     .catch((error) => {
-//       if (
-//         error.error ===
-//         "A food item with this name already exists in the database."
-//       ) {
-//         showModal(
-//           "errorModal",
-//           "A food item with this name already exists in the database. Please choose a different food."
-//         );
-//       } else {
-//         showModal(
-//           "errorModal",
-//           "An error occurred while adding the food. Please try again."
-//         );
-//       }
-//     });
-// }
 function addRecipe() {
   const form = document.getElementById("addRecipeForm");
   const formData = new FormData(form);
 
-  // Log form data
-  for (let [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
+  const name = formData.get("name");
 
+  // First, check if the recipe already exists (case-insensitive)
+  fetch(`http://localhost:3000/api/recipes/name/${encodeURIComponent(name)}`)
+    .then((response) => {
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Recipe doesn't exist, proceed with adding
+          return addNewRecipe(formData);
+        } else {
+          throw new Error("Error checking for existing recipe");
+        }
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data && data.name.toLowerCase() === name.toLowerCase()) {
+        // Recipe already exists (case-insensitive match), show prompt
+        showRecipeExistsPrompt(data.name);
+      } else {
+        // No exact match found, proceed with adding
+        return addNewRecipe(formData);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      showModal(
+        "errorModal",
+        `An error occurred while checking for existing recipe: ${error.message}`
+      );
+    });
+}
+
+function showRecipeExistsPrompt(recipeName) {
+  const promptDiv = document.createElement("div");
+  promptDiv.classList.add("recipe-exists-prompt");
+  promptDiv.innerHTML = `
+    <div class="prompt-content">
+      <h3>Recipe Already Exists</h3>
+      <p>"${recipeName}" has already been added to the database.</p>
+      <button id="closePrompt">OK</button>
+    </div>
+  `;
+
+  document.body.appendChild(promptDiv);
+
+  document.getElementById("closePrompt").addEventListener("click", () => {
+    document.body.removeChild(promptDiv);
+  });
+}
+
+function addNewRecipe(formData) {
   fetch("http://localhost:3000/api/recipes", {
     method: "POST",
     body: formData,
@@ -513,17 +540,18 @@ function addRecipe() {
       return response.json();
     })
     .then((data) => {
-      showModal("successModal", "Food added successfully!").then(() => {
+      showModal("successModal", "Recipe added successfully!").then(() => {
         fetchRecipes();
         fetchRecipeCount();
         closeAddRecipeModal();
+        document.getElementById("addRecipeForm").reset();
       });
     })
     .catch((error) => {
       console.error("Error details:", error);
       showModal(
         "errorModal",
-        `An error occurred while adding the food: ${error.message}`
+        `An error occurred while adding the recipe: ${error.message}`
       );
     });
 }
