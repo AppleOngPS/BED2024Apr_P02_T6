@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json"); // Import generated spec
 
 const usersController = require("./controllers/userController");
 
@@ -23,6 +25,8 @@ app.get("/users/search", usersController.searchUsers); // Search users
 app.get('/login', usersController.loginUser); // Login user
 app.get('/user/:userId', usersController.getUserById); // Get user details by ID
 app.get('/users', usersController.getUserByName);// Get user by Name
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 
 // Start server and connect to database
