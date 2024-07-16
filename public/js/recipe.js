@@ -223,7 +223,7 @@ function fetchRecipes(page = 1, limit = 16) {
   fetch(`http://localhost:3000/api/recipes?page=${page}&limit=${limit}`)
     .then((response) => response.json())
     .then((data) => {
-      displayRecipes(data.recipes);
+      displayRecipes(data.recipes, data.totalRecipes);
       displayPagination(
         data.totalPages,
         data.currentPage,
@@ -239,13 +239,6 @@ function fetchRecipes(page = 1, limit = 16) {
     });
 }
 
-function updateTotalRecipeCount(count) {
-  const totalRecipesElement = document.getElementById("totalRecipes");
-  if (totalRecipesElement) {
-    totalRecipesElement.textContent = `Total Recipes: ${count}`;
-  }
-}
-
 function fetchRecipesByCategory(category, page = 1, limit = 16) {
   fetch(
     `http://localhost:3000/api/recipes/category/${encodeURIComponent(
@@ -254,7 +247,7 @@ function fetchRecipesByCategory(category, page = 1, limit = 16) {
   )
     .then((response) => response.json())
     .then((data) => {
-      displayRecipes(data.recipes);
+      displayRecipes(data.recipes, data.totalRecipes);
       displayPagination(
         data.totalPages,
         data.currentPage,
@@ -266,6 +259,13 @@ function fetchRecipesByCategory(category, page = 1, limit = 16) {
       updateTotalRecipeCount(data.totalRecipes);
     })
     .catch((error) => console.error("Error:", error));
+}
+
+function updateTotalRecipeCount(count) {
+  const totalRecipesElement = document.getElementById("totalRecipes");
+  if (totalRecipesElement) {
+    totalRecipesElement.textContent = `Total Recipes: ${count}`;
+  }
 }
 
 function displayPagination(
@@ -334,7 +334,7 @@ function displayPagination(
 //   updateRecipeCount(recipeArray.length);
 // }
 
-function displayRecipes(recipes) {
+function displayRecipes(recipes, totalRecipes) {
   const recipeList = document.getElementById("recipe-list");
   recipeList.innerHTML = "";
 
@@ -346,7 +346,7 @@ function displayRecipes(recipes) {
     return;
   }
 
-  resultsHeader.innerHTML = `Results <span id="recipeCount">(Recipes found: ${recipes.length})</span>`;
+  resultsHeader.innerHTML = `Results <span id="recipeCount">(Total Recipes: ${totalRecipes})</span>`;
 
   recipes.forEach((recipe) => {
     if (!recipe) return;
@@ -646,7 +646,7 @@ function filterByCalories(page = 1, limit = 16) {
     .then((response) => response.json())
     .then((data) => {
       if (Array.isArray(data.recipes)) {
-        displayRecipes(data.recipes);
+        displayRecipes(data.recipes, data.totalRecipes);
         displayPagination(
           data.totalPages,
           data.currentPage,
@@ -690,7 +690,7 @@ function filterByNutrient(page = 1, limit = 16) {
     })
     .then((data) => {
       if (Array.isArray(data.recipes)) {
-        displayRecipes(data.recipes);
+        displayRecipes(data.recipes, data.totalRecipes);
         displayPagination(
           data.totalPages,
           data.currentPage,
@@ -727,7 +727,7 @@ function searchByIngredient() {
   )
     .then((response) => response.json())
     .then((data) => {
-      displayRecipes(data);
+      displayRecipes(data, data.totalRecipes);
     })
     .catch((error) => console.error("Error:", error));
 }
@@ -743,9 +743,9 @@ function searchByName() {
     })
     .then((data) => {
       if (data) {
-        displayRecipes([data]); // Display single recipe as an array
+        displayRecipes([data], 1); // Display single recipe, total count is 1
       } else {
-        displayRecipes([]); // Empty array if no recipe found
+        displayRecipes([], 0); // No recipes found
       }
       // Remove pagination
       const paginationContainer = document.getElementById("pagination");
@@ -755,7 +755,7 @@ function searchByName() {
     })
     .catch((error) => {
       console.error("Error:", error);
-      displayRecipes([]); // Empty array on error
+      displayRecipes([], 0); // Error occurred
       // Remove pagination
       const paginationContainer = document.getElementById("pagination");
       if (paginationContainer) {

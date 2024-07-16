@@ -373,31 +373,23 @@ const getRecipeByName = async (req, res) => {
 };
 
 const getRecipesByCategory = async (req, res) => {
-  try {
-    await connectToDb();
-  } catch (error) {
-    console.error("Database connection failed:", error);
-    return res.status(500).json({
-      error: "Failed to connect to the database",
-      details: error.message,
-      stack: error.stack,
-    });
-  }
-
+  await connectToDb();
   const { category } = req.params;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 16;
-  const offset = (page - 1) * limit;
-
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 16;
+    const offset = (page - 1) * limit;
+
     const request = pool.request();
     request.input("category", sql.NVarChar, category);
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, limit);
 
-    const countResult = await request.query(
-      "SELECT COUNT(*) AS totalCount FROM recipes WHERE category = @category"
-    );
+    const countResult = await request.query(`
+      SELECT COUNT(*) AS totalCount 
+      FROM recipes 
+      WHERE category = @category
+    `);
     const totalCount = countResult.recordset[0].totalCount;
 
     const result = await request.query(`
@@ -415,10 +407,7 @@ const getRecipesByCategory = async (req, res) => {
       totalRecipes: totalCount,
     });
   } catch (error) {
-    console.error("Error in getRecipesByCategory:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to retrieve recipes", details: error.message });
+    res.status(500).json({ error: "Failed to retrieve recipes" });
   }
 };
 
