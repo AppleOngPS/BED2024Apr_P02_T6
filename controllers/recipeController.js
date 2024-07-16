@@ -528,26 +528,32 @@ const getRecipesByNutrientRange = async (req, res) => {
 
 const searchRecipesByIngredient = async (req, res) => {
   await connectToDb();
-  const { ingredient } = req.query;
+  const { ingredient, page = 1, limit = 16 } = req.query;
+  const offset = (page - 1) * limit;
+
   if (!ingredient) {
     return res.status(400).json({ error: "Ingredient parameter is required" });
   }
   try {
     console.log("Searching for ingredient:", ingredient);
     const request = pool.request();
-    request.input("ingredient", sql.NVarChar, ingredient.trim());
-    const query = `
+    request.input("ingredient", sql.NVarChar, `%${ingredient.trim()}%`);
+    request.input("offset", sql.Int, offset);
+    request.input("limit", sql.Int, parseInt(limit));
+
+    const query = ` 
       SELECT * FROM recipes 
       WHERE description LIKE '%' + @ingredient + '%'
       OR EXISTS (
         SELECT value 
-        FROM STRING_SPLIT(ingredients, ',') 
+        FROM STRING_SPLIT(CAST(ingredients AS NVARCHAR(MAX)), ',') 
         WHERE TRIM(value) LIKE '%' + @ingredient + '%'
       )
     `;
     console.log("Executing query:", query);
     const result = await request.query(query);
     console.log("Query result:", result);
+
     res.json(result.recordset);
   } catch (error) {
     console.error("Error in searchRecipesByIngredient:", error);

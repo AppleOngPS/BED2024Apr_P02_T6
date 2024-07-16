@@ -718,18 +718,36 @@ function filterByNutrient(page = 1, limit = 16) {
     });
 }
 
-function searchByIngredient() {
-  const ingredient = document.getElementById("ingredientSearch").value;
+function searchByIngredient(page = 1, limit = 16) {
+  const ingredient = document.getElementById("ingredientSearch").value.trim();
+  if (!ingredient) {
+    displayNoResults();
+    return;
+  }
+
   fetch(
     `http://localhost:3000/api/recipes/search?ingredient=${encodeURIComponent(
       ingredient
-    )}`
+    )}&page=${page}&limit=${limit}`
   )
-    .then((response) => response.json())
-    .then((data) => {
-      displayRecipes(data, data.totalRecipes);
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
     })
-    .catch((error) => console.error("Error:", error));
+    .then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        displayRecipes(data, data.length);
+        // Note: Pagination might need to be handled differently for this endpoint
+      } else {
+        displayNoResults();
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      displayNoResults();
+    });
 }
 
 function searchByName() {

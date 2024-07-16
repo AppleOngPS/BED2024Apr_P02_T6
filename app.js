@@ -232,6 +232,7 @@ app.get(
   recipeController.getRecipesByCategory
 );
 app.get("/api/recipes/name/:name", recipeController.getRecipeByName);
+app.get("/api/recipes/search", recipeController.searchRecipesByIngredient);
 
 app.get("/api/recipes", recipeController.getAllRecipes);
 app.get("/api/recipes/:id", recipeController.getRecipeById);
@@ -244,8 +245,6 @@ app.post(
 );
 app.put("/api/recipes/:id", validateRecipe, recipeController.updateRecipe);
 app.delete("/api/recipes/:id", recipeController.deleteRecipe);
-
-app.get("/api/recipes/search", recipeController.searchRecipesByIngredient);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
