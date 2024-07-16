@@ -266,6 +266,11 @@ function updateTotalRecipeCount(count) {
   if (totalRecipesElement) {
     totalRecipesElement.textContent = `Total Recipes: ${count}`;
   }
+  // Update the results header as well
+  const resultsHeader = document.querySelector(".results h2");
+  if (resultsHeader) {
+    resultsHeader.innerHTML = `Results <span id="recipeCount">(Total Recipes: ${count})</span>`;
+  }
 }
 
 function displayPagination(
@@ -640,6 +645,22 @@ function closeAddRecipeModal() {
 function filterByCalories(page = 1, limit = 16) {
   const min = document.getElementById("calorieMin").value;
   const max = document.getElementById("calorieMax").value;
+  if (!min && !max) {
+    showModal(
+      "errorModal",
+      "Please enter the minimum and maximum calorie value."
+    );
+    return;
+  }
+
+  if ((min && !max) || (!min && max)) {
+    showModal(
+      "errorModal",
+      "Please enter both minimum and maximum calorie values for a range search."
+    );
+    return;
+  }
+
   fetch(
     `http://localhost:3000/api/recipes/calories?min=${min}&max=${max}&page=${page}&limit=${limit}`
   )
@@ -678,6 +699,21 @@ function filterByNutrient(page = 1, limit = 16) {
   const nutrient = document.getElementById("nutrientSelect").value;
   const min = document.getElementById("nutrientMin").value;
   const max = document.getElementById("nutrientMax").value;
+  if (!min && !max) {
+    showModal(
+      "errorModal",
+      "Please enter the minimum and maximum nutrient value."
+    );
+    return;
+  }
+
+  if ((min && !max) || (!min && max)) {
+    showModal(
+      "errorModal",
+      `Please enter both minimum and maximum ${nutrient} values for a range search.`
+    );
+    return;
+  }
 
   fetch(
     `http://localhost:3000/api/recipes/nutrient?nutrient=${nutrient}&min=${min}&max=${max}&page=${page}&limit=${limit}`
@@ -721,7 +757,7 @@ function filterByNutrient(page = 1, limit = 16) {
 function searchByIngredient(page = 1, limit = 16) {
   const ingredient = document.getElementById("ingredientSearch").value.trim();
   if (!ingredient) {
-    displayNoResults();
+    showModal("errorModal", "Please enter an ingredient to search for.");
     return;
   }
 
@@ -749,15 +785,34 @@ function searchByIngredient(page = 1, limit = 16) {
         updateTotalRecipeCount(data.totalRecipes);
       } else {
         displayNoResults();
+        // Hide pagination when no results are found
+        const paginationContainer = document.getElementById("pagination");
+        if (paginationContainer) {
+          paginationContainer.style.display = "none";
+        }
+        // Update the total recipe count to 0
+        updateTotalRecipeCount(0);
       }
     })
     .catch((error) => {
       console.error("Error:", error);
       displayNoResults();
+      // Hide pagination on error
+      const paginationContainer = document.getElementById("pagination");
+      if (paginationContainer) {
+        paginationContainer.style.display = "none";
+      }
+      // Update the total recipe count to 0
+      updateTotalRecipeCount(0);
     });
 }
+
 function searchByName() {
   const name = document.getElementById("nameSearch").value;
+  if (!name) {
+    showModal("errorModal", "Please enter a recipe name to search for.");
+    return;
+  }
   fetch(`http://localhost:3000/api/recipes/name/${encodeURIComponent(name)}`)
     .then((response) => {
       if (!response.ok) {
@@ -792,6 +847,8 @@ function displayNoResults() {
   const recipeList = document.getElementById("recipe-list");
   recipeList.innerHTML = "<p>No recipes found matching your search.</p>";
   updateRecipeCount(0);
+  // Update the total recipes display
+  updateTotalRecipeCount(0);
 }
 
 function fetchRandomRecipe() {

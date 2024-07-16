@@ -451,6 +451,19 @@ const getRecipesByCalorieRange = async (req, res) => {
   await connectToDb();
   const { min, max, page = 1, limit = 16 } = req.query;
   const offset = (page - 1) * limit;
+  if (!min && !max) {
+    return res.status(400).json({
+      error: "Please provide at the minimum and maximum calorie value.",
+    });
+  }
+  if ((min && !max) || (!min && max)) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "Please provide both minimum and maximum calorie values for a range search.",
+      });
+  }
 
   try {
     const request = pool.request();
@@ -487,6 +500,20 @@ const getRecipesByCalorieRange = async (req, res) => {
 const getRecipesByNutrientRange = async (req, res) => {
   await connectToDb();
   const { nutrient, min, max, page = 1, limit = 16 } = req.query;
+
+  if (!min && !max) {
+    return res.status(400).json({
+      error: "Please provide the minimum and maximum nutrient value.",
+    });
+  }
+  if ((min && !max) || (!min && max)) {
+    return res
+      .status(400)
+      .json({
+        error: `Please provide both minimum and maximum ${nutrient} values for a range search.`,
+      });
+  }
+
   const offset = (page - 1) * limit;
 
   try {
@@ -529,6 +556,13 @@ const getRecipesByNutrientRange = async (req, res) => {
 const searchRecipesByIngredient = async (req, res) => {
   await connectToDb();
   const { ingredient, page = 1, limit = 16 } = req.query;
+
+  if (!ingredient || ingredient.trim() === "") {
+    return res
+      .status(400)
+      .json({ error: "Please provide an ingredient to search for." });
+  }
+
   const offset = (page - 1) * limit;
 
   if (!ingredient) {
