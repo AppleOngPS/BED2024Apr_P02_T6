@@ -373,17 +373,52 @@ const getRecipeByName = async (req, res) => {
 };
 
 const getRecipesByCategory = async (req, res) => {
-  await connectToDb();
+  try {
+    await connectToDb();
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    return res.status(500).json({
+      error: "Failed to connect to the database",
+      details: error.message,
+      stack: error.stack,
+    });
+  }
+
   const { category } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 16;
+  const offset = (page - 1) * limit;
+
   try {
     const request = pool.request();
     request.input("category", sql.NVarChar, category);
-    const result = await request.query(
-      "SELECT * FROM recipes WHERE category = @category"
+    request.input("offset", sql.Int, offset);
+    request.input("limit", sql.Int, limit);
+
+    const countResult = await request.query(
+      "SELECT COUNT(*) AS totalCount FROM recipes WHERE category = @category"
     );
-    res.json(result.recordset);
+    const totalCount = countResult.recordset[0].totalCount;
+
+    const result = await request.query(`
+      SELECT * FROM recipes
+      WHERE category = @category
+      ORDER BY id
+      OFFSET @offset ROWS
+      FETCH NEXT @limit ROWS ONLY
+    `);
+
+    res.json({
+      recipes: result.recordset,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalRecipes: totalCount,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve recipes" });
+    console.error("Error in getRecipesByCategory:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve recipes", details: error.message });
   }
 };
 

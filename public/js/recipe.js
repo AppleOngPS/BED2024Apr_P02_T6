@@ -200,13 +200,24 @@ document.addEventListener("DOMContentLoaded", function () {
     button.addEventListener("click", function () {
       const category = this.dataset.category;
       if (category === "all") {
-        fetchRecipes();
+        fetchRecipes(); // Fetch all recipes if "All" is selected
       } else {
         fetchRecipesByCategory(category);
       }
     });
   });
 });
+function filterRecipes(category) {
+  fetch("http://localhost:3000/api/recipes")
+    .then((response) => response.json())
+    .then((data) => {
+      const filteredRecipes = data.filter(
+        (recipe) => recipe.category.toLowerCase() === category
+      );
+      displayRecipes(filteredRecipes);
+    })
+    .catch((error) => console.error("Error:", error));
+}
 
 function fetchRecipes(page = 1, limit = 16) {
   fetch(`http://localhost:3000/api/recipes?page=${page}&limit=${limit}`)
@@ -235,15 +246,28 @@ function updateTotalRecipeCount(count) {
   }
 }
 
-function fetchRecipesByCategory(category) {
-  fetch(`http://localhost:3000/api/recipes/category/${category}`)
+function fetchRecipesByCategory(category, page = 1, limit = 16) {
+  fetch(
+    `http://localhost:3000/api/recipes/category/${encodeURIComponent(
+      category
+    )}?page=${page}&limit=${limit}`
+  )
     .then((response) => response.json())
     .then((data) => {
-      displayRecipes(data);
-      updateRecipeCount(data.length);
+      displayRecipes(data.recipes);
+      displayPagination(
+        data.totalPages,
+        data.currentPage,
+        data.totalRecipes,
+        limit,
+        (newPage, newLimit) =>
+          fetchRecipesByCategory(category, newPage, newLimit)
+      );
+      updateTotalRecipeCount(data.totalRecipes);
     })
     .catch((error) => console.error("Error:", error));
 }
+
 function displayPagination(
   totalPages,
   currentPage,
@@ -455,7 +479,7 @@ function showModal(modalId, message) {
     okButton.textContent = "OK";
     okButton.onclick = closeModal;
     messageElement.parentNode.insertBefore(
-      okButton,
+      //okButton,
       messageElement.nextSibling
     );
 
@@ -527,6 +551,43 @@ function showRecipeExistsPrompt(recipeName) {
 }
 
 function addNewRecipe(formData) {
+  // Check if all fields are filled, including the image
+  const requiredFields = [
+    "name",
+    "category",
+    "description",
+    "ingredients",
+    "calories",
+    "carbs",
+    "protein",
+    "fats",
+    "image",
+  ];
+  let allFieldsFilled = true;
+  let missingFields = [];
+
+  for (let field of requiredFields) {
+    if (field === "image") {
+      if (!formData.get("image").size) {
+        allFieldsFilled = false;
+        missingFields.push("Image");
+      }
+    } else if (!formData.get(field)) {
+      allFieldsFilled = false;
+      missingFields.push(field.charAt(0).toUpperCase() + field.slice(1));
+    }
+  }
+
+  if (!allFieldsFilled) {
+    showModal(
+      "errorModal",
+      `All fields must be filled, including the image. Missing fields: ${missingFields.join(
+        ", "
+      )}`
+    );
+    return;
+  }
+
   fetch("http://localhost:3000/api/recipes", {
     method: "POST",
     body: formData,

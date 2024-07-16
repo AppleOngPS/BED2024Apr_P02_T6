@@ -13,7 +13,7 @@
       <!-- Include your navigation bar here -->
     </header>
     <main>
-      <section class="categories">
+      <!-- <section class="categories">
         <h2>Categories</h2>
         <div class="category-buttons">
           <button class="category" data-category="low carb">Low Carb</button>
@@ -29,14 +29,45 @@
           </button>
           <button class="category" data-category="all">All</button>
         </div>
+      </section> -->
+      <section class="categories">
+        <h2>Categories</h2>
+        <div class="category-buttons">
+          <button class="category" onclick="fetchRecipesByCategory('low carb')">
+            Low Carb
+          </button>
+          <button
+            class="category"
+            onclick="fetchRecipesByCategory('vegetarian')"
+          >
+            Vegetarian
+          </button>
+          <button
+            class="category"
+            onclick="fetchRecipesByCategory('gluten free')"
+          >
+            Gluten Free
+          </button>
+          <button class="category" onclick="fetchRecipesByCategory('local')">
+            Local
+          </button>
+          <button
+            class="category"
+            onclick="fetchRecipesByCategory('smoothies and shakes')"
+          >
+            Smoothies and Shakes
+          </button>
+          <button class="category" onclick="fetchRecipes()">All</button>
+        </div>
       </section>
+
       <div class="content-wrapper">
         <aside class="filters">
           <h2>Filters</h2>
           <div class="filter-options">
             <div class="filter-box">
               <div class="filter-header">
-                <h3 class="filter-title">Calories</h3>
+                <h3 class="filter-title">Calories_______</h3>
                 <button class="filter-toggle"></button>
               </div>
               <div class="filter-content">
@@ -44,13 +75,13 @@
                 <input type="number" id="calorieMin" min="0" />
                 <label for="calorieMax">Max Calories:</label>
                 <input type="number" id="calorieMax" min="0" />
-                <button onclick="filterByCalories()">Filter by Calories</button>
+                <button onclick="filterByCalories()">Apply</button>
               </div>
             </div>
 
             <div class="filter-box">
               <div class="filter-header">
-                <h3 class="filter-title">Nutrients</h3>
+                <h3 class="filter-title">Nutrients______</h3>
                 <button class="filter-toggle"></button>
               </div>
               <div class="filter-content">
@@ -64,33 +95,28 @@
                 <input type="number" id="nutrientMin" min="0" />
                 <label for="nutrientMax">Max:</label>
                 <input type="number" id="nutrientMax" min="0" />
-                <button onclick="filterByNutrient()">Filter by Nutrient</button>
+                <button onclick="filterByNutrient()">Apply</button>
               </div>
             </div>
 
             <div class="filter-box">
               <div class="filter-header">
-                <h3 class="filter-title">Search</h3>
+                <h3 class="filter-title">Search_________</h3>
                 <button class="filter-toggle"></button>
               </div>
               <div class="filter-content">
                 <label for="ingredientSearch">By Ingredient:</label>
                 <input type="text" id="ingredientSearch" />
                 <button onclick="searchByIngredient()">Search</button>
-                <form
-                  id="nameSearchForm"
-                  onsubmit="event.preventDefault(); searchByName();"
-                >
-                  <label for="nameSearch">By Name:</label>
-                  <input type="text" id="nameSearch" />
-                  <button type="submit">Search</button>
-                </form>
+                <label for="nameSearch">By Name:</label>
+                <input type="text" id="nameSearch" />
+                <button onclick="searchByName()">Search</button>
               </div>
             </div>
 
             <div class="filter-box">
               <div class="filter-header">
-                <h3 class="filter-title">Other Options</h3>
+                <h3 class="filter-title">Others_________</h3>
                 <button class="filter-toggle"></button>
               </div>
               <div class="filter-content">
@@ -151,7 +177,9 @@
       <div id="successModal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
+          <h2>Success!</h2>
           <p id="successMessage"></p>
+          <button onclick="closeSuccessModal()">OK</button>
         </div>
       </div>
 
