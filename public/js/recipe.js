@@ -737,9 +737,16 @@ function searchByIngredient(page = 1, limit = 16) {
       return response.json();
     })
     .then((data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        displayRecipes(data, data.length);
-        // Note: Pagination might need to be handled differently for this endpoint
+      if (Array.isArray(data.recipes) && data.recipes.length > 0) {
+        displayRecipes(data.recipes, data.totalRecipes);
+        displayPagination(
+          data.totalPages,
+          data.currentPage,
+          data.totalRecipes,
+          limit,
+          (newPage, newLimit) => searchByIngredient(newPage, newLimit)
+        );
+        updateTotalRecipeCount(data.totalRecipes);
       } else {
         displayNoResults();
       }
@@ -749,7 +756,6 @@ function searchByIngredient(page = 1, limit = 16) {
       displayNoResults();
     });
 }
-
 function searchByName() {
   const name = document.getElementById("nameSearch").value;
   fetch(`http://localhost:3000/api/recipes/name/${encodeURIComponent(name)}`)

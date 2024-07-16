@@ -541,6 +541,18 @@ const searchRecipesByIngredient = async (req, res) => {
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, parseInt(limit));
 
+    const countQuery = `
+      SELECT COUNT(*) AS totalCount FROM recipes 
+      WHERE description LIKE '%' + @ingredient + '%'
+      OR EXISTS (
+        SELECT value 
+        FROM STRING_SPLIT(CAST(ingredients AS NVARCHAR(MAX)), ',') 
+        WHERE TRIM(value) LIKE '%' + @ingredient + '%'
+      )
+    `;
+    const countResult = await request.query(countQuery);
+    const totalCount = countResult.recordset[0].totalCount;
+
     const query = ` 
       SELECT * FROM recipes 
       WHERE description LIKE '%' + @ingredient + '%'
@@ -549,12 +561,20 @@ const searchRecipesByIngredient = async (req, res) => {
         FROM STRING_SPLIT(CAST(ingredients AS NVARCHAR(MAX)), ',') 
         WHERE TRIM(value) LIKE '%' + @ingredient + '%'
       )
+      ORDER BY id
+      OFFSET @offset ROWS
+      FETCH NEXT @limit ROWS ONLY
     `;
     console.log("Executing query:", query);
     const result = await request.query(query);
     console.log("Query result:", result);
 
-    res.json(result.recordset);
+    res.json({
+      recipes: result.recordset,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalCount / parseInt(limit)),
+      totalRecipes: totalCount,
+    });
   } catch (error) {
     console.error("Error in searchRecipesByIngredient:", error);
     res.status(500).json({
@@ -577,5 +597,5 @@ module.exports = {
   getRecipeCount, //
   getRecipesByCalorieRange, //
   getRecipesByNutrientRange, //
-  searchRecipesByIngredient,
+  searchRecipesByIngredient, //
 };
