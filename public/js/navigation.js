@@ -34,9 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     : "community.html"
                 }">Community</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "public/html/food.html" : "food.html"
-                }">Food</a></li>
-                <li><a href="${
                   isCurrentDirectory() ? "public/html/login.html" : "login.html"
                 }">Login</a></li>
                 <li id="points-display" style="color: white;"></li>

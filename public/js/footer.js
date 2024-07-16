@@ -46,7 +46,6 @@ function createLinks() {
     "Recipe",
     "Quiz",
     "Meal Planning",
-    "Food",
     "Credits",
     "Login",
   ];
