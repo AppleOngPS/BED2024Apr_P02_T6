@@ -2,7 +2,9 @@ const express = require("express");
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
+// Recipe class representing a recipe entity and containing static methods for database operations
 class Recipe {
+  // Constructor for creating a new Recipe instance
   constructor(
     id,
     name,
@@ -27,15 +29,18 @@ class Recipe {
     this.image = image;
   }
 
+  // Retrieves all recipes with pagination
   static async getAllRecipes(page = 1, limit = 16) {
     const connection = await sql.connect(dbConfig);
     const offset = (page - 1) * limit;
 
+    // Get total count of recipes
     const countQuery = `SELECT COUNT(*) AS totalCount FROM recipes`;
     const countRequest = connection.request();
     const countResult = await countRequest.query(countQuery);
     const totalCount = countResult.recordset[0].totalCount;
 
+    // Query to fetch recipes with pagination
     const sqlQuery = `
       SELECT * FROM recipes
       ORDER BY id
@@ -50,6 +55,7 @@ class Recipe {
 
     connection.close();
 
+    // Map database results to Recipe instances and return with pagination info
     return {
       recipes: result.recordset.map(
         (row) =>
@@ -72,6 +78,7 @@ class Recipe {
     };
   }
 
+  // Retrieves a single recipe by its ID
   static async getRecipeById(id) {
     const connection = await sql.connect(dbConfig);
 
@@ -101,6 +108,7 @@ class Recipe {
     return null;
   }
 
+  // Creates a new recipe in the database
   static async createRecipe(newRecipeData) {
     const connection = await sql.connect(dbConfig);
 
@@ -125,9 +133,11 @@ class Recipe {
 
     connection.close();
 
+    // Fetch and return the newly created recipe
     return this.getRecipeById(result.recordset[0].id);
   }
 
+  // Updates an existing recipe in the database
   static async updateRecipe(id, updatedRecipeData) {
     const connection = await sql.connect(dbConfig);
 
@@ -155,9 +165,11 @@ class Recipe {
 
     connection.close();
 
+    // Fetch and return the updated recipe
     return this.getRecipeById(id);
   }
 
+  // Deletes a recipe from the database
   static async deleteRecipe(id) {
     const connection = await sql.connect(dbConfig);
 
@@ -172,16 +184,19 @@ class Recipe {
     return result.rowsAffected > 0;
   }
 
+  // Retrieves recipes by category with pagination
   static async getRecipesByCategory(category, page = 1, limit = 16) {
     const connection = await sql.connect(dbConfig);
     const offset = (page - 1) * limit;
 
+    // Get total count of recipes in the category
     const countQuery = `SELECT COUNT(*) AS totalCount FROM recipes WHERE category = @category`;
     const countRequest = connection.request();
     countRequest.input("category", sql.NVarChar, category);
     const countResult = await countRequest.query(countQuery);
     const totalCount = countResult.recordset[0].totalCount;
 
+    // Query to fetch recipes by category with pagination
     const sqlQuery = `
       SELECT * FROM recipes
       WHERE category = @category
@@ -198,6 +213,7 @@ class Recipe {
 
     connection.close();
 
+    // Map database results to Recipe instances and return with pagination info
     return {
       recipes: result.recordset.map(
         (row) =>
@@ -220,10 +236,12 @@ class Recipe {
     };
   }
 
+  // Retrieves recipes within a specified calorie range with pagination
   static async getRecipesByCalorieRange(min, max, page = 1, limit = 16) {
     const connection = await sql.connect(dbConfig);
     const offset = (page - 1) * limit;
 
+    // Get total count of recipes within the calorie range
     const countQuery = `SELECT COUNT(*) AS totalCount FROM recipes WHERE calories BETWEEN @min AND @max`;
     const countRequest = connection.request();
     countRequest.input("min", sql.Int, min);
@@ -231,6 +249,7 @@ class Recipe {
     const countResult = await countRequest.query(countQuery);
     const totalCount = countResult.recordset[0].totalCount;
 
+    // Query to fetch recipes within the calorie range with pagination
     const sqlQuery = `
       SELECT * FROM recipes
       WHERE calories BETWEEN @min AND @max
@@ -248,6 +267,7 @@ class Recipe {
 
     connection.close();
 
+    // Map database results to Recipe instances and return with pagination info
     return {
       recipes: result.recordset.map(
         (row) =>
@@ -270,10 +290,12 @@ class Recipe {
     };
   }
 
+  // Searches for recipes by ingredient with pagination
   static async searchRecipesByIngredient(ingredient, page = 1, limit = 16) {
     const connection = await sql.connect(dbConfig);
     const offset = (page - 1) * limit;
 
+    // Get total count of recipes containing the ingredient
     const countQuery = `
       SELECT COUNT(*) AS totalCount FROM recipes 
       WHERE description LIKE '%' + @ingredient + '%'
@@ -288,6 +310,7 @@ class Recipe {
     const countResult = await countRequest.query(countQuery);
     const totalCount = countResult.recordset[0].totalCount;
 
+    // Query to fetch recipes containing the ingredient with pagination
     const sqlQuery = `
       SELECT * FROM recipes 
       WHERE description LIKE '%' + @ingredient + '%'
@@ -309,6 +332,7 @@ class Recipe {
 
     connection.close();
 
+    // Map database results to Recipe instances and return with pagination info
     return {
       recipes: result.recordset.map(
         (row) =>
@@ -331,6 +355,7 @@ class Recipe {
     };
   }
 
+  // Retrieves a random recipe from the database
   static async getRandomRecipe() {
     const connection = await sql.connect(dbConfig);
 
@@ -359,6 +384,7 @@ class Recipe {
     return null;
   }
 
+  // Retrieves the total count of recipes in the database
   static async getRecipeCount() {
     const connection = await sql.connect(dbConfig);
 
