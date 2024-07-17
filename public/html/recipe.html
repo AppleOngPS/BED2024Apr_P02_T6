@@ -4,18 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recipe Page</title>
+    <!-- Link to external CSS files -->
     <link rel="stylesheet" href="../css/recipe.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <link rel="stylesheet" href="../css/footer.css" />
   </head>
   <body>
     <header>
-      <!-- Include your navigation bar here -->
+      <!-- Navigation bar will be included here -->
     </header>
     <main>
+      <!-- Category section -->
       <section class="categories">
         <h2>Categories</h2>
         <div class="category-buttons">
+          <!-- Buttons for filtering recipes by category -->
           <button class="category" onclick="fetchRecipesByCategory('low carb')">
             Low Carb
           </button>
@@ -45,9 +48,11 @@
       </section>
 
       <div class="content-wrapper">
+        <!-- Sidebar with filters -->
         <aside class="filters">
           <h2>Filters</h2>
           <div class="filter-options">
+            <!-- Calorie filter -->
             <div class="filter-box">
               <div class="filter-header">
                 <h3 class="filter-title">Calories_______</h3>
@@ -62,6 +67,7 @@
               </div>
             </div>
 
+            <!-- Nutrient filter -->
             <div class="filter-box">
               <div class="filter-header">
                 <h3 class="filter-title">Nutrients______</h3>
@@ -82,6 +88,7 @@
               </div>
             </div>
 
+            <!-- Search filter -->
             <div class="filter-box">
               <div class="filter-header">
                 <h3 class="filter-title">Search_________</h3>
@@ -97,6 +104,7 @@
               </div>
             </div>
 
+            <!-- Other options -->
             <div class="filter-box">
               <div class="filter-header">
                 <h3 class="filter-title">Others_________</h3>
@@ -108,6 +116,7 @@
             </div>
           </div>
         </aside>
+        <!-- Results section -->
         <section class="results">
           <h2>Results</h2>
           <div class="recipe-list" id="recipe-list">
@@ -116,15 +125,18 @@
           <div id="pagination"></div>
         </section>
       </div>
+      <!-- Add recipe button -->
       <section class="add-recipe">
         <button onclick="openAddRecipeModal()">Add Recipe</button>
       </section>
 
+      <!-- Add Recipe Modal -->
       <div id="addRecipeModal" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeAddRecipeModal()">&times;</span>
           <h2>Add Recipe</h2>
           <form id="addRecipeForm">
+            <!-- Form fields for adding a new recipe -->
             <label for="recipe-name">Name:</label>
             <input type="text" id="recipe-name" name="name" required />
             <label for="recipe-category">Category:</label>
@@ -157,6 +169,7 @@
           </form>
         </div>
       </div>
+      <!-- Success Modal -->
       <div id="successModal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
@@ -166,12 +179,14 @@
         </div>
       </div>
 
+      <!-- Error Modal -->
       <div id="errorModal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
           <p id="errorMessage"></p>
         </div>
       </div>
+      <!-- Recipe Details Modal -->
       <div id="recipeModal" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeRecipeModal()">&times;</span>
@@ -185,6 +200,7 @@
           <p id="modal-recipe-ingredients"></p>
         </div>
       </div>
+      <!-- Confirm Delete Modal -->
       <div id="confirmModal" class="modal">
         <div class="modal-content">
           <h2>Confirm Delete</h2>
@@ -195,8 +211,8 @@
           </div>
         </div>
       </div>
-      <!-- Keep your existing modals here -->
     </main>
+    <!-- JavaScript files -->
     <script src="../js/recipe.js"></script>
     <script src="../js/navigation.js"></script>
     <script src="../js/footer.js"></script>
