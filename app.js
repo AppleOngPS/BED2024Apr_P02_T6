@@ -1,19 +1,27 @@
-
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const sql = require("mssql");
+const path = require("path");
 const dbConfig = require("./dbConfig");
 const cors = require("cors");
-// const fs = require("fs");
-//  const postRoutes = require("./routes/postRoutes");
-  const postController = require("./controllers/postController");
+const fs = require("fs");
+//const postRoutes = require("./routes/postRoutes");
+const postController = require("./controllers/postController");
 
 const usersController = require("./controllers/usersController");
 const rewardsController = require("./controllers/rewardController");
 
 const app = express();
 const port = 3000;
+
+// CRUD routes
+app.post("/posts", postController.createPost);
+app.get("/posts", postController.getPosts);
+app.get("/posts/:id", postController.getPostById);
+app.put("/posts/:id", postController.updatePost);
+app.delete("/posts/:id", postController.deletePost);
+
+module.exports = app;
 
 // Middleware
 app.use(cors());
@@ -33,45 +41,50 @@ app.use(express.static("public"));
 //app.use("/uploads", express.static(uploadsDir));
 
 // Routes
-// app.use("/posts", postRoutes);
+//app.use("/posts", postRoutes);
 
-// // Serve HTML files
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "html", "community.html"));
-// });
+// Middleware to parse JSON requests
+app.use(express.json());
 
-// app.get("/community-page.html", (req, res) => {
-//   res.sendFile(path.join(__dirname, "html", "community-page.html"));
-// });
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, "public")));
 
-// app.get("/community.html", (req, res) => {
-//   res.sendFile(path.join(__dirname, "html", "community.html"));
-// });
+// Routes to serve HTML files from the 'public/html' directory
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "community.html"));
+});
 
-// app.get("/quiz.html", (req, res) => {
-//   res.sendFile(path.join(__dirname, "html", "quiz.html"));
-// });
+app.get("/community-page.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "community-page.html"));
+});
 
-// // Endpoint to fetch quiz data
-// app.get("/fetch_quiz", async (req, res) => {
-//   try {
-//     const questions = await postController.getQuizQuestions();
-//     res.json(questions);
-//   } catch (err) {
-//     console.error("Error fetching quiz questions:", err);
-//     res.status(500).send("Server error");
-//   }
-// });
+app.get("/community.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "community.html"));
+});
 
+app.get("/quiz.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "quiz.html"));
+});
+
+// Endpoint to fetch quiz data
+app.get("/fetch_quiz", async (req, res) => {
+  try {
+    const questions = await postController.getQuizQuestions();
+    res.json(questions);
+  } catch (err) {
+    console.error("Error fetching quiz questions:", err);
+    res.status(500).send("Server error");
+  }
+});
 
 // Routes
 app.post("/users", usersController.createUser); // Create user
 app.get("/users", usersController.getAllUsers); // Get all users
 app.get("/users/:id", usersController.getUserById); // Get user by ID
 app.get("/users/search", usersController.searchUsers); // Search users
-app.get('/login', usersController.loginUser); // Login user
-app.get('/user/:userId', usersController.getUserById); // Get user details by ID
-app.get('/users', usersController.getUserByName);// Get user by Name
+app.get("/login", usersController.loginUser); // Login user
+app.get("/user/:userId", usersController.getUserById); // Get user details by ID
+app.get("/users", usersController.getUserByName); // Get user by Name
 app.put("/users", usersController.updateUser); // Update user
 app.delete("/users", usersController.deleteUser); // Delete user
 
@@ -86,14 +99,10 @@ app.get("/community/:id", postController.getPostById);
 app.put("/community/:id", postController.updatePost);
 app.delete("/community/:id", postController.deletePost);
 
-
 // Serve the HTML file
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
-
-
-
 
 // Start server and connect to database
 app.listen(port, async () => {

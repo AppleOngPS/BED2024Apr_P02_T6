@@ -1,7 +1,9 @@
-const { sql, poolPromise } = require("../dbConfig");
+const sql = require("mssql");
+const dbConfig = require("../dbConfig");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const { text } = require("body-parser");
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -15,10 +17,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single("image");
 
+// Helper function to get the connection pool
+async function getConnectionPool() {
+  const pool = await sql.connect(dbConfig);
+  return pool;
+}
+
 // Create a new post
 const createPost = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
+      console.error("Error uploading file:", err);
       return res.status(500).json({ error: err.message });
     }
     try {
@@ -28,12 +37,12 @@ const createPost = async (req, res) => {
         content = req.file.filename; // Save the filename to the database
       }
 
-      const pool = await poolPromise;
+      const pool = await getConnectionPool();
       await pool
         .request()
         .input("title", sql.NVarChar, title)
         .input("category", sql.NVarChar, category)
-        .input("content", sql.VarBinary(sql.MAX), content)
+        .input("content", sql.VarBinary(sql.MAX), content) // Use NVarChar for filenames
         .input("message", sql.NVarChar(sql.MAX), message)
         .query(
           "INSERT INTO Posts (title, category, content, message) VALUES (@title, @category, @content, @message)"
@@ -41,6 +50,7 @@ const createPost = async (req, res) => {
 
       res.status(201).json({ message: "Post created successfully" });
     } catch (err) {
+      console.error("Error creating post:", err);
       res.status(500).json({ error: err.message });
     }
   });
@@ -49,11 +59,12 @@ const createPost = async (req, res) => {
 // Get all posts
 const getPosts = async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getConnectionPool();
     const result = await pool.request().query("SELECT * FROM Posts");
     res.json(result.recordset);
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -61,15 +72,20 @@ const getPosts = async (req, res) => {
 const getPostById = async (req, res) => {
   try {
     const { id } = req.params;
-    const pool = await poolPromise;
+    const pool = await getConnectionPool();
     const result = await pool
       .request()
       .input("id", sql.Int, id)
       .query("SELECT * FROM Posts WHERE id = @id");
 
-    res.json(result.recordset[0]);
+    if (result.recordset.length === 0) {
+      res.status(404).json({ error: "Post not found" });
+    } else {
+      res.json(result.recordset[0]);
+    }
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error("Error fetching post by ID:", err);
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -77,7 +93,8 @@ const getPostById = async (req, res) => {
 const updatePost = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      return res.status(500).send(err.message);
+      console.error("Error uploading file:", err);
+      return res.status(500).json({ error: err.message });
     }
     try {
       const { id } = req.params;
@@ -87,21 +104,22 @@ const updatePost = async (req, res) => {
         content = fs.readFileSync(req.file.path);
       }
 
-      const pool = await poolPromise;
+      const pool = await getConnectionPool();
       await pool
         .request()
         .input("id", sql.Int, id)
         .input("title", sql.NVarChar, title)
-        .input("category", sql.NVarChar, category)
+        .input("category", sql.NVarChar(50), category)
         .input("content", sql.VarBinary(sql.MAX), content)
-        .input("message", sql.NVarChar(sql.MAX), message)
+        .input("message", text, message)
         .query(
           "UPDATE Posts SET title = @title, category = @category, content = @content, message = @message WHERE id = @id"
         );
 
       res.json({ message: "Post updated successfully" });
     } catch (err) {
-      res.status(500).send(err.message);
+      console.error("Error updating post:", err);
+      res.status(500).json({ error: err.message });
     }
   });
 };
@@ -110,7 +128,7 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const pool = await poolPromise;
+    const pool = await getConnectionPool();
     await pool
       .request()
       .input("id", sql.Int, id)
@@ -118,20 +136,26 @@ const deletePost = async (req, res) => {
 
     res.json({ message: "Post deleted successfully" });
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error("Error deleting post:", err);
+    res.status(500).json({ error: err.message });
   }
 };
 
 // Function to get quiz questions
-const getQuizQuestions = async () => {
-  const pool = await poolPromise;
-  const query = `
+const getQuizQuestions = async (req, res) => {
+  try {
+    const pool = await getConnectionPool();
+    const query = `
       SELECT q.question_id, q.question_text, a.answer_id, a.answer_text, a.is_correct
       FROM quiz_questions q
       JOIN quiz_answers a ON q.question_id = a.question_id
-  `;
-  const result = await pool.request().query(query);
-  return result.recordset;
+    `;
+    const result = await pool.request().query(query);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error fetching quiz questions:", err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 module.exports = {
