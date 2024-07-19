@@ -195,6 +195,20 @@ class Reward {
       throw error;
     }
   }
+  static async deleteRewardById(id) {
+    try {
+      const connection = await sql.connect(dbConfig);
+      const sqlQuery = `DELETE FROM rewards WHERE id = @id`;
+      const request = connection.request();
+      request.input("id", sql.Int, id);
+      const result = await request.query(sqlQuery);
+      connection.close();
+      return result.rowsAffected > 0; // Indicate success based on affected rows
+    } catch (error) {
+      console.error("Error deleting reward:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Reward;

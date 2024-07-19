@@ -55,6 +55,21 @@ const redeemReward = async (req, res) => {
     res.status(500).json({ error: "Failed to redeem reward" });
   }
 };
+const deleteReward = async (req, res) => {
+  const rewardId = req.params.id;
+  try {
+    const result = await Reward.deleteRewardById(rewardId);
+    if (result) {
+      res.status(200).json({ message: "Reward deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Reward not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting reward:", error);
+    res.status(500).json({ error: "Failed to delete reward" });
+  }
+};
+
 
 
 
@@ -64,4 +79,5 @@ module.exports = {
   getRewardsById,
   getUserPoints,
   redeemReward,
+  deleteReward,
 };

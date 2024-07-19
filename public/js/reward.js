@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     });
 
-    pointsElement.textContent = `Total available Points: ${userPoints}`;
+    pointsElement.textContent = ` ${userPoints}`;
     console.log('User points displayed:', userPoints);
   }
 
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Function to handle deleting rewards
   async function deleteReward(reward) {
     try {
-      const response = await fetch(`http://localhost:3000/delete/${reward.id}`, {
+      const response = await fetch(`http://localhost:3000/rewards/${reward.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (!response.ok) {
         throw new Error('Failed to delete reward');
       }
-
+  
       const cardToRemove = redeemedRewardsGrid.querySelector(`.card[data-id="${reward.id}"]`);
       if (cardToRemove) {
         redeemedRewardsGrid.removeChild(cardToRemove);
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const newCard = createRewardCard(redeemedReward);
       redeemedRewardsGrid.appendChild(newCard);
     }
-    pointsElement.textContent = `Total available Points: ${userPoints}`;
+    pointsElement.textContent = ` ${userPoints}`;
   }
 
   fetchRewards();
