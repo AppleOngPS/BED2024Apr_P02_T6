@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     const cardToRemove = rewardsGrid.querySelector(`.card[data-id="${redeemedReward.id}"]`);
     if (cardToRemove) {
       rewardsGrid.removeChild(cardToRemove);
-      redeemedRewardsGrid.appendChild(cardToRemove);
+      const newCard = createRewardCard(redeemedReward);
+      redeemedRewardsGrid.appendChild(newCard);
     }
     pointsElement.textContent = `Total available Points: ${userPoints}`;
   }
