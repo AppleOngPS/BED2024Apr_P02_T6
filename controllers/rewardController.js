@@ -27,45 +27,41 @@ const getRewardsById = async (req, res) => {
   }
 };
 
-const updateRewards = async (req, res) => {
-  try {
-    const { name } = req.body; // Assuming you use name to identify the reward to update
-    const updateRewardDetails = req.body;
-    const updatedReward = await Reward.updateRewards(name, updateRewardDetails);
-    res.status(200).json(updatedReward);
-  } catch (error) {
-    console.error("Error updating reward:", error);
-    res.status(500).send("Error updating reward");
-  }
-};
 
-const deleteReward = async (req, res) => {
-  try {
-    const { name, password } = req.query; // Extracting name and password from query parameters
 
+// Function to fetch user points - Replace with your actual implementation
+const getUserPoints = async () => {
+  try {
     const connection = await sql.connect(dbConfig);
-    const sqlQuery = `DELETE FROM rewards WHERE name = @name AND password = @password`;
+    const sqlQuery = `SELECT point FROM AccountUser WHERE id = @userId`; // Assuming you have userId available
     const request = connection.request();
-    request.input("name", sql.NVarChar, name);
-    request.input("password", sql.NVarChar, password);
+    request.input("userId", sql.Int, /* Replace with actual userId */);
     const result = await request.query(sqlQuery);
-
     connection.close();
-
-    if (result.rowsAffected > 0) {
-      res.status(204).send(); // Return 204 No Content for successful deletion
-    } else {
-      res.status(404).send("Reward not found"); // Return 404 Not Found if reward does not exist
-    }
+    return result.recordset.length > 0 ? result.recordset[0].point : 0;
   } catch (error) {
-    console.error("Error deleting reward:", error);
-    res.status(500).send("Error deleting reward");
+    console.error("Error fetching user points:", error);
+    throw error;
   }
 };
+
+const redeemReward = async (req, res) => {
+  const rewardId = req.params.id;
+  try {
+    await Reward.redeemRewardById(rewardId); // Update database to mark reward as redeemed
+    res.status(200).json({ message: "Reward redeemed successfully" });
+  } catch (error) {
+    console.error("Error redeeming reward:", error);
+    res.status(500).json({ error: "Failed to redeem reward" });
+  }
+};
+
+
+
 
 module.exports = {
   getAllRewards,
   getRewardsById,
-  updateRewards,
-  deleteReward,
+  getUserPoints,
+  redeemReward,
 };
