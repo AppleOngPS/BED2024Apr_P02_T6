@@ -23,11 +23,11 @@ const getRewardsById = async (req, res) => {
     }
   } catch (error) {
     console.error("Error retrieving reward:", error);
-    res.status(500).json({ message: "Error retrieving reward", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error retrieving reward", error: error.message });
   }
 };
-
-
 
 // Function to fetch user points - Replace with your actual implementation
 const getUserPoints = async () => {
@@ -35,7 +35,7 @@ const getUserPoints = async () => {
     const connection = await sql.connect(dbConfig);
     const sqlQuery = `SELECT point FROM AccountUser WHERE id = @userId`; // Assuming you have userId available
     const request = connection.request();
-    request.input("userId", sql.Int, /* Replace with actual userId */);
+    request.input("userId", sql.Int /* Replace with actual userId */);
     const result = await request.query(sqlQuery);
     connection.close();
     return result.recordset.length > 0 ? result.recordset[0].point : 0;
@@ -69,10 +69,6 @@ const deleteReward = async (req, res) => {
     res.status(500).json({ error: "Failed to delete reward" });
   }
 };
-
-
-
-
 
 module.exports = {
   getAllRewards,
