@@ -117,8 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const { name, password } = loggedInUser;
 
-          const deleteUrl = `http://localhost:3000/users?name=${encodeURIComponent(
-            name
+          const deleteUrl = `http://localhost:3000/users?name=${encodeURIComponent(name
           )}&password=${encodeURIComponent(password)}`;
 
           const response = await fetch(deleteUrl, {

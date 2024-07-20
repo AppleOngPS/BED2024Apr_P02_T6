@@ -2,7 +2,7 @@ const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
 class User {
-  constructor(name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake) {
+  constructor(name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake,point) {
     this.name = name;
     this.password = password;
     this.email = email;
@@ -12,6 +12,7 @@ class User {
     this.weight = weight;
     this.weightGoal = weightGoal;
     this.TargetCalarieIntake = TargetCalarieIntake;
+    this.point = point;
   }
 
   static async getAllUsers() {
@@ -21,7 +22,7 @@ class User {
     const result = await request.query(sqlQuery);
     connection.close();
     return result.recordset.map(
-      (row) => new User(row.name, row.password, row.email, row.contactNumber, row.age, row.height, row.weight, row.weightGoal, row.TargetCalarieIntake)
+      (row) => new User(row.name, row.password, row.email, row.contactNumber, row.age, row.height, row.weight, row.weightGoal, row.TargetCalarieIntake,row.point)
     );
   }
 
@@ -42,7 +43,8 @@ class User {
           result.recordset[0].height,
           result.recordset[0].weight,
           result.recordset[0].weightGoal,
-          result.recordset[0].TargetCalarieIntake
+          result.recordset[0].TargetCalarieIntake,
+          result.recordset[0].point
         )
       : null;
   }

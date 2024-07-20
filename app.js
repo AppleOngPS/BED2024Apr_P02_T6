@@ -89,9 +89,9 @@ app.put("/users", usersController.updateUser); // Update user
 app.delete("/users", usersController.deleteUser); // Delete user
 
 app.get("/rewards", rewardsController.getAllRewards); // Get all rewards
-app.get("/rewards", rewardsController.getRewardsById); // Get all rewards by ID
-app.get("/rewards/:id", rewardsController.updateRewards); // update rewards
-app.delete("/rewards", rewardsController.deleteReward); // Delete rewards
+app.get("/rewards/:id", rewardsController.getRewardsById); // Get reward by ID
+app.post("/redeem/:id", rewardsController.redeemReward); // Redeem reward by ID
+app.delete("/rewards/:id", rewardsController.deleteReward); //delete reward
 
 app.post("/community", postController.createPost);
 app.get("/community", postController.getPosts);
