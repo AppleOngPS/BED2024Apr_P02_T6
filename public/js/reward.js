@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async function() {
   console.log('DOM fully loaded and parsed');
 
@@ -61,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     });
 
-    pointsElement.textContent = ` ${userPoints}`;
+    pointsElement.textContent = `Total available Points: ${userPoints}`;
     console.log('User points displayed:', userPoints);
   }
 
@@ -73,15 +72,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const nameRow = document.createElement('div');
     nameRow.className = 'row';
-    nameRow.innerHTML = ` <span>${reward.name}</span>`;
+    nameRow.innerHTML = `<span>${reward.name}</span>`;
     card.appendChild(nameRow);
 
     const descriptionRow = document.createElement('div');
     descriptionRow.className = 'row';
-    descriptionRow.innerHTML = ` <span>${reward.description}</span>`;
+    descriptionRow.innerHTML = `<span>${reward.description}</span>`;
     card.appendChild(descriptionRow);
-
-
 
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'button-container';
@@ -108,21 +105,22 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Function to handle redeeming rewards
   async function redeemReward(reward) {
     try {
-      const response = await fetch(`http://localhost:3000/redeem/${reward.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-      });
-      if (!response.ok) {
-        throw new Error('Failed to redeem reward');
-      }
-
       if (reward.point <= userPoints) {
+        const response = await fetch(`http://localhost:3000/redeem/${reward.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({})
+        });
+        if (!response.ok) {
+          throw new Error('Failed to redeem reward');
+        }
+
         reward.redeemed = 'Y';
         userPoints -= reward.point;
         updateRewardUI(reward);
+        await updateUserPoints(); // Update user points after redeeming
       } else {
         alert('Insufficient points to redeem this reward');
       }
@@ -143,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (!response.ok) {
         throw new Error('Failed to delete reward');
       }
-  
+
       const cardToRemove = redeemedRewardsGrid.querySelector(`.card[data-id="${reward.id}"]`);
       if (cardToRemove) {
         redeemedRewardsGrid.removeChild(cardToRemove);
@@ -161,7 +159,36 @@ document.addEventListener('DOMContentLoaded', async function() {
       const newCard = createRewardCard(redeemedReward);
       redeemedRewardsGrid.appendChild(newCard);
     }
-    pointsElement.textContent = ` ${userPoints}`;
+    pointsElement.textContent = `${userPoints}`;
+  }
+
+  // Function to handle update user points
+  async function updateUserPoints() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (loggedInUser) {
+      try {
+        const updatedUserData = {
+          name: loggedInUser.name,
+          point: userPoints
+        };
+        const response = await fetch('http://localhost:3000/users/points', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedUserData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update user data');
+        }
+
+        alert('Points updated successfully');
+      } catch (error) {
+        console.error('Error updating points:', error);
+        alert('Error updating points. Please try again.');
+      }
+    }
   }
 
   fetchRewards();
@@ -171,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('Logged in user:', loggedInUser);
     userPoints = await fetchUserPoints(loggedInUser.name, loggedInUser.password);
     console.log('User points fetched:', userPoints);
-    pointsElement.textContent = ` ${userPoints}`;
+    pointsElement.textContent = `${userPoints}`;
   } else {
     console.error('User not logged in');
   }
