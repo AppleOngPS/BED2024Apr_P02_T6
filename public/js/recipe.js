@@ -206,8 +206,22 @@ function showRecipeDetails(recipe) {
     <p>${recipe.description}</p>
     <h3>Ingredients</h3>
     <p>${recipe.ingredients}</p>
+    <h3>Nutritional Information</h3>
+    <div class="nutrition-info">
+      <p><strong>Calories:</strong> ${recipe.calories}</p>
+      <p><strong>Carbs:</strong> ${recipe.carbs}g</p>
+      <p><strong>Protein:</strong> ${recipe.protein}g</p>
+      <p><strong>Fats:</strong> ${recipe.fats}g</p>
+    </div>
   `;
   modalContent.appendChild(detailsContainer);
+
+  // Create and append edit button
+  const editButton = document.createElement("button");
+  editButton.textContent = "Edit Recipe";
+  editButton.className = "edit-button";
+  editButton.onclick = () => openEditRecipeModal(recipe);
+  modalContent.appendChild(editButton);
 
   // Create and append delete button
   const deleteButton = document.createElement("button");
@@ -217,9 +231,7 @@ function showRecipeDetails(recipe) {
 
   // Event listeners
   closeBtn.onclick = closeRecipeModal;
-  deleteButton.onclick = function () {
-    showConfirmModal(recipe.id);
-  };
+  deleteButton.onclick = () => showConfirmModal(recipe.id);
 
   modal.style.display = "block";
 
@@ -293,22 +305,25 @@ function closeRecipeModal() {
   document.getElementById("recipeModal").style.display = "none";
 }
 
-function addRecipe() {
+function addRecipe(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+
+  console.log("addRecipe function called"); // Debugging line
   const form = document.getElementById("addRecipeForm");
   const formData = new FormData(form);
 
   const name = formData.get("name");
 
+  // Disable the submit button to prevent double submission
+  const submitButton = form.querySelector('button[type="submit"]');
+  if (submitButton) submitButton.disabled = true;
+
   // First, check if the recipe already exists (case-insensitive)
   fetch(`http://localhost:3000/api/recipes/name/${encodeURIComponent(name)}`)
     .then((response) => {
-      if (!response.ok) {
-        if (response.status === 404) {
-          // Recipe doesn't exist, proceed with adding
-          return addNewRecipe(formData);
-        } else {
-          throw new Error("Error checking for existing recipe");
-        }
+      if (response.status === 404) {
+        // Recipe doesn't exist, proceed with adding
+        return addNewRecipe(formData);
       }
       return response.json();
     })
@@ -327,6 +342,10 @@ function addRecipe() {
         "errorModal",
         `An error occurred while checking for existing recipe: ${error.message}`
       );
+    })
+    .finally(() => {
+      // Re-enable the submit button
+      if (submitButton) submitButton.disabled = false;
     });
 }
 
@@ -386,7 +405,7 @@ function addNewRecipe(formData) {
     return;
   }
 
-  fetch("http://localhost:3000/api/recipes", {
+  return fetch("http://localhost:3000/api/recipes", {
     method: "POST",
     body: formData,
   })
@@ -413,6 +432,122 @@ function addNewRecipe(formData) {
         `An error occurred while adding the recipe: ${error.message}`
       );
     });
+}
+document.getElementById("addRecipeForm").addEventListener("submit", addRecipe);
+let currentRecipe = null;
+
+function openEditRecipeModal(recipe) {
+  const modal = document.getElementById("editRecipeModal");
+  modal.style.display = "block";
+
+  // Populate the form with current recipe data
+  document.getElementById("edit-recipe-id").value = recipe.id;
+  document.getElementById("edit-recipe-name").value = recipe.name;
+  document.getElementById("edit-recipe-category").value = recipe.category;
+  document.getElementById("edit-recipe-description").value = recipe.description;
+  document.getElementById("edit-recipe-ingredients").value = recipe.ingredients;
+  document.getElementById("edit-recipe-calories").value = recipe.calories;
+  document.getElementById("edit-recipe-carbs").value = recipe.carbs;
+  document.getElementById("edit-recipe-protein").value = recipe.protein;
+  document.getElementById("edit-recipe-fats").value = recipe.fats;
+
+  // Store the current recipe for comparison later
+  currentRecipe = { ...recipe };
+}
+function closeEditRecipeModal() {
+  document.getElementById("editRecipeModal").style.display = "none";
+}
+function updateRecipe(event) {
+  event.preventDefault();
+  const form = document.getElementById("editRecipeForm");
+  const formData = new FormData(form);
+
+  let changesDetected = false;
+  for (let [key, value] of formData.entries()) {
+    if (value !== currentRecipe[key]) {
+      changesDetected = true;
+      break;
+    }
+  }
+
+  if (!changesDetected) {
+    showPrompt("No changes were made to the recipe.");
+    return;
+  }
+
+  // Convert FormData to JSON
+  const jsonData = {};
+  formData.forEach((value, key) => {
+    if (key !== "image" && key !== "id") {
+      jsonData[key] = value;
+    }
+  });
+
+  // Handle image separately
+  const imageFile = formData.get("image");
+  if (imageFile && imageFile.size > 0) {
+    // If you want to send the image, you'll need to handle file upload separately
+    // For now, we'll just skip it
+    console.log("Image file selected, but not sent in this request");
+  }
+
+  console.log("Data being sent:", jsonData);
+
+  fetch(`http://localhost:3000/api/recipes/${currentRecipe.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(jsonData),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((text) => {
+          throw new Error(text);
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      showPrompt("Recipe updated successfully!");
+      closeEditRecipeModal();
+      fetchRecipes();
+      closeRecipeModal();
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      showPrompt(
+        `An error occurred while updating the recipe: ${error.message}`
+      );
+    });
+}
+function showPrompt(message) {
+  // Remove any existing prompt
+  const existingPrompt = document.querySelector(".prompt-overlay");
+  if (existingPrompt) {
+    existingPrompt.remove();
+  }
+
+  // Create a new prompt
+  const promptOverlay = document.createElement("div");
+  promptOverlay.className = "prompt-overlay";
+
+  const promptContent = document.createElement("div");
+  promptContent.className = "prompt-content";
+
+  const messageElement = document.createElement("p");
+  messageElement.textContent = message;
+
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "OK";
+  closeButton.onclick = () => promptOverlay.remove();
+
+  promptContent.appendChild(messageElement);
+  promptContent.appendChild(closeButton);
+  promptOverlay.appendChild(promptContent);
+
+  // Append the prompt to the body
+  document.body.appendChild(promptOverlay);
 }
 
 function deleteRecipe(id) {
@@ -665,3 +800,6 @@ function fetchRecipeCount() {
 function updateRecipeCount(count) {
   //document.getElementById("recipeCount").textContent = `Total recipes: ${count || 0}`;
 }
+document
+  .getElementById("editRecipeForm")
+  .addEventListener("submit", updateRecipe);

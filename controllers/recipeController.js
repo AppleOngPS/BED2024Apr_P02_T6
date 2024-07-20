@@ -5,7 +5,6 @@ const dbConfig = require("../dbConfig");
 const imagesDir = path.join(__dirname, "../public/images");
 
 let pool;
-// Use a singleton pattern for database connection to avoid multiple connections
 async function connectToDb() {
   if (!pool) {
     pool = await sql.connect(dbConfig);
@@ -15,7 +14,6 @@ async function connectToDb() {
 const getAllRecipes = async (req, res) => {
   await connectToDb();
   try {
-    // Implement pagination to limit the number of results and improve performance
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 16;
     const offset = (page - 1) * limit;
@@ -24,13 +22,11 @@ const getAllRecipes = async (req, res) => {
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, limit);
 
-    // Get total count for pagination metadata
     const countResult = await request.query(
       "SELECT COUNT(*) AS totalCount FROM recipes"
     );
     const totalCount = countResult.recordset[0].totalCount;
 
-    // Use OFFSET-FETCH for efficient pagination in SQL Server
     const result = await request.query(`
       SELECT * FROM recipes
       ORDER BY id
@@ -38,7 +34,6 @@ const getAllRecipes = async (req, res) => {
       FETCH NEXT @limit ROWS ONLY
     `);
 
-    // Return pagination metadata along with the results
     res.json({
       recipes: result.recordset,
       currentPage: page,
@@ -78,7 +73,6 @@ const createRecipe = async (req, res) => {
   } = req.body;
 
   try {
-    // Check for existing recipe with the same name to avoid duplicates
     const checkRequest = pool.request();
     checkRequest.input("name", sql.NVarChar, name.toLowerCase());
     const checkResult = await checkRequest.query(
@@ -91,7 +85,6 @@ const createRecipe = async (req, res) => {
       });
     }
 
-    // Insert new recipe
     const insertRequest = pool.request();
     insertRequest.input("name", sql.NVarChar, name);
     insertRequest.input("category", sql.NVarChar, category);
@@ -109,7 +102,6 @@ const createRecipe = async (req, res) => {
 
     const newId = result.recordset[0].id;
 
-    // Handle image upload if provided
     if (req.file) {
       const newImageName = `recipe-${newId}.avif`;
       const oldPath = path.join(imagesDir, req.file.filename);
@@ -117,7 +109,6 @@ const createRecipe = async (req, res) => {
 
       fs.renameSync(oldPath, newPath);
 
-      // Update the recipe with the new image name
       const updateRequest = pool.request();
       updateRequest.input("image", sql.NVarChar, newImageName);
       updateRequest.input("id", sql.Int, newId);
@@ -128,7 +119,6 @@ const createRecipe = async (req, res) => {
 
     res.json({ id: newId, message: "Recipe added successfully" });
   } catch (error) {
-    // Clean up uploaded file if an error occurs during recipe creation
     if (req.file) {
       const filePath = path.join(imagesDir, req.file.filename);
       fs.unlink(filePath, (err) => {
@@ -144,7 +134,20 @@ const createRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
   await connectToDb();
   const { id } = req.params;
-  const { name, category, description, ingredients } = req.body;
+  console.log("Received update request for recipe ID:", id);
+  console.log("Request body:", req.body);
+
+  const {
+    name,
+    category,
+    description,
+    ingredients,
+    calories,
+    carbs,
+    protein,
+    fats,
+  } = req.body;
+
   try {
     const request = pool.request();
     request.input("id", sql.Int, id);
@@ -152,12 +155,33 @@ const updateRecipe = async (req, res) => {
     request.input("category", sql.NVarChar, category);
     request.input("description", sql.NVarChar, description);
     request.input("ingredients", sql.NVarChar, ingredients);
-    const result = await request.query(
-      "UPDATE recipes SET name = @name, category = @category, description = @description, ingredients = @ingredients WHERE id = @id"
-    );
-    res.json(result);
+    request.input("calories", sql.Int, parseInt(calories));
+    request.input("carbs", sql.Int, parseInt(carbs));
+    request.input("protein", sql.Int, parseInt(protein));
+    request.input("fats", sql.Int, parseInt(fats));
+
+    let query = `
+      UPDATE recipes 
+      SET name = @name, category = @category, description = @description, 
+          ingredients = @ingredients, calories = @calories, carbs = @carbs, 
+          protein = @protein, fats = @fats
+      WHERE id = @id
+    `;
+
+    await request.query(query);
+
+    // Fetch the updated recipe
+    const updatedRecipe = await pool
+      .request()
+      .input("id", sql.Int, id)
+      .query("SELECT * FROM recipes WHERE id = @id");
+
+    res.json(updatedRecipe.recordset[0]);
   } catch (error) {
-    res.status(500).json({ error: "Failed to update recipe" });
+    console.error("Error updating recipe:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to update recipe", details: error.message });
   }
 };
 
@@ -180,7 +204,6 @@ const getRecipeByName = async (req, res) => {
   try {
     const request = pool.request();
     request.input("name", sql.NVarChar, name);
-    // Use LIKE for partial name matching
     const result = await request.query(
       "SELECT TOP 1 * FROM recipes WHERE name LIKE @name + '%'"
     );
@@ -199,7 +222,6 @@ const getRecipesByCategory = async (req, res) => {
   await connectToDb();
   const { category } = req.params;
   try {
-    // Implement pagination for category-based results
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 16;
     const offset = (page - 1) * limit;
@@ -209,7 +231,6 @@ const getRecipesByCategory = async (req, res) => {
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, limit);
 
-    // Get total count for pagination metadata
     const countResult = await request.query(`
       SELECT COUNT(*) AS totalCount 
       FROM recipes 
@@ -217,7 +238,6 @@ const getRecipesByCategory = async (req, res) => {
     `);
     const totalCount = countResult.recordset[0].totalCount;
 
-    // Use OFFSET-FETCH for efficient pagination in SQL Server
     const result = await request.query(`
       SELECT * FROM recipes
       WHERE category = @category
@@ -226,7 +246,6 @@ const getRecipesByCategory = async (req, res) => {
       FETCH NEXT @limit ROWS ONLY
     `);
 
-    // Return pagination metadata along with the results
     res.json({
       recipes: result.recordset,
       currentPage: page,
@@ -242,7 +261,6 @@ const getRandomRecipe = async (req, res) => {
   try {
     await connectToDb();
     const request = pool.request();
-    // Use NEWID() for random selection in SQL Server
     const result = await request.query(
       "SELECT TOP 1 * FROM recipes ORDER BY NEWID()"
     );
@@ -279,11 +297,9 @@ const getRecipesByCalorieRange = async (req, res) => {
   await connectToDb();
   const { min, max, page = 1, limit = 16 } = req.query;
   const offset = (page - 1) * limit;
-
-  // Validate input parameters
   if (!min && !max) {
     return res.status(400).json({
-      error: "Please provide at least the minimum or maximum calorie value.",
+      error: "Please provide at the minimum and maximum calorie value.",
     });
   }
   if ((min && !max) || (!min && max)) {
@@ -300,13 +316,11 @@ const getRecipesByCalorieRange = async (req, res) => {
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, parseInt(limit));
 
-    // Get total count for pagination metadata
     const countResult = await request.query(
       "SELECT COUNT(*) AS totalCount FROM recipes WHERE calories BETWEEN @min AND @max"
     );
     const totalCount = countResult.recordset[0].totalCount;
 
-    // Use OFFSET-FETCH for efficient pagination in SQL Server
     const result = await request.query(
       `SELECT * FROM recipes 
        WHERE calories BETWEEN @min AND @max 
@@ -315,7 +329,6 @@ const getRecipesByCalorieRange = async (req, res) => {
        FETCH NEXT @limit ROWS ONLY`
     );
 
-    // Return pagination metadata along with the results
     res.json({
       recipes: result.recordset,
       currentPage: parseInt(page),
@@ -332,7 +345,6 @@ const getRecipesByNutrientRange = async (req, res) => {
   await connectToDb();
   const { nutrient, min, max, page = 1, limit = 16 } = req.query;
 
-  // Validate input parameters
   if (!min && !max) {
     return res.status(400).json({
       error: "Please provide the minimum and maximum nutrient value.",
@@ -353,19 +365,15 @@ const getRecipesByNutrientRange = async (req, res) => {
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, parseInt(limit));
 
-    // Validate nutrient parameter
     const validNutrients = ["calories", "carbs", "protein", "fats"];
     if (!validNutrients.includes(nutrient)) {
       return res.status(400).json({ error: "Invalid nutrient specified" });
     }
 
-    // Get total count for pagination metadata
     const countResult = await request.query(
       `SELECT COUNT(*) AS totalCount FROM recipes WHERE ${nutrient} BETWEEN @min AND @max`
     );
     const totalCount = countResult.recordset[0].totalCount;
-
-    // Use OFFSET-FETCH for efficient pagination in SQL Server
     const result = await request.query(
       `SELECT * FROM recipes 
        WHERE ${nutrient} BETWEEN @min AND @max 
@@ -374,7 +382,6 @@ const getRecipesByNutrientRange = async (req, res) => {
        FETCH NEXT @limit ROWS ONLY`
     );
 
-    // Return pagination metadata along with the results
     res.json({
       recipes: result.recordset,
       currentPage: parseInt(page),
@@ -391,7 +398,6 @@ const searchRecipesByIngredient = async (req, res) => {
   await connectToDb();
   const { ingredient, page = 1, limit = 16 } = req.query;
 
-  // Validate input parameters
   if (!ingredient || ingredient.trim() === "") {
     return res
       .status(400)
@@ -400,6 +406,9 @@ const searchRecipesByIngredient = async (req, res) => {
 
   const offset = (page - 1) * limit;
 
+  if (!ingredient) {
+    return res.status(400).json({ error: "Ingredient parameter is required" });
+  }
   try {
     console.log("Searching for ingredient:", ingredient);
     const request = pool.request();
@@ -407,7 +416,6 @@ const searchRecipesByIngredient = async (req, res) => {
     request.input("offset", sql.Int, offset);
     request.input("limit", sql.Int, parseInt(limit));
 
-    // Get total count for pagination metadata
     const countQuery = `
       SELECT COUNT(*) AS totalCount FROM recipes 
       WHERE description LIKE '%' + @ingredient + '%'
@@ -420,8 +428,6 @@ const searchRecipesByIngredient = async (req, res) => {
     const countResult = await request.query(countQuery);
     const totalCount = countResult.recordset[0].totalCount;
 
-    // Use OFFSET-FETCH for efficient pagination in SQL Server
-    // Search in both description and ingredients fields
     const query = ` 
       SELECT * FROM recipes 
       WHERE description LIKE '%' + @ingredient + '%'
@@ -437,14 +443,13 @@ const searchRecipesByIngredient = async (req, res) => {
     console.log("Executing query:", query);
     const result = await request.query(query);
     console.log("Query result:", result);
-    //pagination math for this function
+
     res.json({
       recipes: result.recordset,
       currentPage: parseInt(page),
       totalPages: Math.ceil(totalCount / parseInt(limit)),
       totalRecipes: totalCount,
     });
-    //error handling if there is any internal server error
   } catch (error) {
     console.error("Error in searchRecipesByIngredient:", error);
     res.status(500).json({
