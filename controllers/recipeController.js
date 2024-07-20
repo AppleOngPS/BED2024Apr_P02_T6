@@ -134,9 +134,6 @@ const createRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
   await connectToDb();
   const { id } = req.params;
-  console.log("Received update request for recipe ID:", id);
-  console.log("Request body:", req.body);
-
   const {
     name,
     category,
@@ -149,6 +146,32 @@ const updateRecipe = async (req, res) => {
   } = req.body;
 
   try {
+    // First, fetch the current recipe
+    const currentRecipe = await pool
+      .request()
+      .input("id", sql.Int, id)
+      .query("SELECT * FROM recipes WHERE id = @id");
+
+    if (currentRecipe.recordset.length === 0) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    const current = currentRecipe.recordset[0];
+
+    // Check if any changes were made
+    const changesDetected =
+      current.name !== name ||
+      current.category !== category ||
+      current.description !== description ||
+      current.ingredients !== ingredients ||
+      current.calories !== parseInt(calories) ||
+      current.carbs !== parseInt(carbs) ||
+      current.protein !== parseInt(protein) ||
+      current.fats !== parseInt(fats);
+
+    if (!changesDetected) {
+      return res.status(200).json({ message: "No changes detected" });
+    }
     const request = pool.request();
     request.input("id", sql.Int, id);
     request.input("name", sql.NVarChar, name);

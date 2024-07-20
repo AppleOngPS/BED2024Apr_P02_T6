@@ -452,7 +452,17 @@ function openEditRecipeModal(recipe) {
   document.getElementById("edit-recipe-fats").value = recipe.fats;
 
   // Store the current recipe for comparison later
-  currentRecipe = { ...recipe };
+  currentRecipe = {
+    id: recipe.id,
+    name: recipe.name,
+    category: recipe.category,
+    description: recipe.description,
+    ingredients: recipe.ingredients,
+    calories: recipe.calories,
+    carbs: recipe.carbs,
+    protein: recipe.protein,
+    fats: recipe.fats,
+  };
 }
 function closeEditRecipeModal() {
   document.getElementById("editRecipeModal").style.display = "none";
@@ -463,11 +473,47 @@ function updateRecipe(event) {
   const formData = new FormData(form);
 
   let changesDetected = false;
-  for (let [key, value] of formData.entries()) {
+  const keysToCheck = [
+    "name",
+    "category",
+    "description",
+    "ingredients",
+    "calories",
+    "carbs",
+    "protein",
+    "fats",
+  ];
+
+  const jsonData = {};
+
+  for (let key of keysToCheck) {
+    let value = formData.get(key);
+
+    // Convert numeric values to numbers for comparison
+    if (
+      key === "calories" ||
+      key === "carbs" ||
+      key === "protein" ||
+      key === "fats"
+    ) {
+      value = parseInt(value);
+    }
+
+    jsonData[key] = value;
+
     if (value !== currentRecipe[key]) {
       changesDetected = true;
-      break;
+      console.log(
+        `Change detected in ${key}: ${currentRecipe[key]} -> ${value}`
+      );
     }
+  }
+
+  // Check if a new image is uploaded
+  const imageFile = formData.get("image");
+  if (imageFile && imageFile.size > 0) {
+    changesDetected = true;
+    console.log("New image uploaded");
   }
 
   if (!changesDetected) {
@@ -475,24 +521,9 @@ function updateRecipe(event) {
     return;
   }
 
-  // Convert FormData to JSON
-  const jsonData = {};
-  formData.forEach((value, key) => {
-    if (key !== "image" && key !== "id") {
-      jsonData[key] = value;
-    }
-  });
+  console.log("Changes detected, sending update request");
 
-  // Handle image separately
-  const imageFile = formData.get("image");
-  if (imageFile && imageFile.size > 0) {
-    // If you want to send the image, you'll need to handle file upload separately
-    // For now, we'll just skip it
-    console.log("Image file selected, but not sent in this request");
-  }
-
-  console.log("Data being sent:", jsonData);
-
+  // If changes were detected, proceed with the update
   fetch(`http://localhost:3000/api/recipes/${currentRecipe.id}`, {
     method: "PUT",
     headers: {
@@ -502,25 +533,33 @@ function updateRecipe(event) {
   })
     .then((response) => {
       if (!response.ok) {
-        return response.text().then((text) => {
-          throw new Error(text);
+        return response.json().then((err) => {
+          throw err;
         });
       }
       return response.json();
     })
     .then((data) => {
-      showPrompt("Recipe updated successfully!");
-      closeEditRecipeModal();
-      fetchRecipes();
-      closeRecipeModal();
+      console.log("Server response:", data);
+      if (!changesDetected) {
+        showPrompt("No changes were made to the recipe.");
+      } else {
+        showPrompt("Recipe updated successfully!");
+        closeEditRecipeModal();
+        fetchRecipes();
+        closeRecipeModal();
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
-      showPrompt(
-        `An error occurred while updating the recipe: ${error.message}`
-      );
+      let errorMessage = "An error occurred while updating the recipe.";
+      if (error.errors && Array.isArray(error.errors)) {
+        errorMessage += " " + error.errors.join(", ");
+      }
+      showPrompt(errorMessage);
     });
 }
+
 function showPrompt(message) {
   // Remove any existing prompt
   const existingPrompt = document.querySelector(".prompt-overlay");
@@ -549,6 +588,9 @@ function showPrompt(message) {
   // Append the prompt to the body
   document.body.appendChild(promptOverlay);
 }
+document
+  .getElementById("editRecipeForm")
+  .addEventListener("submit", updateRecipe);
 
 function deleteRecipe(id) {
   fetch(`http://localhost:3000/api/recipes/${id}`, {
