@@ -99,10 +99,7 @@ app.get("/community/:id", postController.getPostById);
 app.put("/community/:id", postController.updatePost);
 app.delete("/community/:id", postController.deletePost);
 
-// Serve the HTML file
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
+
 
 app.post("/update_points", async (req, res) => {
   const { points } = req.body;
@@ -123,6 +120,11 @@ app.post("/update_points", async (req, res) => {
     console.error("Error updating points:", error);
     res.status(500).send("Failed to update points");
   }
+});
+
+// Serve the HTML file
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "./index.html");
 });
 
 // Start server and connect to database
