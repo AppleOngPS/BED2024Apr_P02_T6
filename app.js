@@ -87,6 +87,8 @@ app.get("/user/:userId", usersController.getUserById); // Get user details by ID
 app.get("/users", usersController.getUserByName); // Get user by Name
 app.put("/users", usersController.updateUser); // Update user
 app.delete("/users", usersController.deleteUser); // Delete user
+app.put("/users/points", usersController.updateUserPoints); // Route to update user points
+
 
 app.get("/rewards", rewardsController.getAllRewards); // Get all rewards
 app.get("/rewards/:id", rewardsController.getRewardsById); // Get reward by ID
