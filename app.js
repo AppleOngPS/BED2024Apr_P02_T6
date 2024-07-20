@@ -73,7 +73,7 @@ app.get("/fetch_quiz", async (req, res) => {
     res.json(questions);
   } catch (err) {
     console.error("Error fetching quiz questions:", err);
-    res.status(500).send("Server error");
+    res.status(500).json({ error: "Server error" });
   }
 });
 

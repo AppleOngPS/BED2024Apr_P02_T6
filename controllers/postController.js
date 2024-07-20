@@ -141,23 +141,26 @@ const deletePost = async (req, res) => {
   }
 };
 
-// Function to get quiz questions
-const getQuizQuestions = async (req, res) => {
+// Get quiz questions
+const getQuizQuestions = async () => {
   try {
-    const pool = await getConnectionPool();
+    const pool = await sql.connect(dbConfig);
+    console.log("Connected to database"); // Debug log
     const query = `
       SELECT q.question_id, q.question_text, a.answer_id, a.answer_text, a.is_correct
       FROM quiz_questions q
       JOIN quiz_answers a ON q.question_id = a.question_id
     `;
     const result = await pool.request().query(query);
-    res.json(result.recordset);
-  } catch (err) {
-    console.error("Error fetching quiz questions:", err);
-    res.status(500).json({ error: err.message });
+    console.log("Query executed successfully", result.recordset); // Debug log
+    return result.recordset;
+  } catch (error) {
+    console.error("Error fetching quiz questions:", error); // Detailed log
+    throw error;
+  } finally {
+    sql.close(); // Ensure the connection is closed
   }
 };
-
 module.exports = {
   createPost,
   getPosts,

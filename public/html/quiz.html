@@ -19,8 +19,16 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         fetch("http://localhost:3000/fetch_quiz")
-          .then((response) => response.json())
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                `Server error: ${response.status} - ${response.statusText}`
+              );
+            }
+            return response.json();
+          })
           .then((data) => {
+            console.log("Fetched quiz data:", data); // Logging for debugging
             const quizForm = document.getElementById("quizForm");
             let currentQuestionId = null;
 
@@ -61,7 +69,14 @@
         const totalQuestions = new Set();
 
         fetch("http://localhost:3000/fetch_quiz")
-          .then((response) => response.json())
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                `Server error: ${response.status} - ${response.statusText}`
+              );
+            }
+            return response.json();
+          })
           .then((data) => {
             data.forEach((item) => {
               totalQuestions.add(item.question_id);
