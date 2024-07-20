@@ -104,6 +104,27 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+app.post("/update_points", async (req, res) => {
+  const { points } = req.body;
+  const userId = req.session.userId; // Assuming you have session management
+
+  try {
+    const connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    request.input("userId", sql.Int, userId);
+    request.input("points", sql.Int, points);
+    await request.query(
+      "UPDATE AccountUser SET point = point + @points WHERE id = @userId"
+    );
+    connection.close();
+
+    res.json({ message: "Points updated successfully." });
+  } catch (error) {
+    console.error("Error updating points:", error);
+    res.status(500).send("Failed to update points");
+  }
+});
+
 // Start server and connect to database
 app.listen(port, async () => {
   try {

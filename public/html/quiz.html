@@ -66,6 +66,7 @@
         const quizForm = document.getElementById("quizForm");
         const formData = new FormData(quizForm);
         let score = 0;
+        let totalPoints = 0; // Initialize total points
         const totalQuestions = new Set();
 
         fetch("http://localhost:3000/fetch_quiz")
@@ -85,12 +86,35 @@
                 formData.get(`q${item.question_id}`) == item.answer_id
               ) {
                 score++;
+                totalPoints += 100; // Add 100 points for each correct answer
               }
             });
-            // Redirect to a new page with the score
-            window.location.href = `/html/quiz-result.html?score=${score}&total=${totalQuestions.size}`;
+
+            // Here, send the totalPoints to the server to update the database
+            fetch("http://localhost:3000/update_points", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ points: totalPoints }),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(
+                    `Failed to update points: ${response.status} - ${response.statusText}`
+                  );
+                }
+                return response.json();
+              })
+              .then((result) => {
+                console.log("Points updated successfully:", result);
+                // Redirect to a new page with the score and points
+                window.location.href = `/html/quiz-result.html?score=${score}&total=${totalQuestions.size}&points=${totalPoints}`;
+              });
           })
-          .catch((error) => console.error("Error calculating score:", error));
+          .catch((error) =>
+            console.error("Error calculating score and points:", error)
+          );
       }
     </script>
     <script src="../navigation.js"></script>
