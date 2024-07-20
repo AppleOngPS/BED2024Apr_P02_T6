@@ -105,19 +105,20 @@ app.get("/", (req, res) => {
 });
 
 app.post("/update_points", async (req, res) => {
-  const { points } = req.body;
-  const userId = req.session.userId; // Assuming you have session management
+  const { points, name } = req.body; // Use 'name' to match your database schema
 
   try {
     const connection = await sql.connect(dbConfig);
     const request = connection.request();
-    request.input("userId", sql.Int, userId);
+    request.input("name", sql.VarChar, name);
     request.input("points", sql.Int, points);
-    await request.query(
-      "UPDATE AccountUser SET point = point + @points WHERE id = @userId"
-    );
-    connection.close();
 
+    // Update the point column by adding the new points to the existing points
+    await request.query(
+      "UPDATE AccountUser SET point = ISNULL(point, 0) + @points WHERE name = @name"
+    );
+
+    connection.close();
     res.json({ message: "Points updated successfully." });
   } catch (error) {
     console.error("Error updating points:", error);
