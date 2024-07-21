@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Sharing Form</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/navigation.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Community Sharing</h1>
+      <form id="postForm" enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required />
+
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+          <option value="General">General</option>
+          <option value="Events">Events</option>
+          <option value="Announcements">Announcements</option>
+        </select>
+
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" />
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+    <script>
+      document
+        .getElementById("postForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = new FormData(this);
+
+          try {
+            const response = await fetch("/posts", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              window.location.href = "/community-page.html";
+            } else {
+              const errorData = await response.json();
+              alert("Error: " + errorData.error);
+            }
+          } catch (error) {
+            alert("Error: " + error.message);
+          }
+        });
+    </script>
+    <script src="../navigation.js"></script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+
+.header-full{
+    border: black hidden;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .header{
+    display:flex;
+    justify-content: center;
+    background-color: lightgrey hidden;
+    border-radius: 20px;
+    width:500px;
+    font-size: 28px;  
+    border:5px black hidden;
+    
+  }
+  
+  .container{
+    border: 3px purple hidden;
+    display: flex;
+    justify-content: center;
+    height: 600px;
+  }
+
+  #profileForm {
+    display:flex;
+    flex-direction: column;
+    
+    width:500px;
+    height:400px;
+    padding: 20px;
+    border: 10px black hidden;
+    font-size: 18px;
+  
+  }
+  
+  #loginForm input{
+    width:100%;
+  }
+  .form-group{
+    display: flex ;
+    justify-content: left;
+    border: black hidden;
+  }
+
+.form-group input{
+    display: flex;
+    
+    width:100%;
+}
