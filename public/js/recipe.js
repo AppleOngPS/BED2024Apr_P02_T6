@@ -323,7 +323,7 @@ function addRecipe(event) {
     .then((response) => {
       if (response.status === 404) {
         // Recipe doesn't exist, proceed with adding
-        return addNewRecipe(formData);
+        return null;
       }
       return response.json();
     })
@@ -332,7 +332,7 @@ function addRecipe(event) {
         // Recipe already exists (case-insensitive match), show prompt
         showRecipeExistsPrompt(data.name);
       } else {
-        // No exact match found, proceed with adding
+        // No exact match found or response was 404, proceed with adding
         return addNewRecipe(formData);
       }
     })
