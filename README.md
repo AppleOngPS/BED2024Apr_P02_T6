@@ -1,11 +1,19 @@
-# BED-Assignment
+# BED-Assignment: Project Name
+Desription of the website
 
 
 # Design Process
+This website is focusing on anyone who are interested and want to find out more about healthy lifestyle through the website.As a user, I want the website to be easy to navigate to every page using the menu bar,providing distinct and clear category like Home, Recipe, Quiz, Meal planning ,Community, Food Database, Reward, Login. As a reader ,readability will be a important factor,having a clear font,and contrasting colors to enhance the overall user experience.
 
+We used Figma software to create the wireframe.Below is the attacked link for both desktop view and mobile view.
+link: https://www.figma.com/design/v1nV3wdBctch9Cxq5SNRMZ/BED-Assignment?node-id=0-1&t=YaIrJOvIUad5vm1Z-1
 
 # Features
+In this section, we will go over the different parts of my project, and describe each in a sentence or so.
 
+Feature 1 - allow user to navigate around the pages using the menus bar
+Feature 2 - allow user to login to user by having them fill up the login details
+Feature 3 - allow user to redeem and delete the voucher in the reward page
 
 # Technologies Used
 HTML the project uses html to create a basic structure of the website. Testing Official website:https://html.spec.whatwg.org/
@@ -30,3 +38,15 @@ Figma(WireFrame) the project use Figma for prototyping, and user interface (UI) 
 
 
 # Credits
+
+Images for the wireframe
+
+https://www.ntuc.org.sg/uportal/about-us/social-enterprises/ntuc-fairprice  
+
+https://www.mrbean.com.sg/  
+
+https://pss.hpb.gov.sg/  
+
+https://www.facebook.com/lihosg/   
+
+https://simplywrapps.oddle.me/en_SG/  
