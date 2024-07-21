@@ -9,15 +9,14 @@
     <link rel="stylesheet" href="../css/footer.css" />
   </head>
   <body>
-    <!-- Include navbar -->
-    <header>
-      <!-- Insert your existing navbar code here -->
-    </header>
-
     <main>
       <section class="meal-summary">
         <h2>Meal Plan</h2>
         <p id="current-date"></p>
+        <button id="calendar-button" onclick="openCalendarModal()">
+          📅 Calendar
+        </button>
+        <!-- Calendar button -->
         <div class="nutrition-summary">
           <div>Calories: <span id="total-calories">0</span></div>
           <div>Carbs: <span id="total-carbs">0</span></div>
@@ -26,6 +25,13 @@
           <div>Sodium: <span id="total-sodium">0</span></div>
         </div>
       </section>
+
+      <div id="nutritionModal" class="modal">
+        <div class="nutrition-modal-content">
+          <span class="close-nutrition">&times;</span>
+          <div id="nutritionModalContent"></div>
+        </div>
+      </div>
 
       <section class="meal-planning">
         <div class="meal-category">
@@ -57,7 +63,48 @@
             </div>
           </div>
         </div>
+
+        <div class="meal-category">
+          <h3>Extra's (snacks, drinks)</h3>
+          <div class="meal-list" id="extras-list">
+            <!-- Food items for extra's will be dynamically inserted here -->
+            <div class="add-item" onclick="openAddFoodModal('extras')">
+              + Add Item
+            </div>
+          </div>
+        </div>
       </section>
+
+      <section class="new-day">
+        <button id="new-day-button">New Day</button>
+      </section>
+
+      <div id="calendarModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeCalendarModal()">&times;</span>
+          <div id="calendar-container">
+            <div id="calendar-header">
+              <button id="prevMonth">&lt;</button>
+              <h2 id="monthYear"></h2>
+              <button id="nextMonth">&gt;</button>
+            </div>
+            <table id="calendar">
+              <thead>
+                <tr>
+                  <th>Sun</th>
+                  <th>Mon</th>
+                  <th>Tue</th>
+                  <th>Wed</th>
+                  <th>Thu</th>
+                  <th>Fri</th>
+                  <th>Sat</th>
+                </tr>
+              </thead>
+              <tbody id="calendar-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <!-- Modal for adding new food item -->
       <div id="addFoodModal" class="modal">
@@ -92,6 +139,15 @@
 
             <label for="food-sodium">Sodium:</label>
             <input type="number" id="food-sodium" name="food-sodium" required />
+
+            <label for="food-image">Image:</label>
+            <input
+              type="file"
+              id="food-image"
+              name="food-image"
+              accept="image/*"
+              required
+            />
 
             <button type="submit">Add Food</button>
           </form>
