@@ -119,6 +119,21 @@ const deleteUser = async (req, res) => {
 };
 
 
+const updateUserPoints = async (req, res) => {
+  try {
+    const { name, point } = req.body; // Extract name and points from the request body
+    const success = await User.updateUserPoints(name, point);
+    if (success) {
+      res.status(200).json({ message: 'Points updated successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error updating points:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -128,4 +143,5 @@ module.exports = {
   getUserByName,
   updateUser,
   deleteUser,
+  updateUserPoints,
 };

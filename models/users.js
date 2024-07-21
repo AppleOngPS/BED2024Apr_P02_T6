@@ -49,12 +49,13 @@ class User {
       : null;
   }
 
+
   static async createUserAccount(newUserAccount) {
     try {
       const connection = await sql.connect(dbConfig);
       const sqlQuery = `
-        INSERT INTO AccountUser (name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake)
-        VALUES (@name, @password, @email, @contactNumber, @age, @height, @weight, @weightGoal, @TargetCalarieIntake);
+        INSERT INTO AccountUser (name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake, point)
+        VALUES (@name, @password, @email, @contactNumber, @age, @height, @weight, @weightGoal, @TargetCalarieIntake, @point);
         SELECT SCOPE_IDENTITY() AS userId;
       `;
       const request = connection.request();
@@ -67,6 +68,7 @@ class User {
       request.input("weight", sql.Float, newUserAccount.weight);
       request.input("weightGoal", sql.Float, newUserAccount.weightGoal);
       request.input("TargetCalarieIntake", sql.Float, newUserAccount.TargetCalarieIntake);
+      request.input("point", sql.Int, newUserAccount.point || 0); // Default to 0 if not provided
       const result = await request.query(sqlQuery);
       connection.close();
       const userId = result.recordset[0].userId;
@@ -76,6 +78,7 @@ class User {
       throw error;
     }
   }
+  
 
   static async getUserByNameAndPassword(name, password) {
     try {
@@ -142,6 +145,29 @@ class User {
       throw error;
     }
   }
+
+static async updateUserPoints(name, points) {
+  try {
+    const connection = await sql.connect(dbConfig);
+    const sqlQuery = `
+      UPDATE AccountUser
+      SET point = @points
+      WHERE name = @name
+    `;
+    const request = connection.request();
+    request.input("name", sql.NVarChar, name);
+    request.input("points", sql.Int, points);
+    
+    const result = await request.query(sqlQuery);
+    connection.close();
+    
+    return result.rowsAffected[0] > 0; // Return true if any rows were affected
+  } catch (error) {
+    console.error("Error updating user points:", error);
+    throw error;
+  }
 }
+
+ }
 
 module.exports = User;
