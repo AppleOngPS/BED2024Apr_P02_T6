@@ -43,6 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     ? "html/Reward.html"
                     : "Reward.html"
                 }">Reward</a></li>
+                 <li><a href="${
+                  isCurrentDirectory() ? "html/profile.html" : "profile.html"
+                }">Profile</a></li>
                 <li><a href="${
                   isCurrentDirectory() ? "html/login.html" : "login.html"
                 }">Login</a></li>

@@ -78,6 +78,11 @@ app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
 
+// Serve the HTML file
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
 // Routes to serve HTML files from the 'public/html' directory
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "community.html"));
@@ -180,10 +185,9 @@ app.put("/api/recipes/:id", validateRecipe, recipeController.updateRecipe);
 // DELETE route for removing a recipe
 app.delete("/api/recipes/:id", recipeController.deleteRecipe);
 
-// Serve the HTML file
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "./index.html");
-});
+
+
+
 
 // Start server and connect to database
 app.listen(port, async () => {
