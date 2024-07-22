@@ -1,3 +1,48 @@
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+
+  if (loggedInUser) {
+    console.log('Logged in user:', loggedInUser);
+
+    // Fetch user points using the stored username and password
+    const username = await fetchUserPoints(loggedInUser.name, loggedInUser.password);
+    console.log('Username fetched:', username);
+   
+  } else {
+    console.error('User not logged in');
+  }
+});
+
+async function fetchUserPoints(username, password) {
+  try {
+    // Adjust URL and query parameters as needed for your API
+    const response = await fetch(`http://localhost:3000/users?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch points');
+    }
+
+    const data = await response.json();
+    //console.log('Fetched user points data:', data);
+
+    // Find the user and return their username or other relevant data
+    const user = data.find(user => user.name === username && user.password === password);
+    
+    if (user) {
+      return user.name; // or any other relevant information you need
+    } else {
+      throw new Error('User not found');
+    }
+
+  } catch (error) {
+    console.error('Error fetching username:', error);
+    return null; // Or handle the error appropriately
+  }
+}
+
+
+
 const meals = {
   breakfast: [],
   lunch: [],
@@ -780,3 +825,6 @@ document.getElementById("nextMonth").addEventListener("click", () => {
   currentMonth = (currentMonth + 1) % 12;
   generateCalendar(currentMonth, currentYear);
 });
+
+
+
