@@ -18,33 +18,33 @@ document.addEventListener("DOMContentLoaded", function () {
             <ul>
                 <!-- Navigation menu items with dynamic linking based on current directory -->
                 <li><a href="${
-                  isCurrentDirectory() ? "index.html" : "../../index.html"
+                  isCurrentDirectory() ? "index.html" : "index.html"
                 }">Home</a></li>
                 <li><a href="${
                   isCurrentDirectory()
-                    ? "public/html/recipe.html"
+                    ? "html/recipe.html"
                     : "recipe.html"
                 }">Recipe</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "public/html/quiz.html" : "quiz.html"
+                  isCurrentDirectory() ? "html/quiz.html" : "quiz.html"
                 }">Quiz</a></li>
                 <li><a href="${
                   isCurrentDirectory()
-                    ? "public/html/meal_planning.html"
+                    ? "html/meal_planning.html"
                     : "meal_planning.html"
                 }">Meal Planning</a></li>
                 <li><a href="${
                   isCurrentDirectory()
-                    ? "public/html/community.html"
+                    ? "html/community.html"
                     : "community.html"
                 }">Community</a></li>
                                 <li><a href="${
                   isCurrentDirectory()
-                    ? "public/html/Reward.html"
+                    ? "html/Reward.html"
                     : "Reward.html"
                 }">Reward</a></li>
                 <li><a href="${
-                  isCurrentDirectory() ? "public/html/login.html" : "login.html"
+                  isCurrentDirectory() ? "html/login.html" : "login.html"
                 }">Login</a></li>
                 <li id="points-display" style="color: white;"></li>
                 <div class="main-icon">
