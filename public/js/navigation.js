@@ -38,6 +38,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     ? "public/html/community.html"
                     : "community.html"
                 }">Community</a></li>
+                                <li><a href="${
+                  isCurrentDirectory()
+                    ? "public/html/Reward.html"
+                    : "Reward.html"
+                }">Reward</a></li>
                 <li><a href="${
                   isCurrentDirectory() ? "public/html/login.html" : "login.html"
                 }">Login</a></li>
