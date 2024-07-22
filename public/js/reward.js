@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     });
 
-    pointsElement.textContent = `Total available Points: ${userPoints}`;
+    pointsElement.textContent = `${userPoints}`;
     console.log('User points displayed:', userPoints);
   }
 
