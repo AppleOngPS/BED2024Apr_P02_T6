@@ -17,9 +17,13 @@ const validateRecipe = require("./middlewares/validateRecipe");
 
 const mealPlanningController = require("./controllers/mealPlanningController");
 
+
 const app = express();
 const port = 3000;
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json");// Import generated spec
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // CRUD routes
 app.post("/posts", postController.createPost);
 app.get("/posts", postController.getPosts);
