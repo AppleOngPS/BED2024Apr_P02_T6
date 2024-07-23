@@ -5,8 +5,8 @@ const meals = {
   extras: [],
 };
 
-const apiKey = "668d0271a7d61d3f9c5c1416";
-const baseUrl = "https://bedass1-fc80.restdb.io/rest/meal-planning";
+const apiKey = "669f4b5ef3a6b21dce3a79f3";
+const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
 
 // Calendar variables
 let currentDate = new Date();
@@ -23,6 +23,32 @@ const targetNutrition = {
   protein: 150,
   fats: 65,
   sodium: 2300,
+};
+const consumedNutrition = {
+  get calories() {
+    return this.calculateTotal("calories");
+  },
+  get carbs() {
+    return this.calculateTotal("carbs");
+  },
+  get protein() {
+    return this.calculateTotal("protein");
+  },
+  get fats() {
+    return this.calculateTotal("fats");
+  },
+  get sodium() {
+    return this.calculateTotal("sodium");
+  },
+  calculateTotal(nutrient) {
+    let total = 0;
+    for (let mealType in meals) {
+      meals[mealType].forEach((food) => {
+        total += food[nutrient] * food.quantity;
+      });
+    }
+    return Math.round(total);
+  },
 };
 
 // Initialization
@@ -213,19 +239,39 @@ function showDayDetails(year, month, day) {
   const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
     day
   ).padStart(2, "0")}`;
-  const storedData = localStorage.getItem(formattedDate);
+
   let dailyNutrition;
 
-  if (storedData) {
-    dailyNutrition = JSON.parse(storedData);
-  } else {
+  // Check if the selected date is today
+  const today = new Date();
+  const isToday =
+    year === today.getFullYear() &&
+    month === today.getMonth() &&
+    day === today.getDate();
+
+  if (isToday) {
+    // Use current day's totals for today
     dailyNutrition = {
-      calories: 0,
-      carbs: 0,
-      protein: 0,
-      fats: 0,
-      sodium: 0,
+      calories: parseInt(document.getElementById("total-calories").innerText),
+      carbs: parseInt(document.getElementById("total-carbs").innerText),
+      protein: parseInt(document.getElementById("total-protein").innerText),
+      fats: parseInt(document.getElementById("total-fats").innerText),
+      sodium: parseInt(document.getElementById("total-sodium").innerText),
     };
+  } else {
+    // For past days, use stored data
+    const storedData = localStorage.getItem(formattedDate);
+    if (storedData) {
+      dailyNutrition = JSON.parse(storedData);
+    } else {
+      dailyNutrition = {
+        calories: 0,
+        carbs: 0,
+        protein: 0,
+        fats: 0,
+        sodium: 0,
+      };
+    }
   }
 
   const modalContent = `
@@ -238,27 +284,27 @@ function showDayDetails(year, month, day) {
       </tr>
       <tr>
         <td>Calories</td>
-        <td>${dailyNutrition.calories} kcal</td>
+        <td>${consumedNutrition.calories} kcal</td>
         <td>${targetNutrition.calories} kcal</td>
       </tr>
       <tr>
         <td>Carbs</td>
-        <td>${dailyNutrition.carbs} g</td>
+        <td>${consumedNutrition.carbs} g</td>
         <td>${targetNutrition.carbs} g</td>
       </tr>
       <tr>
         <td>Protein</td>
-        <td>${dailyNutrition.protein} g</td>
+        <td>${consumedNutrition.protein} g</td>
         <td>${targetNutrition.protein} g</td>
       </tr>
       <tr>
         <td>Fats</td>
-        <td>${dailyNutrition.fats} g</td>
+        <td>${consumedNutrition.fats} g</td>
         <td>${targetNutrition.fats} g</td>
       </tr>
       <tr>
         <td>Sodium</td>
-        <td>${dailyNutrition.sodium} mg</td>
+        <td>${consumedNutrition.sodium} mg</td>
         <td>${targetNutrition.sodium} mg</td>
       </tr>
     </table>
@@ -640,11 +686,12 @@ function updateTotals() {
     });
   }
 
-  document.getElementById("total-calories").innerText = totalCalories;
-  document.getElementById("total-carbs").innerText = totalCarbs;
-  document.getElementById("total-protein").innerText = totalProtein;
-  document.getElementById("total-fats").innerText = totalFats;
-  document.getElementById("total-sodium").innerText = totalSodium;
+  // Update the display
+  document.getElementById("total-calories").textContent = totalCalories;
+  document.getElementById("total-carbs").textContent = totalCarbs;
+  document.getElementById("total-protein").textContent = totalProtein;
+  document.getElementById("total-fats").textContent = totalFats;
+  document.getElementById("total-sodium").textContent = totalSodium;
 
   // Store the data for the current date
   const currentDate = new Date();
@@ -657,9 +704,11 @@ function updateTotals() {
     protein: totalProtein,
     fats: totalFats,
     sodium: totalSodium,
-    targetCalories: targetNutrition.calories, // Add this line
   };
   localStorage.setItem(formattedDate, JSON.stringify(dailyData));
+
+  // Update the calendar display
+  generateCalendar(currentDate.getMonth(), currentDate.getFullYear());
 }
 
 function fetchFoodItems() {
