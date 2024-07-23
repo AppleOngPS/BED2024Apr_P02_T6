@@ -15,6 +15,8 @@ const rewardsController = require("./controllers/rewardController");
 const recipeController = require("./controllers/recipeController");
 const validateRecipe = require("./middlewares/validateRecipe");
 
+const mealPlanningController = require("./controllers/mealPlanningController");
+
 const app = express();
 const port = 3000;
 
@@ -185,9 +187,7 @@ app.put("/api/recipes/:id", validateRecipe, recipeController.updateRecipe);
 // DELETE route for removing a recipe
 app.delete("/api/recipes/:id", recipeController.deleteRecipe);
 
-
-
-
+app.get("/api/targetCalories", mealPlanningController.getTargetCalories);
 
 // Start server and connect to database
 app.listen(port, async () => {
