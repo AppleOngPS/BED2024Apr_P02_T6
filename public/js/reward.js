@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const cardToRemove = redeemedRewardsGrid.querySelector(`.card[data-id="${reward.id}"]`);
       if (cardToRemove) {
         redeemedRewardsGrid.removeChild(cardToRemove);
-      }
+      }alert('Rewards deleted successfully');
     } catch (error) {
       console.error('Error deleting reward:', error);
     }
