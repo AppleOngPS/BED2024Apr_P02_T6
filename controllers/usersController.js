@@ -138,39 +138,50 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Method to update user points
-const updateUserPoints = async (req, res) => {
-  const { id, point } = req.body;
-  console.log("Received data for updating points:", req.body);
 
-  if (!id || !Number.isInteger(Number(id)) || !Number.isInteger(point)) {
+const updateUserPoints = async (req, res) => {
+  const { id, name, point } = req.body;
+
+  console.log('Received request to update points:', req.body);
+
+  // Validate inputs
+  if ((!id && !name) || !Number.isInteger(Number(point))) {
     return res.status(400).json({ error: "Invalid input data" });
   }
 
   try {
-    const connection = await sql.connect(dbConfig);
-    const request = connection.request();
-    request.input("id", sql.Int, Number(id)); // Ensure id is converted to a number
-    request.input("point", sql.Int, point);
+    // Case when `id` is provided
+    if (id) {
+      const connection = await sql.connect(dbConfig);
+      const request = connection.request();
+      request.input("id", sql.Int, Number(id));
+      request.input("point", sql.Int, point);
 
-    const result = await request.query(`
-      UPDATE AccountUser
-      SET point = ISNULL(point, 0) + @point
-      WHERE id = @id
-    `);
+      const result = await request.query(`
+        UPDATE AccountUser
+        SET point = ISNULL(point, 0) + @point
+        WHERE id = @id
+      `);
 
-    console.log("Query executed successfully:", result);
-    res.json({ success: true, result });
-  } catch (err) {
-    console.error("Error executing query:", err);
-    res
-      .status(500)
-      .json({ error: "Database query failed", details: err.message });
-  } finally {
-    sql.close(); // Ensure the connection is closed after the operation
+      console.log("Query executed successfully:", result);
+      res.json({ success: true, result });
+    }
+    // Case when `name` is provided
+    else if (name) {
+      const success = await User.updateUserPoints(name, point);
+      if (success) {
+        res.status(200).json({ message: 'Points updated successfully' });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } else {
+      res.status(400).json({ error: "Invalid input data" });
+    }
+  } catch (error) {
+    console.error('Error updating points:', error);
+    res.status(500).json({ message: 'Internal server error', details: error.message });
   }
 };
-
 module.exports = {
   createUser,
   getAllUsers,
