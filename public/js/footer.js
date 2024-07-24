@@ -72,7 +72,7 @@ function createLinks() {
   var currentPath = window.location.pathname;
 
   // Determine the correct base path for links
-  var basePath = currentPath.includes("public/html") ? "./" : "public/html/";
+  var basePath = currentPath.includes("/html/") ? "./" : "/html/";
 
   // Create links for each name in the array
   linkNames.forEach(function (name) {
@@ -81,7 +81,7 @@ function createLinks() {
     // Set href based on the link name
     if (name === "Home") {
       link.textContent = name;
-      link.href = currentPath.includes("public/html")
+      link.href = currentPath.includes("html/")
         ? "../../index.html"
         : "index.html";
     } else if (name === "Meal Planning") {
