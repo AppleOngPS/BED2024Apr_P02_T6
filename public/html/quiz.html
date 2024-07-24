@@ -7,36 +7,77 @@
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <style>
-      .quiz-container {
-        display: none;
+      body {
+        background-color: #f0f9f0;
+        margin: 0;
+        font-family: Arial, sans-serif;
       }
+
+      .quiz-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        width: 100%;
+        background-color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
       .start-screen {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        width: 100%;
       }
-      .start-button {
-        padding: 15px 30px;
-        font-size: 1.5em;
-        cursor: pointer;
-      }
-      .question-container {
-        border: 2px solid #333;
+
+      .quiz-container {
+        display: none;
+        max-width: 800px;
+        margin: auto;
         padding: 20px;
         background-color: #fff;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
-        width: 50%;
-        margin: auto;
       }
+
+      .start-button,
+      .submit-button {
+        padding: 15px 30px;
+        font-size: 1.5em;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        margin-top: 20px;
+      }
+
+      .start-button:hover,
+      .submit-button:hover {
+        background-color: #0056b3;
+      }
+
+      .question-container {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin: 20px auto;
+      }
+
       .answers {
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-top: 20px;
       }
+
       .answer-button {
         display: inline-block;
         padding: 10px 20px;
@@ -47,19 +88,23 @@
         cursor: pointer;
         font-size: 1em;
         transition: background-color 0.3s ease, color 0.3s ease;
-        width: 200px;
+        width: 100%;
+        max-width: 300px;
         text-align: center;
       }
+
       .answer-button:hover,
       .answer-button.selected {
         background-color: #007bff;
         color: #fff;
       }
+
       .navigation-buttons {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         margin-top: 20px;
       }
+
       .navigation-button {
         padding: 10px 20px;
         border: none;
@@ -69,42 +114,52 @@
         cursor: pointer;
         font-size: 1em;
         transition: background-color 0.3s ease;
+        margin: 0 10px;
+        flex: 1;
       }
+
       .navigation-button:hover {
         background-color: #0056b3;
       }
+
       .welcome-container {
         border: 2px solid #333;
         padding: 40px;
-        width: 50%;
         background-color: #f9f9f9;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
         font-size: 1.5em;
+        width: 80%;
+        max-width: 600px;
+        margin: auto;
       }
     </style>
   </head>
   <body>
-    <div class="start-screen">
-      <div class="welcome-container">
-        <h1>Welcome to the Quiz</h1>
-        <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+    <div class="quiz-wrapper">
+      <div class="start-screen">
+        <div class="welcome-container">
+          <h1>Welcome to the Quiz</h1>
+          <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+        </div>
       </div>
-    </div>
 
-    <div class="quiz-container">
-      <h1 class="quiz-title">Quiz</h1>
-      <div id="questionContainer" class="question-container"></div>
-      <button
-        type="button"
-        class="submit-button"
-        onclick="submitQuiz()"
-        style="display: none"
-      >
-        Submit
-      </button>
-      <div id="quizResult" class="quiz-result"></div>
+      <div class="quiz-container">
+        <h1 class="quiz-title">Quiz</h1>
+        <div id="questionContainer" class="question-container"></div>
+        <div class="navigation-buttons">
+          <button
+            type="button"
+            class="submit-button"
+            onclick="submitQuiz()"
+            style="display: none"
+          >
+            Submit
+          </button>
+        </div>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
     </div>
 
     <script>
@@ -187,18 +242,16 @@
         const questionContainer = document.getElementById("questionContainer");
         questionContainer.innerHTML = "";
 
-        console.log(
-          `Displaying question ${index + 1}/${uniqueQuestions.length}`
-        );
-
         if (index >= uniqueQuestions.length) {
+          console.error("Index out of bounds or no questions available");
           return;
         }
 
         const question = uniqueQuestions[index];
-        console.log("Current question:", question);
+        console.log("Displaying question:", question);
         if (!question) return;
 
+        // Create question element
         const questionDiv = document.createElement("div");
         questionDiv.classList.add("quiz-question");
 
@@ -207,12 +260,18 @@
         questionText.innerText = question.question_text;
         questionDiv.appendChild(questionText);
 
+        // Create answers element
         const answersDiv = document.createElement("div");
         answersDiv.classList.add("answers");
 
         const options = quizData.filter(
           (item) => item.question_id === question.question_id
         );
+
+        if (options.length === 0) {
+          console.error("No answer options found for this question");
+          return;
+        }
 
         options.forEach((item) => {
           const answerButton = document.createElement("div");
@@ -226,46 +285,41 @@
         questionDiv.appendChild(answersDiv);
         questionContainer.appendChild(questionDiv);
 
-        const navButtonsDiv = document.createElement("div");
-        navButtonsDiv.classList.add("navigation-buttons");
+        // Show navigation buttons if there are multiple questions
+        if (uniqueQuestions.length > 1) {
+          const navButtonsDiv = document.createElement("div");
+          navButtonsDiv.classList.add("navigation-buttons");
 
-        if (index > 0) {
-          const prevButton = document.createElement("button");
-          prevButton.classList.add("navigation-button");
-          prevButton.innerText = "Previous";
-          prevButton.onclick = () => {
-            currentQuestionIndex--;
-            console.log(
-              "Previous button clicked. Current question index:",
-              currentQuestionIndex
-            );
-            showQuestion(currentQuestionIndex);
-          };
-          navButtonsDiv.appendChild(prevButton);
+          if (index > 0) {
+            const prevButton = document.createElement("button");
+            prevButton.classList.add("navigation-button");
+            prevButton.innerText = "Previous";
+            prevButton.onclick = () => {
+              currentQuestionIndex--;
+              showQuestion(currentQuestionIndex);
+            };
+            navButtonsDiv.appendChild(prevButton);
+          }
+
+          if (index < uniqueQuestions.length - 1) {
+            const nextButton = document.createElement("button");
+            nextButton.classList.add("navigation-button");
+            nextButton.id = "nextButton";
+            nextButton.innerText = "Next";
+            nextButton.disabled = !selectedAnswers[question.question_id];
+            nextButton.onclick = () => {
+              currentQuestionIndex++;
+              showQuestion(currentQuestionIndex);
+            };
+            navButtonsDiv.appendChild(nextButton);
+          } else {
+            // Show submit button at the end
+            const submitButton = document.querySelector(".submit-button");
+            submitButton.style.display = "block";
+          }
+
+          questionContainer.appendChild(navButtonsDiv);
         }
-
-        if (index < uniqueQuestions.length - 1) {
-          const nextButton = document.createElement("button");
-          nextButton.classList.add("navigation-button");
-          nextButton.id = "nextButton";
-          nextButton.innerText = "Next";
-          nextButton.disabled = !selectedAnswers[question.question_id];
-          nextButton.onclick = () => {
-            currentQuestionIndex++;
-            console.log(
-              "Next button clicked. Current question index:",
-              currentQuestionIndex
-            );
-            showQuestion(currentQuestionIndex);
-          };
-          navButtonsDiv.appendChild(nextButton);
-        } else {
-          const submitButton = document.querySelector(".submit-button");
-          submitButton.style.display = "block";
-        }
-
-        questionContainer.appendChild(navButtonsDiv);
-        questionContainer.style.display = "block";
       }
 
       function selectAnswer(questionId, answerId, button) {
@@ -286,8 +340,6 @@
           if (nextButton) {
             nextButton.disabled = false;
             console.log("Next button enabled");
-          } else {
-            console.log("Next button not found");
           }
         }, 0);
       }
@@ -321,11 +373,12 @@
           await updateUserPoints(loggedInUser.id, totalPoints);
 
           // Redirect to quiz-result.html after submitting the quiz
-          window.location.href = `quiz-result.html?score=${score}&total=${uniqueQuestions.length}&points=${totalPoints}`;
+          window.location.href = `/html/quiz-result.html?score=${score}&total=${uniqueQuestions.length}&points=${totalPoints}`;
         } catch (error) {
           console.error("Error calculating score and points:", error);
         }
       }
+
       async function updateUserPoints(userId, userPoints) {
         try {
           const updatedUserData = {
