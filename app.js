@@ -49,7 +49,10 @@ app.use("/public/images", express.static(imagesDir));
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
-
+// Serve the HTML file
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 // Routes to serve HTML files from the 'public/html' directory
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "community.html"));
