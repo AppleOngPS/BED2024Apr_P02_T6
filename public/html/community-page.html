@@ -7,193 +7,414 @@
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <style>
-      .post {
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f9fc;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 70%;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .new-post-button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      .post-container {
         border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
         background-color: #fff;
       }
-      .post img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin-bottom: 1rem;
+      .post-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .post-header div {
+        flex-grow: 1;
+      }
+      .post-header strong {
+        font-size: 18px;
+      }
+      .post-header span {
+        color: #888;
+        font-size: 14px;
+      }
+      .post-body {
+        margin-top: 16px;
+      }
+      .post-body h3 {
+        font-size: 20px;
+        margin: 0 0 10px 0;
+      }
+      .post-body p {
+        margin: 0 0 10px 0;
+      }
+      .category {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #eee;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #555;
       }
       .post-buttons {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+        margin-top: 16px;
       }
-      .post-buttons button {
-        margin-left: 0.5rem;
-        padding: 0.5rem 1rem;
+      .like-button,
+      .edit-button,
+      .delete-button,
+      .view-comments-button {
+        padding: 10px 20px;
         border: none;
-        border-radius: 4px;
-        background-color: black;
-        color: white;
+        border-radius: 8px;
         cursor: pointer;
+        font-size: 14px;
+      }
+      .like-button {
+        background-color: #ffcc00;
+        color: black;
+      }
+      .like-button:hover {
+        background-color: #ffdd00;
+      }
+      .edit-button {
+        background-color: #007bff;
+        color: white;
+      }
+      .edit-button:hover {
+        background-color: #0056b3;
+      }
+      .delete-button {
+        background-color: #dc3545;
+        color: white;
+      }
+      .delete-button:hover {
+        background-color: #c82333;
+      }
+      .view-comments-button {
+        background-color: #28a745;
+        color: white;
+      }
+      .view-comments-button:hover {
+        background-color: #218838;
       }
       .edit-form {
         display: none;
-        margin-top: 1rem;
+        margin-top: 16px;
       }
-      .share-post-button {
-        margin-bottom: 1rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 4px;
-        background-color: black;
-        color: white;
-        cursor: pointer;
+      .edit-form input,
+      .edit-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .comment-container {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f1f1f1;
+      }
+      .comments-section {
+        display: none;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Community Posts</h1>
-      <button class="share-post-button" onclick="redirectToShareForm()">
+      <button
+        class="new-post-button"
+        onclick="window.location.href='/html/community.html'"
+      >
         Share a New Post
       </button>
       <div id="posts-container"></div>
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
-        const response = await fetch("/posts");
-        const posts = await response.json();
-        const postsContainer = document.getElementById("posts-container");
+        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-        posts.forEach((post) => {
-          const postElement = document.createElement("div");
-          postElement.classList.add("post");
+        if (loggedInUser) {
+          console.log("Logged in user:", loggedInUser);
 
-          const titleElement = document.createElement("h2");
-          titleElement.textContent = post.title;
-          postElement.appendChild(titleElement);
+          try {
+            const response = await fetch("/community");
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const posts = await response.json();
 
-          const categoryElement = document.createElement("p");
-          categoryElement.textContent = `Category: ${post.category}`;
-          postElement.appendChild(categoryElement);
+            const postsContainer = document.getElementById("posts-container");
+            postsContainer.innerHTML = "";
 
-          if (post.content) {
-            const imgElement = document.createElement("img");
-            imgElement.src = `/uploads/${post.content}`; // Ensure the correct path
-            postElement.appendChild(imgElement);
+            posts.forEach((post) => {
+              const postElement = document.createElement("div");
+              postElement.classList.add("post-container");
+
+              postElement.innerHTML = `
+                <div class="post-header">
+                  <div>
+                    <strong>${post.username || "Unknown"}</strong> <br>
+                    <span>${new Date(post.createdAt).toLocaleString()}</span>
+                  </div>
+                </div>
+                <div class="post-body">
+                  <span class="category">#${post.category}</span>
+                  <h3>${post.title}</h3>
+                  <p>${post.message}</p>
+                  <div class="post-buttons">
+                    <button class="like-button" onclick="likePost(${post.id})">
+                      Like (${post.likes || 0})
+                    </button>
+                    ${
+                      post.username === loggedInUser.name
+                        ? `<button class="edit-button" onclick="showEditForm(${post.id})">Edit</button>
+                           <button class="delete-button" onclick="deletePost(${post.id})">Delete</button>`
+                        : ""
+                    }
+                    <button class="view-comments-button" onclick="toggleComments(${
+                      post.id
+                    })">View Comments</button>
+                  </div>
+                </div>
+                <div class="comments-section" id="comments-section-${post.id}">
+                  <div id="comments-container-${post.id}"></div>
+                  <form onsubmit="addComment(event, ${post.id})">
+                    <input type="text" id="comment-input-${
+                      post.id
+                    }" placeholder="Add a comment..." required>
+                    <button type="submit">Comment</button>
+                  </form>
+                </div>
+                <form class="edit-form" id="edit-form-${post.id}">
+                  <label for="edit-title-${post.id}">Title:</label>
+                  <input type="text" id="edit-title-${post.id}" value="${
+                post.title
+              }">
+                  <label for="edit-category-${post.id}">Category:</label>
+                  <input type="text" id="edit-category-${post.id}" value="${
+                post.category
+              }">
+                  <label for="edit-message-${post.id}">Message:</label>
+                  <textarea id="edit-message-${post.id}">${
+                post.message
+              }</textarea>
+                  <button type="button" onclick="submitEdit(${
+                    post.id
+                  })">Save</button>
+                  <button type="button" onclick="hideEditForm(${
+                    post.id
+                  })">Cancel</button>
+                </form>
+              `;
+
+              postsContainer.appendChild(postElement);
+              fetchComments(post.id); // Fetch comments for the post
+            });
+          } catch (error) {
+            console.error("Error fetching posts:", error);
           }
-
-          const messageElement = document.createElement("p");
-          messageElement.textContent = post.message;
-          postElement.appendChild(messageElement);
-
-          const buttonsContainer = document.createElement("div");
-          buttonsContainer.classList.add("post-buttons");
-
-          const editButton = document.createElement("button");
-          editButton.textContent = "Edit";
-          editButton.addEventListener("click", () => showEditForm(post));
-          buttonsContainer.appendChild(editButton);
-
-          const deleteButton = document.createElement("button");
-          deleteButton.textContent = "Delete";
-          deleteButton.addEventListener("click", () => deletePost(post.id));
-          buttonsContainer.appendChild(deleteButton);
-
-          postElement.appendChild(buttonsContainer);
-
-          const editForm = createEditForm(post);
-          postElement.appendChild(editForm);
-
-          postsContainer.appendChild(postElement);
-        });
+        } else {
+          console.error("User not logged in");
+        }
       });
 
-      function redirectToShareForm() {
-        window.location.href = "/html/community.html";
+      async function fetchComments(postId) {
+        try {
+          const response = await fetch(`/community/comments/${postId}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const comments = await response.json();
+
+          const commentsContainer = document.getElementById(
+            `comments-container-${postId}`
+          );
+          commentsContainer.innerHTML = "";
+
+          comments.forEach((comment) => {
+            const commentElement = document.createElement("div");
+            commentElement.classList.add("comment-container");
+
+            commentElement.innerHTML = `
+              <p><strong>${
+                comment.username || "Unknown"
+              }</strong> <span>${new Date(
+              comment.createdAt
+            ).toLocaleString()}</span></p>
+              <p>${comment.comment}</p>
+            `;
+
+            commentsContainer.appendChild(commentElement);
+          });
+        } catch (error) {
+          console.error(
+            `Error fetching comments for post ID ${postId}:`,
+            error
+          );
+        }
       }
 
-      function showEditForm(post) {
-        const editForm = document.getElementById(`edit-form-${post.id}`);
-        editForm.style.display =
-          editForm.style.display === "none" ? "block" : "none";
+      async function addComment(event, postId) {
+        event.preventDefault();
+        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+        if (!loggedInUser) {
+          alert("You need to be logged in to comment.");
+          return;
+        }
+
+        const commentInput = document.getElementById(`comment-input-${postId}`);
+        const comment = commentInput.value;
+
+        try {
+          const response = await fetch("/community/comment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              postId,
+              comment,
+              userDetails: JSON.stringify(loggedInUser),
+            }),
+          });
+
+          if (response.ok) {
+            commentInput.value = "";
+            fetchComments(postId);
+          } else {
+            const errorData = await response.json();
+            alert(`Failed to add comment. ${errorData.error}`);
+          }
+        } catch (error) {
+          alert(`Failed to add comment. ${error.message}`);
+        }
       }
 
-      function createEditForm(post) {
-        const form = document.createElement("form");
-        form.classList.add("edit-form");
-        form.id = `edit-form-${post.id}`;
+      async function likePost(postId) {
+        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+        if (!loggedInUser) {
+          alert("You need to be logged in to like a post.");
+          return;
+        }
 
-        const titleLabel = document.createElement("label");
-        titleLabel.textContent = "Title:";
-        form.appendChild(titleLabel);
+        try {
+          const response = await fetch(`/community/like/${postId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: loggedInUser.id }),
+          });
 
-        const titleInput = document.createElement("input");
-        titleInput.type = "text";
-        titleInput.name = "title";
-        titleInput.value = post.title;
-        form.appendChild(titleInput);
-
-        const categoryLabel = document.createElement("label");
-        categoryLabel.textContent = "Category:";
-        form.appendChild(categoryLabel);
-
-        const categoryInput = document.createElement("input");
-        categoryInput.type = "text";
-        categoryInput.name = "category";
-        categoryInput.value = post.category;
-        form.appendChild(categoryInput);
-
-        const messageLabel = document.createElement("label");
-        messageLabel.textContent = "Message:";
-        form.appendChild(messageLabel);
-
-        const messageTextarea = document.createElement("textarea");
-        messageTextarea.name = "message";
-        messageTextarea.value = post.message;
-        form.appendChild(messageTextarea);
-
-        const submitButton = document.createElement("button");
-        submitButton.type = "button";
-        submitButton.textContent = "Save";
-        submitButton.addEventListener("click", () => editPost(post.id, form));
-        form.appendChild(submitButton);
-
-        return form;
+          if (response.ok) {
+            alert(`Liked post with ID: ${postId}`);
+            location.reload();
+          } else {
+            const errorData = await response.json();
+            alert(`Failed to like post with ID: ${postId}. ${errorData.error}`);
+          }
+        } catch (error) {
+          alert(`Failed to like post with ID: ${postId}. ${error.message}`);
+        }
       }
 
-      async function editPost(postId, form) {
-        const formData = new FormData(form);
-        const updatedPost = {};
-        formData.forEach((value, key) => {
-          updatedPost[key] = value;
-        });
-
-        const response = await fetch(`/posts/${postId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedPost),
-        });
-
-        if (response.ok) {
-          alert(`Post with ID: ${postId} has been updated.`);
-          location.reload();
+      function toggleComments(postId) {
+        const commentsSection = document.getElementById(
+          `comments-section-${postId}`
+        );
+        if (
+          commentsSection.style.display === "none" ||
+          commentsSection.style.display === ""
+        ) {
+          commentsSection.style.display = "block";
         } else {
-          alert(`Failed to update post with ID: ${postId}`);
+          commentsSection.style.display = "none";
+        }
+      }
+
+      function showEditForm(postId) {
+        const form = document.getElementById(`edit-form-${postId}`);
+        form.style.display = "block";
+      }
+
+      function hideEditForm(postId) {
+        const form = document.getElementById(`edit-form-${postId}`);
+        form.style.display = "none";
+      }
+
+      async function submitEdit(postId) {
+        const title = document.getElementById(`edit-title-${postId}`).value;
+        const category = document.getElementById(
+          `edit-category-${postId}`
+        ).value;
+        const message = document.getElementById(`edit-message-${postId}`).value;
+
+        try {
+          const response = await fetch(`/community/${postId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title, category, message }),
+          });
+
+          if (response.ok) {
+            alert(`Updated post with ID: ${postId}`);
+            location.reload();
+          } else {
+            const errorData = await response.json();
+            alert(
+              `Failed to update post with ID: ${postId}. ${errorData.error}`
+            );
+          }
+        } catch (error) {
+          alert(`Failed to update post with ID: ${postId}. ${error.message}`);
         }
       }
 
       async function deletePost(postId) {
-        const response = await fetch(`/posts/${postId}`, {
-          method: "DELETE",
-        });
-        if (response.ok) {
-          alert(`Post with ID: ${postId} has been deleted.`);
-          location.reload();
-        } else {
-          alert(`Failed to delete post with ID: ${postId}`);
+        try {
+          const response = await fetch(`/community/${postId}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            alert(`Deleted post with ID: ${postId}`);
+            location.reload();
+          } else {
+            const errorData = await response.json();
+            alert(
+              `Failed to delete post with ID: ${postId}. ${errorData.error}`
+            );
+          }
+        } catch (error) {
+          alert(`Failed to delete post with ID: ${postId}. ${error.message}`);
         }
       }
     </script>
-    <script src="../navigation.js"></script>
+    <script src="../js/navigation.js"></script>
   </body>
 </html>
