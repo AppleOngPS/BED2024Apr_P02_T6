@@ -69,14 +69,10 @@
     <div class="quiz-result-container">
       <h1>Congratulations!</h1>
       <p>Your score is: <span class="score" id="score"></span></p>
-
-      <div class="voucher-section">
-        <p>Enjoy this $5 Fairprice Voucher!</p>
-        <div class="voucher-code">QUIZ2024</div>
-      </div>
+      <p>Points earned: <span class="totalPoints" id="totalPoints"></span></p>
 
       <div class="back-to-quiz">
-        <a href="/html/quiz.html">Back to Quiz</a>
+        <a href="/html/Reward.html">View Rewards</a>
       </div>
     </div>
 
@@ -85,9 +81,11 @@
         const urlParams = new URLSearchParams(window.location.search);
         const score = urlParams.get("score");
         const totalQuestions = urlParams.get("total");
+        const totalPoints = urlParams.get("points");
         document.getElementById(
           "score"
         ).textContent = `${score}/${totalQuestions}`;
+        document.getElementById("totalPoints").textContent = totalPoints;
       });
     </script>
     <script src="../navigation.js"></script>
