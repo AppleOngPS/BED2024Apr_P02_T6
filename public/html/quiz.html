@@ -6,115 +6,351 @@
     <title>Quiz Page</title>
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
+    <style>
+      .quiz-container {
+        display: none;
+      }
+      .start-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      .start-button {
+        padding: 15px 30px;
+        font-size: 1.5em;
+        cursor: pointer;
+      }
+      .question-container {
+        border: 2px solid #333;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 50%;
+        margin: auto;
+      }
+      .answers {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .answer-button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px;
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        background-color: #fff;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        width: 200px;
+        text-align: center;
+      }
+      .answer-button:hover,
+      .answer-button.selected {
+        background-color: #007bff;
+        color: #fff;
+      }
+      .navigation-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      .navigation-button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+      }
+      .navigation-button:hover {
+        background-color: #0056b3;
+      }
+      .welcome-container {
+        border: 2px solid #333;
+        padding: 40px;
+        width: 50%;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        font-size: 1.5em;
+      }
+    </style>
   </head>
   <body>
+    <div class="start-screen">
+      <div class="welcome-container">
+        <h1>Welcome to the Quiz</h1>
+        <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+      </div>
+    </div>
+
     <div class="quiz-container">
       <h1 class="quiz-title">Quiz</h1>
-      <form id="quizForm" class="quiz-form"></form>
-      <button type="button" class="submit-button" onclick="submitQuiz()">
+      <div id="questionContainer" class="question-container"></div>
+      <button
+        type="button"
+        class="submit-button"
+        onclick="submitQuiz()"
+        style="display: none"
+      >
         Submit
       </button>
       <div id="quizResult" class="quiz-result"></div>
     </div>
+
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        fetch("http://localhost:3000/fetch_quiz")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(
-                `Server error: ${response.status} - ${response.statusText}`
-              );
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log("Fetched quiz data:", data); // Logging for debugging
-            const quizForm = document.getElementById("quizForm");
-            let currentQuestionId = null;
+      let loggedInUser;
+      let currentQuestionIndex = 0;
+      let quizData = [];
+      let uniqueQuestions = [];
+      let selectedAnswers = {};
 
-            data.forEach((item) => {
-              if (item.question_id !== currentQuestionId) {
-                currentQuestionId = item.question_id;
-                const questionDiv = document.createElement("div");
-                questionDiv.classList.add("quiz-question");
-                const questionText = document.createElement("p");
-                questionText.classList.add("question-text");
-                questionText.innerText = item.question_text;
-                questionDiv.appendChild(questionText);
-                quizForm.appendChild(questionDiv);
-              }
+      document.addEventListener("DOMContentLoaded", async () => {
+        loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-              const answerInput = document.createElement("input");
-              answerInput.type = "radio";
-              answerInput.id = `q${item.question_id}a${item.answer_id}`;
-              answerInput.name = `q${item.question_id}`;
-              answerInput.value = item.answer_id;
-
-              const answerLabel = document.createElement("label");
-              answerLabel.htmlFor = answerInput.id;
-              answerLabel.innerText = item.answer_text;
-
-              quizForm.appendChild(answerInput);
-              quizForm.appendChild(answerLabel);
-              quizForm.appendChild(document.createElement("br"));
-            });
-          })
-          .catch((error) => console.error("Error fetching quiz data:", error));
+        if (loggedInUser) {
+          console.log("Logged in user:", loggedInUser);
+          try {
+            await fetchQuizData();
+            const userDetails = await fetchUserDetails(
+              loggedInUser.name,
+              loggedInUser.password
+            );
+            console.log("Fetched user details:", userDetails);
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        } else {
+          console.error("User not logged in");
+        }
       });
 
-      function submitQuiz() {
-        const quizForm = document.getElementById("quizForm");
-        const formData = new FormData(quizForm);
-        let score = 0;
-        let totalPoints = 0; // Initialize total points
-        const totalQuestions = new Set();
+      async function fetchQuizData() {
+        try {
+          const response = await fetch("http://localhost:3000/fetch_quiz");
+          if (!response.ok) {
+            throw new Error(
+              `Server error: ${response.status} - ${response.statusText}`
+            );
+          }
+          quizData = await response.json();
+          uniqueQuestions = Array.from(
+            new Set(quizData.map((q) => q.question_text))
+          ).map((question_text) => {
+            return quizData.find((q) => q.question_text === question_text);
+          });
+          console.log("Fetched quiz data:", quizData);
+          console.log("Unique questions:", uniqueQuestions);
+        } catch (error) {
+          console.error("Error fetching quiz data:", error);
+          throw error;
+        }
+      }
 
-        fetch("http://localhost:3000/fetch_quiz")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(
-                `Server error: ${response.status} - ${response.statusText}`
-              );
-            }
-            return response.json();
-          })
-          .then((data) => {
-            data.forEach((item) => {
-              totalQuestions.add(item.question_id);
-              if (
-                item.is_correct &&
-                formData.get(`q${item.question_id}`) == item.answer_id
-              ) {
-                score++;
-                totalPoints += 100; // Add 100 points for each correct answer
-              }
-            });
-
-            // Here, send the totalPoints to the server to update the database
-            fetch("http://localhost:3000/update_points", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ points: totalPoints }),
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error(
-                    `Failed to update points: ${response.status} - ${response.statusText}`
-                  );
-                }
-                return response.json();
-              })
-              .then((result) => {
-                console.log("Points updated successfully:", result);
-                // Redirect to a new page with the score and points
-                window.location.href = `/html/quiz-result.html?score=${score}&total=${totalQuestions.size}&points=${totalPoints}`;
-              });
-          })
-          .catch((error) =>
-            console.error("Error calculating score and points:", error)
+      async function fetchUserDetails(username, password) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/users?username=${encodeURIComponent(
+              username
+            )}&password=${encodeURIComponent(password)}`
           );
+          if (!response.ok) {
+            throw new Error(
+              `Server error: ${response.status} - ${response.statusText}`
+            );
+          }
+          const data = await response.json();
+          console.log("Fetched user points data:", data);
+          return data;
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+          return null;
+        }
+      }
+
+      function startQuiz() {
+        document.querySelector(".start-screen").style.display = "none";
+        document.querySelector(".quiz-container").style.display = "block";
+        showQuestion(currentQuestionIndex);
+      }
+
+      function showQuestion(index) {
+        const questionContainer = document.getElementById("questionContainer");
+        questionContainer.innerHTML = "";
+
+        console.log(
+          `Displaying question ${index + 1}/${uniqueQuestions.length}`
+        );
+
+        if (index >= uniqueQuestions.length) {
+          return;
+        }
+
+        const question = uniqueQuestions[index];
+        console.log("Current question:", question);
+        if (!question) return;
+
+        const questionDiv = document.createElement("div");
+        questionDiv.classList.add("quiz-question");
+
+        const questionText = document.createElement("p");
+        questionText.classList.add("question-text");
+        questionText.innerText = question.question_text;
+        questionDiv.appendChild(questionText);
+
+        const answersDiv = document.createElement("div");
+        answersDiv.classList.add("answers");
+
+        const options = quizData.filter(
+          (item) => item.question_id === question.question_id
+        );
+
+        options.forEach((item) => {
+          const answerButton = document.createElement("div");
+          answerButton.classList.add("answer-button");
+          answerButton.innerText = item.answer_text;
+          answerButton.onclick = () =>
+            selectAnswer(item.question_id, item.answer_id, answerButton);
+          answersDiv.appendChild(answerButton);
+        });
+
+        questionDiv.appendChild(answersDiv);
+        questionContainer.appendChild(questionDiv);
+
+        const navButtonsDiv = document.createElement("div");
+        navButtonsDiv.classList.add("navigation-buttons");
+
+        if (index > 0) {
+          const prevButton = document.createElement("button");
+          prevButton.classList.add("navigation-button");
+          prevButton.innerText = "Previous";
+          prevButton.onclick = () => {
+            currentQuestionIndex--;
+            console.log(
+              "Previous button clicked. Current question index:",
+              currentQuestionIndex
+            );
+            showQuestion(currentQuestionIndex);
+          };
+          navButtonsDiv.appendChild(prevButton);
+        }
+
+        if (index < uniqueQuestions.length - 1) {
+          const nextButton = document.createElement("button");
+          nextButton.classList.add("navigation-button");
+          nextButton.id = "nextButton";
+          nextButton.innerText = "Next";
+          nextButton.disabled = !selectedAnswers[question.question_id];
+          nextButton.onclick = () => {
+            currentQuestionIndex++;
+            console.log(
+              "Next button clicked. Current question index:",
+              currentQuestionIndex
+            );
+            showQuestion(currentQuestionIndex);
+          };
+          navButtonsDiv.appendChild(nextButton);
+        } else {
+          const submitButton = document.querySelector(".submit-button");
+          submitButton.style.display = "block";
+        }
+
+        questionContainer.appendChild(navButtonsDiv);
+        questionContainer.style.display = "block";
+      }
+
+      function selectAnswer(questionId, answerId, button) {
+        selectedAnswers[questionId] = answerId;
+
+        console.log("Selected answers:", selectedAnswers);
+
+        const selectedButtons = document.querySelectorAll(
+          `.answer-button.selected`
+        );
+        selectedButtons.forEach((btn) => btn.classList.remove("selected"));
+
+        button.classList.add("selected");
+
+        // Ensure nextButton is queried after it is added to the DOM
+        setTimeout(() => {
+          const nextButton = document.querySelector("#nextButton");
+          if (nextButton) {
+            nextButton.disabled = false;
+            console.log("Next button enabled");
+          } else {
+            console.log("Next button not found");
+          }
+        }, 0);
+      }
+
+      async function submitQuiz() {
+        let score = 0;
+        let totalPoints = 0;
+
+        try {
+          const response = await fetch("http://localhost:3000/fetch_quiz");
+          if (!response.ok) {
+            throw new Error(
+              `Server error: ${response.status} - ${response.statusText}`
+            );
+          }
+          const data = await response.json();
+
+          data.forEach((item) => {
+            if (
+              item.is_correct &&
+              selectedAnswers[item.question_id] == item.answer_id
+            ) {
+              score++;
+              totalPoints += 100;
+            }
+          });
+
+          console.log(
+            `Updating points for user ID: ${loggedInUser.id} with points: ${totalPoints}`
+          );
+          await updateUserPoints(loggedInUser.id, totalPoints);
+
+          // Redirect to quiz-result.html after submitting the quiz
+          window.location.href = `quiz-result.html?score=${score}&total=${uniqueQuestions.length}&points=${totalPoints}`;
+        } catch (error) {
+          console.error("Error calculating score and points:", error);
+        }
+      }
+      async function updateUserPoints(userId, userPoints) {
+        try {
+          const updatedUserData = {
+            id: userId,
+            point: userPoints,
+          };
+          console.log("Updating user data with:", updatedUserData);
+
+          const response = await fetch("http://localhost:3000/users/points", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedUserData),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to update user data");
+          }
+
+          alert("Points updated successfully");
+        } catch (error) {
+          console.error("Error updating points:", error);
+          alert("Error updating points. Please try again.");
+        }
       }
     </script>
     <script src="../js/navigation.js"></script>

@@ -1,13 +1,31 @@
-
 const sql = require("mssql");
 const User = require("../models/users");
 const dbConfig = require("../dbConfig");
 
-
 const createUser = async (req, res) => {
   try {
-    const { name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake } = req.body;
-    const newUser = await User.createUserAccount({ name, password, email, contactNumber, age, height, weight, weightGoal, TargetCalarieIntake });
+    const {
+      name,
+      password,
+      email,
+      contactNumber,
+      age,
+      height,
+      weight,
+      weightGoal,
+      TargetCalarieIntake,
+    } = req.body;
+    const newUser = await User.createUserAccount({
+      name,
+      password,
+      email,
+      contactNumber,
+      age,
+      height,
+      weight,
+      weightGoal,
+      TargetCalarieIntake,
+    });
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
@@ -36,7 +54,9 @@ const getUserById = async (req, res) => {
     }
   } catch (error) {
     console.error("Error retrieving user:", error);
-    res.status(500).json({ message: "Error retrieving user", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error retrieving user", error: error.message });
   }
 };
 
@@ -58,11 +78,11 @@ const loginUser = async (req, res) => {
     if (user) {
       res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error('Error logging in:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error logging in:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -74,11 +94,11 @@ const getUserByName = async (req, res) => {
     if (user) {
       res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error('Error retrieving user by name:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error retrieving user by name:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -118,19 +138,36 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
+// Method to update user points
 const updateUserPoints = async (req, res) => {
+  const { id, point } = req.body;
+  console.log("Received data for updating points:", req.body);
+
+  if (!id || !Number.isInteger(Number(id)) || !Number.isInteger(point)) {
+    return res.status(400).json({ error: "Invalid input data" });
+  }
+
   try {
-    const { name, point } = req.body; // Extract name and points from the request body
-    const success = await User.updateUserPoints(name, point);
-    if (success) {
-      res.status(200).json({ message: 'Points updated successfully' });
-    } else {
-      res.status(404).json({ message: 'User not found' });
-    }
-  } catch (error) {
-    console.error('Error updating points:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    const connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    request.input("id", sql.Int, Number(id)); // Ensure id is converted to a number
+    request.input("point", sql.Int, point);
+
+    const result = await request.query(`
+      UPDATE AccountUser
+      SET point = ISNULL(point, 0) + @point
+      WHERE id = @id
+    `);
+
+    console.log("Query executed successfully:", result);
+    res.json({ success: true, result });
+  } catch (err) {
+    console.error("Error executing query:", err);
+    res
+      .status(500)
+      .json({ error: "Database query failed", details: err.message });
+  } finally {
+    sql.close(); // Ensure the connection is closed after the operation
   }
 };
 
