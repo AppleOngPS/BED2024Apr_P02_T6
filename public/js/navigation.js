@@ -6,9 +6,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // Set the inner HTML of the header to create the navigation structure
   header.innerHTML = `
         <nav style="background-color: #4CAF50; font-size: 16px;">
-            <div class="logo">
-                <a href="index.html" style="color: white;">AMA Health Hub</a>
+          <div class="logo" style="padding-left: 20px;">
+            <div style="color: white; display: flex; align-items: center;">
+                <img src="${
+                  isCurrentDirectory()
+                    ? "images/icon.avif"
+                    : "../images/icon.avif"
+                }" alt="AMA Health Hub Icon" style="height: 45px; margin-right: 10px;">
+                <span>AMA Health Hub</span>
             </div>
+          </div>
             <input type="checkbox" id="click">
             <label for="click" class="mainicon">
                 <div class="menu">
@@ -21,9 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   isCurrentDirectory() ? "index.html" : "index.html"
                 }">Home</a></li>
                 <li><a href="${
-                  isCurrentDirectory()
-                    ? "html/recipe.html"
-                    : "recipe.html"
+                  isCurrentDirectory() ? "html/recipe.html" : "recipe.html"
                 }">Recipe</a></li>
                 <li><a href="${
                   isCurrentDirectory() ? "html/quiz.html" : "quiz.html"
@@ -39,13 +44,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     : "community.html"
                 }">Community</a></li>
                                 <li><a href="${
-                  isCurrentDirectory()
-                    ? "html/Reward.html"
-                    : "Reward.html"
-                }">Reward</a></li>
+                                  isCurrentDirectory()
+                                    ? "html/Reward.html"
+                                    : "Reward.html"
+                                }">Reward</a></li>
                  <li><a href="${
-                  isCurrentDirectory() ? "html/profile.html" : "profile.html"
-                }">Profile</a></li>
+                   isCurrentDirectory() ? "html/profile.html" : "profile.html"
+                 }">Profile</a></li>
                 <li><a href="${
                   isCurrentDirectory() ? "html/login.html" : "login.html"
                 }">Login</a></li>
