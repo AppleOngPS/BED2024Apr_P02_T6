@@ -5,8 +5,8 @@ const meals = {
   extras: [],
 };
 
-const apiKey = "66a1c936a41294d908384343";
-const baseUrl = "https://bedass1-fc80.restdb.io/rest/meal-planning";
+const apiKey = "66a245d5d135ef7f34c85819";
+const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
 
 // Calendar variables
 let currentDate = new Date();
@@ -148,7 +148,70 @@ function generateCalendar(month, year) {
 
         cell.appendChild(cellContent);
         cell.appendChild(caloriesDiv);
-        cell.addEventListener("click", () => showDayDetails(year, month, date));
+        if (date == 1) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 1));
+        } else if (date == 2) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 2));
+        } else if (date == 3) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 3));
+        } else if (date == 4) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 4));
+        } else if (date == 5) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 5));
+        } else if (date == 6) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 6));
+        } else if (date == 7) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 7));
+        } else if (date == 8) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 8));
+        } else if (date == 9) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 9));
+        } else if (date == 10) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 10));
+        } else if (date == 11) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 11));
+        } else if (date == 12) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 12));
+        } else if (date == 13) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 13));
+        } else if (date == 14) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 14));
+        } else if (date == 15) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 15));
+        } else if (date == 16) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 16));
+        } else if (date == 17) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 17));
+        } else if (date == 18) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 18));
+        } else if (date == 19) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 19));
+        } else if (date == 20) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 20));
+        } else if (date == 21) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 21));
+        } else if (date == 22) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 22));
+        } else if (date == 23) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 23));
+        } else if (date == 24) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 24));
+        } else if (date == 25) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 25));
+        } else if (date == 26) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 26));
+        } else if (date == 27) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 27));
+        } else if (date == 28) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 28));
+        } else if (date == 29) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 29));
+        } else if (date == 30) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 30));
+        } else {
+          cell.addEventListener("click", () => showDayDetails(year, month, 31));
+        }
+
         row.appendChild(cell);
         date++;
       }
@@ -176,14 +239,15 @@ function getMonthName(monthIndex) {
 }
 
 function showDayDetails(year, month, day) {
+  console.log(day);
   // Create a Date object for the clicked date
   const clickedDate = new Date(year, month, day);
 
   // Format the date as YYYY-MM-DD
   const formattedDate = `${clickedDate.getFullYear()}-${String(
     clickedDate.getMonth() + 1
-  ).padStart(2, "0")}-${String(clickedDate.getDay()).padStart(2, "0")}`;
-
+  ).padStart(2, "0")}-${String(clickedDate.getDate()).padStart(2, "0")}`;
+  console.log(formattedDate);
   let dailyNutrition;
 
   // Check if the selected date is today
