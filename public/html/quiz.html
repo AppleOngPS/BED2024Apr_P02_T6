@@ -4,11 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quiz Page</title>
-    <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
     <style>
       body {
-        background-color: #f0f9f0;
+        background-color: #f0fff0;
         margin: 0;
         font-family: Arial, sans-serif;
       }
@@ -23,6 +22,14 @@
         background-color: #ffffff;
         padding: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      #nextButton {
+        background-color: rgb(33, 179, 82);
+      }
+
+      #nextButton:hover {
+        background-color: grey;
       }
 
       .start-screen {
@@ -46,20 +53,21 @@
 
       .start-button,
       .submit-button {
+        display: inline-block; /* Makes the button respect the parent container's text alignment */
         padding: 15px 30px;
         font-size: 1.5em;
         cursor: pointer;
-        background-color: #007bff;
+        background-color: rgb(33, 179, 82);
         color: white;
         border: none;
         border-radius: 5px;
         transition: background-color 0.3s ease;
-        margin-top: 20px;
+        margin: auto; /* Centers the button within the container */
       }
 
       .start-button:hover,
       .submit-button:hover {
-        background-color: #0056b3;
+        background-color: grey;
       }
 
       .question-container {
@@ -82,7 +90,7 @@
         display: inline-block;
         padding: 10px 20px;
         margin: 10px;
-        border: 2px solid #007bff;
+        border: 2px solid green;
         border-radius: 5px;
         background-color: #fff;
         cursor: pointer;
@@ -108,7 +116,7 @@
       .navigation-button {
         padding: 10px 20px;
         border: none;
-        background-color: #007bff;
+        background-color: rgb(33, 179, 82);
         color: #fff;
         border-radius: 5px;
         cursor: pointer;
@@ -141,6 +149,7 @@
       <div class="start-screen">
         <div class="welcome-container">
           <h1>Welcome to the Quiz</h1>
+          <p>Test your knowledge on nutrition!</p>
           <button class="start-button" onclick="startQuiz()">Start Quiz</button>
         </div>
       </div>
