@@ -27,7 +27,7 @@ const sql = require("mssql");
 
 module.exports = {
   user: "BED_user", // Replace with your SQL Server login username
-  password: "hello123", // Replace with your SQL Server login password
+  password: "hello12345", // Replace with your SQL Server login password
   server: "localhost",
   database: "bed_Asg1",
   trustServerCertificate: true,

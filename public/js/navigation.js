@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <ul>
                 <!-- Navigation menu items with dynamic linking based on current directory -->
                 <li><a href="${
-                  isCurrentDirectory() ? "index.html" : "index.html"
+                  isCurrentDirectory() ? "index.html" : "../index.html"
                 }">Home</a></li>
                 <li><a href="${
                   isCurrentDirectory() ? "html/recipe.html" : "recipe.html"
