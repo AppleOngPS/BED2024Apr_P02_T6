@@ -32,7 +32,7 @@ Feature 16 - allow users to filter the recipes by searching up for a calorie ran
 Feature 17 - allow users to filter the recipes by carbs, protein and fats range<br/>
 Feature 18 - allow users to search by the name of the recipe<br/>
 Feature 19 - allow users to search by an ingredient that is needed in the food<br/>
-Feature 20 - allow users to find a random recipe from the database
+Feature 20 - allow users to find a random recipe from the database<br/>
 Feature 21 - allow users to add a food they ate in the day to the meal planning page with all the nutrients<br/>
 Feature 22 - allow users to delete the food they added in the meal planning page<br/>
 Feature 23 - allow users to track how much nutrients they have eaten so far in a day<br/>
