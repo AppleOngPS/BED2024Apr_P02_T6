@@ -13,30 +13,30 @@ link: https://www.figma.com/design/v1nV3wdBctch9Cxq5SNRMZ/BED-Assignment?node-id
 
 In this section, we will go over the different parts of my project, and describe each in a sentence or so.
 
-Feature 1 - allow user to navigate around the pages using the menus bar
-Feature 2 - allow user to sign up by having them fill up the signup details 
-Feature 3 - allow user to login by having them fill up the login details
-Feature 4 - allow user to view the personal information in the profile page
-Feature 5 - allow user to update the profile personal information in the personal profile page
-Feature 6 - allow user to delete the user account in the personal profile page
-Feature 7 - allow user to see their points in the reward page
-Feature 8 - allow points to be updated after they have redeem the rewards
-Feature 9 - allow user to redeem the rewards in the reward page
-Feature 10 - allow user to delete the rewards in the reward page
-Feature 11 - allow user to categories the food in the recipe page by category
-Feature 12 - allow users to see the total number of food recieved after filtering
-Feature 13 - allow users to create a recipe adding in the nutrients, name, description, ingredients and the photo of the food
-Feature 14 - allow users to delete a recipe from the database
-Feature 15 - allow users to edit the information from an already exisiting item in the database
-Feature 16 - allow users to filter the recipes by searching up for a calorie range
-Feature 17 - allow users to filter the recipes by carbs, protein and fats range
-Feature 18 - allow users to search by the name of the recipe
-Feature 19 - allow users to search by an ingredient that is needed in the food
+Feature 1 - allow user to navigate around the pages using the menus bar <br/>
+Feature 2 - allow user to sign up by having them fill up the signup details <br/>
+Feature 3 - allow user to login by having them fill up the login details<br/>
+Feature 4 - allow user to view the personal information in the profile page<br/>
+Feature 5 - allow user to update the profile personal information in the personal profile page<br/>
+Feature 6 - allow user to delete the user account in the personal profile page<br/>
+Feature 7 - allow user to see their points in the reward page<br/>
+Feature 8 - allow points to be updated after they have redeem the rewards<br/>
+Feature 9 - allow user to redeem the rewards in the reward page<br/>
+Feature 10 - allow user to delete the rewards in the reward page<br/>
+Feature 11 - allow user to categories the food in the recipe page by category<br/>
+Feature 12 - allow users to see the total number of food recieved after filtering<br/>
+Feature 13 - allow users to create a recipe adding in the nutrients, name, description, ingredients and the photo of the food<br/>
+Feature 14 - allow users to delete a recipe from the database<br/>
+Feature 15 - allow users to edit the information from an already exisiting item in the database<br/>
+Feature 16 - allow users to filter the recipes by searching up for a calorie range<br/>
+Feature 17 - allow users to filter the recipes by carbs, protein and fats range<br/>
+Feature 18 - allow users to search by the name of the recipe<br/>
+Feature 19 - allow users to search by an ingredient that is needed in the food<br/>
 Feature 20 - allow users to find a random recipe from the database
-Feature 21 - allow users to add a food they ate in the day to the meal planning page with all the nutrients
-Feature 22 - allow users to delete the food they added in the meal planning page
-Feature 23 - allow users to track how much nutrients they have eaten so far in a day
-Feature 24 - allow users to start a new day which deletes all the items from the database
+Feature 21 - allow users to add a food they ate in the day to the meal planning page with all the nutrients<br/>
+Feature 22 - allow users to delete the food they added in the meal planning page<br/>
+Feature 23 - allow users to track how much nutrients they have eaten so far in a day<br/>
+Feature 24 - allow users to start a new day which deletes all the items from the database<br/>
 Feature 25 - allow users to open up the calendar and select specific dates to see how much calories they ate in the day and their target calories and other nutrients needed. The target calories is filled up by them when they log in.
 
 # Technologies Used
