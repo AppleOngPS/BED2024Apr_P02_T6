@@ -279,6 +279,9 @@ function showModal(modalId, message) {
 
     function closeModal() {
       modal.style.display = "none";
+      {
+        location.reload();
+      }
       resolve();
     }
 

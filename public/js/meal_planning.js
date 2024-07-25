@@ -5,7 +5,7 @@ const meals = {
   extras: [],
 };
 
-const apiKey = "669f4b5ef3a6b21dce3a79f3";
+const apiKey = "66a245d5d135ef7f34c85819";
 const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
 
 // Calendar variables
@@ -148,7 +148,70 @@ function generateCalendar(month, year) {
 
         cell.appendChild(cellContent);
         cell.appendChild(caloriesDiv);
-        cell.addEventListener("click", () => showDayDetails(year, month, date));
+        if (date == 1) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 1));
+        } else if (date == 2) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 2));
+        } else if (date == 3) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 3));
+        } else if (date == 4) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 4));
+        } else if (date == 5) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 5));
+        } else if (date == 6) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 6));
+        } else if (date == 7) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 7));
+        } else if (date == 8) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 8));
+        } else if (date == 9) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 9));
+        } else if (date == 10) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 10));
+        } else if (date == 11) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 11));
+        } else if (date == 12) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 12));
+        } else if (date == 13) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 13));
+        } else if (date == 14) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 14));
+        } else if (date == 15) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 15));
+        } else if (date == 16) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 16));
+        } else if (date == 17) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 17));
+        } else if (date == 18) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 18));
+        } else if (date == 19) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 19));
+        } else if (date == 20) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 20));
+        } else if (date == 21) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 21));
+        } else if (date == 22) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 22));
+        } else if (date == 23) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 23));
+        } else if (date == 24) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 24));
+        } else if (date == 25) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 25));
+        } else if (date == 26) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 26));
+        } else if (date == 27) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 27));
+        } else if (date == 28) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 28));
+        } else if (date == 29) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 29));
+        } else if (date == 30) {
+          cell.addEventListener("click", () => showDayDetails(year, month, 30));
+        } else {
+          cell.addEventListener("click", () => showDayDetails(year, month, 31));
+        }
+
         row.appendChild(cell);
         date++;
       }
@@ -175,71 +238,16 @@ function getMonthName(monthIndex) {
   return months[monthIndex];
 }
 
-// function fetchCaloriesForDate(year, month, day) {
-//   // Implement this function to fetch calorie data from your database
-//   // For now, we'll return a random number
-//   return Math.floor(Math.random() * targetNutrition.calories);
-// }
-function fetchCaloriesForDate(year, month, day) {
-  const formattedDate = `${year}-${month + 1}-${day}`;
-  const storedData = localStorage.getItem(formattedDate);
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    return parsedData.calories;
-  }
-  return 0; // Return 0 if no data is stored for this date
-}
-
-// function showDayDetails(year, month, day) {
-//   const formattedDate = `${year}-${month + 1}-${day}`;
-//   const dailyNutrition = fetchNutritionForDate(formattedDate);
-
-//   const modalContent = `
-//     <h3>Nutritional Details for ${formattedDate}</h3>
-//     <table class="nutrition-table">
-//       <tr>
-//         <th>Nutrient</th>
-//         <th>Consumed</th>
-//         <th>Target</th>
-//       </tr>
-//       <tr>
-//         <td>Calories</td>
-//         <td>${dailyNutrition.calories} kcal</td>
-//         <td>${targetNutrition.calories} kcal</td>
-//       </tr>
-//       <tr>
-//         <td>Carbs</td>
-//         <td>${dailyNutrition.carbs} g</td>
-//         <td>${targetNutrition.carbs} g</td>
-//       </tr>
-//       <tr>
-//         <td>Protein</td>
-//         <td>${dailyNutrition.protein} g</td>
-//         <td>${targetNutrition.protein} g</td>
-//       </tr>
-//       <tr>
-//         <td>Fats</td>
-//         <td>${dailyNutrition.fats} g</td>
-//         <td>${targetNutrition.fats} g</td>
-//       </tr>
-//       <tr>
-//         <td>Sodium</td>
-//         <td>${dailyNutrition.sodium} mg</td>
-//         <td>${targetNutrition.sodium} mg</td>
-//       </tr>
-//     </table>
-//   `;
-
-//   const modal = document.getElementById("nutritionModal");
-//   const modalContentDiv = document.getElementById("nutritionModalContent");
-//   modalContentDiv.innerHTML = modalContent;
-//   modal.style.display = "block";
-// }
 function showDayDetails(year, month, day) {
-  const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-    day
-  ).padStart(2, "0")}`;
+  console.log(day);
+  // Create a Date object for the clicked date
+  const clickedDate = new Date(year, month, day);
 
+  // Format the date as YYYY-MM-DD
+  const formattedDate = `${clickedDate.getFullYear()}-${String(
+    clickedDate.getMonth() + 1
+  ).padStart(2, "0")}-${String(clickedDate.getDate()).padStart(2, "0")}`;
+  console.log(formattedDate);
   let dailyNutrition;
 
   // Check if the selected date is today
@@ -344,18 +352,6 @@ function checkDateAndResetData() {
   }
 }
 
-// function resetMealData() {
-//   meals.breakfast = [];
-//   meals.lunch = [];
-//   meals.dinner = [];
-//   meals.extras = [];
-//   updateTotals();
-//   displayFood("breakfast");
-//   displayFood("lunch");
-//   displayFood("dinner");
-//   displayFood("extras");
-//   deleteAllMealsFromDB();
-// }
 function resetMealData() {
   meals.breakfast = [];
   meals.lunch = [];
@@ -387,57 +383,6 @@ function openAddFoodModal(mealType) {
 function closeAddFoodModal() {
   document.getElementById("addFoodModal").style.display = "none";
 }
-
-// function addFood(mealType) {
-//   const name = document.getElementById("food-name").value;
-//   const calories = parseFloat(document.getElementById("food-calories").value);
-//   const carbs = parseFloat(document.getElementById("food-carbs").value);
-//   const protein = parseFloat(document.getElementById("food-protein").value);
-//   const fats = parseFloat(document.getElementById("food-fats").value);
-//   const sodium = parseFloat(document.getElementById("food-sodium").value);
-//   const imageFile = document.getElementById("food-image").files[0];
-
-//   const reader = new FileReader();
-//   reader.onloadend = function () {
-//     const image = reader.result;
-
-//     const foodItem = {
-//       name,
-//       calories,
-//       carbs,
-//       protein,
-//       fats,
-//       sodium,
-//       mealType,
-//       image,
-//       quantity: 1,
-//     };
-
-//     fetch(baseUrl, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "x-apikey": apiKey,
-//       },
-//       body: JSON.stringify(foodItem),
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         console.log("Added food item:", data);
-//         meals[mealType].push(data);
-//         displayFood(mealType);
-//         updateTotals();
-//         closeAddFoodModal();
-//       })
-//       .catch((error) => console.error("Error:", error));
-//   };
-
-//   if (imageFile) {
-//     reader.readAsDataURL(imageFile);
-//   } else {
-//     console.error("No image file selected.");
-//   }
-// }
 
 function addFood(mealType) {
   const name = document.getElementById("food-name").value;
@@ -582,14 +527,6 @@ function displayFood(mealType) {
   mealList.appendChild(addItemDiv);
 }
 
-// function changeQuantity(mealType, index, change) {
-//   meals[mealType][index].quantity += change;
-//   if (meals[mealType][index].quantity < 1) {
-//     meals[mealType][index].quantity = 1;
-//   }
-//   displayFood(mealType);
-//   updateTotals();
-// }
 function changeQuantity(mealType, index, change) {
   if (meals[mealType][index].quantity === 1 && change === -1) {
     showDeleteFoodPrompt(mealType, index);
@@ -646,29 +583,6 @@ function deleteFoodItem(mealType, index) {
     .catch((error) => console.error("Error deleting food item:", error));
 }
 
-// function updateTotals() {
-//   let totalCalories = 0;
-//   let totalCarbs = 0;
-//   let totalProtein = 0;
-//   let totalFats = 0;
-//   let totalSodium = 0;
-
-//   for (let mealType in meals) {
-//     meals[mealType].forEach((food) => {
-//       totalCalories += food.calories * food.quantity;
-//       totalCarbs += food.carbs * food.quantity;
-//       totalProtein += food.protein * food.quantity;
-//       totalFats += food.fats * food.quantity;
-//       totalSodium += food.sodium * food.quantity;
-//     });
-//   }
-
-//   document.getElementById("total-calories").innerText = totalCalories;
-//   document.getElementById("total-carbs").innerText = totalCarbs;
-//   document.getElementById("total-protein").innerText = totalProtein;
-//   document.getElementById("total-fats").innerText = totalFats;
-//   document.getElementById("total-sodium").innerText = totalSodium;
-// }
 function updateTotals() {
   let totalCalories = 0;
   let totalCarbs = 0;

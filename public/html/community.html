@@ -4,15 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Community Sharing Form</title>
-    <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/navigation.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
     <div class="container">
       <h1>Community Sharing</h1>
+      <p class="caption">
+        What's on your mind? Share your thoughts, ideas, and experiences with
+        the community!
+      </p>
       <form id="postForm">
         <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required />
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="Enter a title..."
+          required
+        />
 
         <label for="category">Category:</label>
         <select id="category" name="category" required>
@@ -22,11 +32,17 @@
         </select>
 
         <label for="message">Message:</label>
-        <textarea id="message" name="message" required></textarea>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Write your message here..."
+          required
+        ></textarea>
 
         <button type="submit">Submit</button>
       </form>
     </div>
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -40,14 +56,13 @@
               event.preventDefault();
               const formData = new FormData(this);
 
-              // Append user details to the form data
               formData.append("userDetails", JSON.stringify(loggedInUser));
 
               const formObject = {};
               formData.forEach((value, key) => (formObject[key] = value));
               const jsonString = JSON.stringify(formObject);
 
-              console.log("Form data before submission:", formObject); // Log form data before submission
+              console.log("Form data before submission:", formObject);
 
               try {
                 const response = await fetch("/community", {
