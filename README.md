@@ -1,6 +1,6 @@
 # BED-Assignment: AMA Health HUB
 
-Desription of the website
+As a health and fitness-centred website, the application includes multiple elements like user registration, meal planning, user data, recipes, quizzes, community, rewards, and profile. The project will be implemented using HTML, CSS, and JavaScript as the key tools of the implementation process. The entire website is going to be in a green theme as it best represents healthy living. The website we tried to make it as minimalist as possible so that it is easy for users to use. 
 
 # Design Process
 
@@ -63,7 +63,7 @@ Figma(WireFrame) the project use Figma for prototyping, and user interface (UI) 
 
 Images for the wireframe (rewards page) 
 <br/>
-<br/>
+
 https://www.ntuc.org.sg/uportal/about-us/social-enterprises/ntuc-fairprice
 
 https://www.mrbean.com.sg/
@@ -88,7 +88,7 @@ https://www.vecteezy.com/vector-art/10427968-lower-risk-of-heart-disease-concept
 https://www.vecteezy.com/vector-art/39303244-vitality-concept-line-icon-simple-element-illustration-vitality-concept-outline-symbol-design
 
 
-Images for the recipe page
+Images for the recipe page<br/>
 
 https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.eatingbirdfood.com%2Fgrilled-chicken-salad%2F&psig=AOvVaw0KmqclU7clgBPGjjyisDFm&ust=1721918306250000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJi_3tnzv4cDFQAAAAAdAAAAABAE
 
