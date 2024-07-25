@@ -61,7 +61,7 @@ Figma(WireFrame) the project use Figma for prototyping, and user interface (UI) 
 
 # Credits
 
-Images for the wireframe (rewards page)
+Images for the wireframe (rewards page) <br/>
 
 https://www.ntuc.org.sg/uportal/about-us/social-enterprises/ntuc-fairprice
 

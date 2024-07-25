@@ -74,6 +74,13 @@ document.addEventListener("DOMContentLoaded", function () {
     "https://www.loveandlemons.com/green-smoothie/",
     "https://chocolatecoveredkatie.com/peanut-butter-banana-smoothie/",
     "https://feelgoodfoodie.net/recipe/avocado-smoothie/",
+    "https://www.nmamilife.com/lifestyle/5-lifestyle-habits-for-better-sleep/",
+    "https://www.freepik.com/premium-vector/immunity-system-logo-template-human-immune-system-vector-design-flat-vector-illustration_28623110.htm",
+    "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTrqQ31oG3fJ6LKMGJa6Yy77uHTgZU9fgI1jLUiB9VZZhqvHv2K",
+    "https://www.vectorstock.com/royalty-free-vector/life-expectancy-blue-gradient-concept-icon-vector-42350254",
+    "https://www.vecteezy.com/vector-art/10427968-lower-risk-of-heart-disease-concept-icon-heart-attack-prevention-veganism-benefit-abstract-idea-thin-line-illustration-isolated-outline-drawing-editable-stroke",
+    "https://www.vecteezy.com/vector-art/39303244-vitality-concept-line-icon-simple-element-illustration-vitality-concept-outline-symbol-design",
+
   ];
 
   const imageCreditsContainer = document.getElementById("image-credits");
