@@ -61,4 +61,18 @@ body {
   button[type="submit"]:hover {
     background-color: #45a049;
   }
-  
+  @media (max-width: 768px) {
+    .container {
+      max-width: 90%;
+      padding: 10px;
+    }
+    .header-full {
+      padding: 0.5em 0;
+    }
+    .form-group input {
+      /* Adjust input field styles for smaller screens if needed */
+    }
+    button[type="submit"] {
+      /* Adjust button styles for smaller screens if needed */
+    }
+  }
