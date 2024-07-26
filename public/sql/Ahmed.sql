@@ -1,3 +1,6 @@
+--Recipe sql code 
+
+
 CREATE TABLE recipes (
     id INT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
