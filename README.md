@@ -1,6 +1,6 @@
 # BED-Assignment: AMA Health HUB
 
-As a health and fitness-centred website, the application includes multiple elements like user registration, meal planning, user data, recipes, quizzes, community, rewards, and profile. The project will be implemented using HTML, CSS, and JavaScript as the key tools of the implementation process. The entire website is going to be in a green theme as it best represents healthy living. The website we tried to make it as minimalist as possible so that it is easy for users to use. 
+As a health and fitness-centred website, the application includes multiple elements like user registration, meal planning, user data, recipes, quizzes, community, rewards, and profile. The project will be implemented using HTML, CSS, and JavaScript as the key tools of the implementation process. The entire website is going to be in a green theme as it best represents healthy living. The website we tried to make it as minimalist as possible so that it is easy for users to use.
 
 # Design Process
 
@@ -37,7 +37,14 @@ Feature 21 - allow users to add a food they ate in the day to the meal planning 
 Feature 22 - allow users to delete the food they added in the meal planning page<br/>
 Feature 23 - allow users to track how much nutrients they have eaten so far in a day<br/>
 Feature 24 - allow users to start a new day which deletes all the items from the database<br/>
-Feature 25 - allow users to open up the calendar and select specific dates to see how much calories they ate in the day and their target calories and other nutrients needed. The target calories is filled up by them when they log in.
+Feature 25 - allow users to open up the calendar and select specific dates to see how much calories they ate in the day and their target calories and other nutrients needed. The target calories is filled up by them when they log in. <br/>
+Feature 27 - Allows users to view posts made by other members on the community page.<br/>
+Feature 28 - Allows users to delete their own posts.<br/>
+Feature 29 - Allows users to leave comments on their own posts or those of other users.<br/>
+Feature 30 - Allows users to edit and update their own posts.<br/>
+Feature 31 - Allows users to participate in quizzes to test and expand their knowledge of nutrition.<br/>
+Feature 32 - Allows users to earn points that can be redeemed for vouchers on the rewards page.<br/>
+Feature 33 - Allow users to like their own posts or other users posts.<br/>
 
 # Technologies Used
 
@@ -55,13 +62,15 @@ Figma(WireFrame) the project use Figma for prototyping, and user interface (UI) 
 
 # For any scenarios that have not been automated, test the user stories manually and provide as much detail as is relevant. A particularly useful form for describing your testing process is via scenarios, example:
 
-# speical bugs:
+# special bugs:
 
 # Tested
 
+The project has been tested on multiple browsers (Google chrome (default), Firefox, Internet Explorer, Microsoft Edge) to ensure a consistent user experience.The project is fully compatible with the different browser, displaying as intended.
+
 # Credits
 
-Images for the wireframe (rewards page) 
+Images for the wireframe (rewards page)
 <br/>
 
 https://www.ntuc.org.sg/uportal/about-us/social-enterprises/ntuc-fairprice
@@ -86,7 +95,6 @@ https://www.vectorstock.com/royalty-free-vector/life-expectancy-blue-gradient-co
 https://www.vecteezy.com/vector-art/10427968-lower-risk-of-heart-disease-concept-icon-heart-attack-prevention-veganism-benefit-abstract-idea-thin-line-illustration-isolated-outline-drawing-editable-stroke
 
 https://www.vecteezy.com/vector-art/39303244-vitality-concept-line-icon-simple-element-illustration-vitality-concept-outline-symbol-design
-
 
 Images for the recipe page<br/>
 
