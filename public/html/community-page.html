@@ -19,7 +19,7 @@
 
       .container {
         width: 70%;
-        margin: 100px auto; /* Increased margin-top for visibility */
+        margin: 100px auto;
         padding: 20px;
         background-color: #fff;
         border-radius: 10px;
@@ -30,7 +30,7 @@
         display: block;
         width: 100%;
         padding: 15px;
-        background-color: #2c3e50; /* Primary color */
+        background-color: #2c3e50;
         color: white;
         text-align: center;
         border: none;
@@ -39,10 +39,11 @@
         font-size: 16px;
         margin-bottom: 20px;
         transition: background-color 0.3s;
+        outline: none; /* Removes the default outline on focus */
       }
 
       .new-post-button:hover {
-        background-color: #34495e; /* Darker shade of primary color */
+        background-color: #34495e;
       }
 
       .post-container {
@@ -50,7 +51,7 @@
         border-radius: 8px;
         padding: 16px;
         margin-bottom: 16px;
-        background-color: #ecf0f1; /* Light secondary color */
+        background-color: #ecf0f1;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
@@ -66,7 +67,7 @@
 
       .post-header strong {
         font-size: 18px;
-        color: #2c3e50; /* Primary color */
+        color: #2c3e50;
       }
 
       .post-header span {
@@ -82,7 +83,7 @@
         font-size: 22px;
         margin: 0 0 10px 0;
         font-weight: bold;
-        color: #2c3e50; /* Primary color */
+        color: #2c3e50;
       }
 
       .post-body p {
@@ -95,11 +96,11 @@
       .category {
         display: inline-block;
         padding: 5px 10px;
-        background-color: #bdc3c7; /* Light secondary color */
+        background-color: #bdc3c7;
         border-radius: 5px;
         margin-bottom: 10px;
         font-size: 14px;
-        color: #2c3e50; /* Primary color */
+        color: #2c3e50;
       }
 
       .post-buttons {
@@ -108,78 +109,78 @@
         margin-top: 16px;
       }
 
-      .post-buttons button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.3s;
-      }
-
-      .delete-button {
-        background-color: #e74c3c; /* Accent color */
-        color: white;
-      }
-
       .like-button {
-        background-color: #e74c3c; /* Accent color */
+        background-color: #e74c3c;
         color: white;
-        border: none;
-        border-radius: 50%; /* Circular shape */
-        width: 40px; /* Size of the button */
-        height: 40px;
+        border: none; /* Removes the border */
+        outline: none; /* Removes the default outline on focus */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
-        position: relative;
       }
 
       .like-button:hover {
-        background-color: #c0392b; /* Darker shade of accent color */
-        transform: scale(1.1); /* Slightly enlarge on hover */
+        background-color: #c0392b;
+        transform: scale(1.1);
       }
 
-      .like-button span {
-        display: none; /* Hide the text inside the button */
-      }
-
-      .like-button::before {
-        content: "❤";
-        font-size: 24px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+      .like-content {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
       }
 
-      .delete-button:hover {
-        background-color: #c0392b; /* Darker shade of accent color */
+      .like-content .fa-heart {
+        font-size: 18px;
+        margin-bottom: 3px;
+      }
+
+      .like-count {
+        font-size: 12px;
+      }
+
+      .edit-button,
+      .delete-button,
+      .view-comments-button {
+        border: none; /* Removes the border */
+        outline: none; /* Removes the default outline on focus */
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 5px;
+        margin: 0 5px;
+        cursor: pointer;
       }
 
       .edit-button {
-        background-color: #3498db; /* Secondary color */
+        background-color: #3498db;
         color: white;
       }
 
       .edit-button:hover {
-        background-color: #2980b9; /* Darker shade of secondary color */
+        background-color: #2980b9;
+      }
+
+      .delete-button {
+        background-color: #e74c3c;
+        color: white;
+      }
+
+      .delete-button:hover {
+        background-color: #c0392b;
       }
 
       .view-comments-button {
-        background-color: #27ae60; /* Success color */
+        background-color: #27ae60;
         color: white;
       }
 
       .view-comments-button:hover {
-        background-color: #2ecc71; /* Darker shade of success color */
+        background-color: #2ecc71;
       }
 
       .edit-form {
@@ -242,72 +243,68 @@
               postElement.classList.add("post-container");
 
               postElement.innerHTML = `
-                            <div class="post-header">
-                                <div>
-                                    <strong>${
-                                      post.username || "Unknown"
-                                    }</strong> <br>
-                                </div>
-                            </div>
-                            <div class="post-body">
-                                <span class="category">#${post.category}</span>
-                                <h3>${post.title}</h3>
-                                <p>${post.message}</p>
-                                <div class="post-buttons">
-              <button class="like-button" id="like-button-${
-                post.id
-              }" onclick="likePost(${post.id})">
-                <i class="fa fa-heart"></i> ${post.likes || 0}
-              </button>
-                                    ${
-                                      post.username === loggedInUser.name
-                                        ? `<button class="edit-button" onclick="showEditForm(${post.id})">Edit</button>
-                                            <button class="delete-button" onclick="deletePost(${post.id})">Delete</button>`
-                                        : ""
-                                    }
-                                    <button class="view-comments-button" onclick="toggleComments(${
-                                      post.id
-                                    })">View Comments</button>
-                                </div>
-                            </div>
-                            <div class="comments-section" id="comments-section-${
-                              post.id
-                            }">
-                                <div id="comments-container-${post.id}"></div>
-                                <form onsubmit="addComment(event, ${post.id})">
-                                    <input type="text" id="comment-input-${
-                                      post.id
-                                    }" placeholder="Add a comment..." required>
-                                    <button type="submit">Comment</button>
-                                </form>
-                            </div>
-                            <form class="edit-form" id="edit-form-${post.id}">
-                                <label for="edit-title-${
-                                  post.id
-                                }">Title:</label>
-                                <input type="text" id="edit-title-${
-                                  post.id
-                                }" value="${post.title}">
-                                <label for="edit-category-${
-                                  post.id
-                                }">Category:</label>
-                                <input type="text" id="edit-category-${
-                                  post.id
-                                }" value="${post.category}">
-                                <label for="edit-message-${
-                                  post.id
-                                }">Message:</label>
-                                <textarea id="edit-message-${post.id}">${
+              <div class="post-header">
+                <div>
+                  <strong>${post.username || "Unknown"}</strong> <br>
+                </div>
+              </div>
+              <div class="post-body">
+                <span class="category">#${post.category}</span>
+                <h3>${post.title}</h3>
+                <p>${post.message}</p>
+                <div class="post-buttons">
+      <button class="like-button" id="like-button-${
+        post.id
+      }" onclick="likePost(${post.id})">
+        <div class="like-content">
+          <i class="fa fa-heart"></i>
+          <div class="like-count" id="like-count-${post.id}">${
+                post.likes || 0
+              }</div>
+        </div>
+      </button>
+                  ${
+                    post.username === loggedInUser.name
+                      ? `
+                    <button class="edit-button" onclick="showEditForm(${post.id})">Edit</button>
+                    <button class="delete-button" onclick="deletePost(${post.id})">Delete</button>`
+                      : ""
+                  }
+                  <button class="view-comments-button" onclick="toggleComments(${
+                    post.id
+                  })">View Comments</button>
+                </div>
+              </div>
+              <div class="comments-section" id="comments-section-${post.id}">
+                <div id="comments-container-${post.id}"></div>
+                <form onsubmit="addComment(event, ${post.id})">
+                  <input type="text" id="comment-input-${
+                    post.id
+                  }" placeholder="Add a comment..." required>
+                  <button type="submit">Comment</button>
+                </form>
+              </div>
+              <form class="edit-form" id="edit-form-${post.id}">
+                <label for="edit-title-${post.id}">Title:</label>
+                <input type="text" id="edit-title-${post.id}" value="${
+                post.title
+              }">
+                <label for="edit-category-${post.id}">Category:</label>
+                <input type="text" id="edit-category-${post.id}" value="${
+                post.category
+              }">
+                <label for="edit-message-${post.id}">Message:</label>
+                <textarea id="edit-message-${post.id}">${
                 post.message
               }</textarea>
-                                <button type="button" onclick="submitEdit(${
-                                  post.id
-                                })">Save</button>
-                                <button type="button" onclick="hideEditForm(${
-                                  post.id
-                                })">Cancel</button>
-                            </form>
-                        `;
+                <button type="button" onclick="submitEdit(${
+                  post.id
+                })">Save</button>
+                <button type="button" onclick="hideEditForm(${
+                  post.id
+                })">Cancel</button>
+              </form>
+            `;
 
               postsContainer.appendChild(postElement);
               fetchComments(post.id);
@@ -338,13 +335,13 @@
             commentElement.classList.add("comment-container");
 
             commentElement.innerHTML = `
-                        <p><strong>${
-                          comment.username || "Unknown"
-                        }</strong> <span>${new Date(
+            <p><strong>${
+              comment.username || "Unknown"
+            }</strong> <span>${new Date(
               comment.createdAt
             ).toLocaleString()}</span></p>
-                        <p>${comment.comment}</p>
-                    `;
+            <p>${comment.comment}</p>
+          `;
 
             commentsContainer.appendChild(commentElement);
           });
@@ -409,8 +406,12 @@
           });
 
           if (response.ok) {
+            const data = await response.json();
+            const likeCountElement = document.getElementById(
+              `like-count-${postId}`
+            );
+            likeCountElement.textContent = data.likes; // Update the like count
             alert(`Liked post with ID: ${postId}`);
-            location.reload();
           } else {
             const errorData = await response.json();
             alert(`Failed to like post with ID: ${postId}. ${errorData.error}`);
