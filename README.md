@@ -38,7 +38,13 @@ Feature 22 - allow users to delete the food they added in the meal planning page
 Feature 23 - allow users to track how much nutrients they have eaten so far in a day<br/>
 Feature 24 - allow users to start a new day which deletes all the items from the database<br/>
 Feature 25 - allow users to open up the calendar and select specific dates to see how much calories they ate in the day and their target calories and other nutrients needed. The target calories is filled up by them when they log in.
-
+Feature 27 - Allows users to view posts made by other members on the community page.
+Feature 28 - Allows users to delete their own posts.
+Feature 29 - Allows users to leave comments on their own posts or those of other users.
+Feature 30 - Allows users to edit and update their own posts.
+Feature 31 - Allows users to participate in quizzes to test and expand their knowledge of nutrition.
+Feature 32 - Allows users to earn points that can be redeemed for vouchers on the rewards page.
+Feature 33 - Allow users to like their own posts or other users posts.
 # Technologies Used
 
 HTML the project uses html to create a basic structure of the website. Testing Official website:https://html.spec.whatwg.org/
