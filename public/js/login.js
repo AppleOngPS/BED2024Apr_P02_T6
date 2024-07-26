@@ -32,8 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Logged in user:", loggedInUser);
         // Store user data in local storage
         localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+        alert("Login successfully");
         // Redirect or perform actions upon successful login
         window.location.href = "profile.html"; // Example redirect to profile page
+        
       } catch (error) {
         console.error("Error logging in:", error);
         // Handle error: show error message to user
@@ -44,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", function () {
   // Select the Sign Up button
   const signupButton = document.getElementById("signupButton");
-
+ 
   // Add click event listener
   signupButton.addEventListener("click", function () {
     // Navigate to signup.html

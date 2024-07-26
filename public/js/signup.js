@@ -34,8 +34,10 @@ document
 
       const newUser = await response.json();
       console.log("New user created:", newUser);
+      alert("Sign up successful");
       // Redirect to the login page or show a success message
       window.location.href = "login.html";
+      
     } catch (error) {
       console.error("Error creating user:", error);
       // Handle error: show error message to user
@@ -44,6 +46,7 @@ document
 document.addEventListener("DOMContentLoaded", function () {
   // Select the Sign Up button
   const loginButton = document.getElementById("loginButton");
+  
 
   // Add click event listener
   loginButton.addEventListener("click", function () {

@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           throw new Error('Failed to update user data');
         }
 
-        alert('Points updated successfully');
+        alert('Rewards redeemed and points updated successfully');
       } catch (error) {
         console.error('Error updating points:', error);
         alert('Error updating points. Please try again.');
