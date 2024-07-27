@@ -6,6 +6,7 @@
     <title>Community Sharing Form</title>
     <link rel="stylesheet" href="../css/navigation.css" />
     <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/footer.css" />
   </head>
   <body>
     <div class="container">
@@ -38,8 +39,23 @@
           placeholder="Write your message here..."
           required
         ></textarea>
-
-        <button type="submit">Submit</button>
+        <br />
+        <button
+          type="submit"
+          style="
+            width: 200px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+          "
+        >
+          Submit
+        </button>
       </form>
     </div>
 
@@ -74,6 +90,7 @@
                 });
 
                 if (response.ok) {
+                  alert("Your post has been successfully submitted!");
                   window.location.href = "/html/community-page.html";
                 } else {
                   const errorData = await response.json();
@@ -89,5 +106,6 @@
       });
     </script>
     <script src="../js/navigation.js"></script>
+    <script src="../js/footer.js"></script>
   </body>
 </html>
