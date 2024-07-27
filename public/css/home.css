@@ -19,7 +19,7 @@ header {
 .hero {
   background-color: #a8e4a0;
   text-align: left;
-  padding: 50px 20px;
+  padding: 100px 20px 50px; /* Add top padding to ensure content is not hidden under the navbar */
 }
 
 .hero h1 {
@@ -47,28 +47,18 @@ header {
 
 .benefits {
   text-align: center;
-  padding: 50px 20px;
-}
-
-.benefit-content {
-  display: grid;
-  
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 20px; /* Adjust the gap between items as needed */
-  padding: 20px;
+  padding: 100px 20px 50px; /* Add top padding to ensure content is not hidden under the navbar */
 }
 
 .benefit-item {
-  /*background-color: whitesmoke; /* Add some background color for visibility */
   font-size: 20px;
-  padding: 20px; /* Add some padding */
-  border: black 1px solid; /* Add a border for visibility */
-  padding: 20px; /* Add some padding */
-  text-align: center; /* Center the text */
-  border-radius: 8px; /* Optional: Add some rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+  padding: 20px;
+  border: black 1px solid;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 body {
   overflow-x: hidden;
 }

@@ -9,6 +9,7 @@ body {
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-top: 56px;
 }
 
 main {
@@ -435,6 +436,9 @@ h3 {
 }
 
 @media (max-width: 768px) {
+  .body {
+    padding-top: 72px; /* Adjust for larger navbar on wider screens if needed */
+  }
   .category {
     flex: 1 1 calc(33.333% - 10px);
     max-width: calc(33.333% - 10px);

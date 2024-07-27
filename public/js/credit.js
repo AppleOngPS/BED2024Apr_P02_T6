@@ -27,6 +27,11 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Used for prototyping and user interface (UI) design.",
       link: "https://www.figma.com/",
     },
+    {
+      name: "Bootstarp",
+      description: "Used for making the website responsive.",
+      link: "https://getbootstrap.com/docs/5.3/getting-started/introduction/#cdn-links",
+    },
   ];
 
   const techList = document.getElementById("tech-list");
@@ -80,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "https://www.vectorstock.com/royalty-free-vector/life-expectancy-blue-gradient-concept-icon-vector-42350254",
     "https://www.vecteezy.com/vector-art/10427968-lower-risk-of-heart-disease-concept-icon-heart-attack-prevention-veganism-benefit-abstract-idea-thin-line-illustration-isolated-outline-drawing-editable-stroke",
     "https://www.vecteezy.com/vector-art/39303244-vitality-concept-line-icon-simple-element-illustration-vitality-concept-outline-symbol-design",
-
   ];
 
   const imageCreditsContainer = document.getElementById("image-credits");

@@ -60,6 +60,9 @@ github the project use github is a code hosting platform for version control and
 
 Figma(WireFrame) the project use Figma for prototyping, and user interface (UI) design. Example like how does the website in desktop look like in the mobile view.Quick look on how the overview layout look like and able to follow to do the final code using html,css,javascript. official website:https://www.figma.com/
 
+We used Bootstrap to make all of out pages responsive in other devices
+official website: https://getbootstrap.com/docs/5.3/getting-started/introduction/#cdn-links
+
 # For any scenarios that have not been automated, test the user stories manually and provide as much detail as is relevant. A particularly useful form for describing your testing process is via scenarios, example:
 
 # special bugs:
