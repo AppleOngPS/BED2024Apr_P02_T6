@@ -81,9 +81,7 @@ function createLinks() {
     // Set href based on the link name
     if (name === "Home") {
       link.textContent = name;
-      link.href = currentPath.includes("html/")
-        ? "../../index.html"
-        : "index.html";
+      link.href = "/";
     } else if (name === "Meal Planning") {
       link.textContent = name;
       link.href = basePath + "meal_planning.html";
