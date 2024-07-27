@@ -279,7 +279,7 @@ function showModal(modalId, message) {
 
     function closeModal() {
       modal.style.display = "none";
-      {
+      if (modalId === "successModal") {
         location.reload();
       }
       resolve();
@@ -291,16 +291,16 @@ function showModal(modalId, message) {
     const okButton = document.createElement("button");
     okButton.textContent = "OK";
     okButton.onclick = closeModal;
-    messageElement.parentNode.insertBefore(
-      //okButton,
-      messageElement.nextSibling
-    );
+    messageElement.parentNode.insertBefore(messageElement.nextSibling);
 
-    window.onclick = function (event) {
-      if (event.target == modal) {
-        closeModal();
-      }
-    };
+    if (modalId !== "successModal") {
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+          resolve();
+        }
+      };
+    }
   });
 }
 
