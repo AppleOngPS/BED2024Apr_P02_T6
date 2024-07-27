@@ -6,7 +6,6 @@
     <title>Quiz Page</title>
     <link rel="stylesheet" href="../css/navigation.css" />
     <link rel="stylesheet" href="../css/footer.css" />
-
     <style>
       body {
         background-color: #f0fff0;
@@ -317,10 +316,13 @@
             nextButton.classList.add("navigation-button");
             nextButton.id = "nextButton";
             nextButton.innerText = "Next";
-            nextButton.disabled = !selectedAnswers[question.question_id];
             nextButton.onclick = () => {
-              currentQuestionIndex++;
-              showQuestion(currentQuestionIndex);
+              if (selectedAnswers[question.question_id]) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+              } else {
+                alert("Please select an answer before proceeding.");
+              }
             };
             navButtonsDiv.appendChild(nextButton);
           } else {
@@ -356,6 +358,11 @@
       }
 
       async function submitQuiz() {
+        if (Object.keys(selectedAnswers).length < uniqueQuestions.length) {
+          alert("Please answer all questions before submitting the quiz.");
+          return;
+        }
+
         let score = 0;
         let totalPoints = 0;
 
