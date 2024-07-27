@@ -1,81 +1,108 @@
-// Wait for the DOM to be fully loaded before executing the script
 document.addEventListener("DOMContentLoaded", function () {
+  // Include Bootstrap CSS
+  const bootstrapCSS = document.createElement("link");
+  bootstrapCSS.rel = "stylesheet";
+  bootstrapCSS.href =
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
+  document.head.appendChild(bootstrapCSS);
+
+  // Include your custom CSS
+  const customCSS = document.createElement("link");
+  customCSS.rel = "stylesheet";
+  customCSS.href = isCurrentDirectory()
+    ? "css/navigation.css"
+    : "./css/navigation.css";
+  document.head.appendChild(customCSS);
+
+  // Include Bootstrap JS
+  const bootstrapJS = document.createElement("script");
+  bootstrapJS.src =
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js";
+  document.body.appendChild(bootstrapJS);
+
   // Create a new header element
   const header = document.createElement("header");
 
   // Set the inner HTML of the header to create the navigation structure
   header.innerHTML = `
-        <nav style="background-color: #4CAF50; font-size: 16px;">
-          <div class="logo" style="padding-left: 20px;">
-            <div style="color: white; display: flex; align-items: center;">
-                <img src="${
-                  isCurrentDirectory()
-                    ? "images/icon.avif"
-                    : "../images/icon.avif"
-                }" alt="AMA Health Hub Icon" style="height: 45px; margin-right: 10px;">
-                <span>AMA Health Hub</span>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4CAF50; font-size: 16px;">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" style="padding-left: 20px;">
+          <div style="color: white; display: flex; align-items: center;">
+            <img src="${
+              isCurrentDirectory() ? "images/icon.avif" : "../images/icon.avif"
+            }" alt="AMA Health Hub Icon" style="height: 45px; margin-right: 10px;">
+            <span>AMA Health Hub</span>
           </div>
-            <input type="checkbox" id="click">
-            <label for="click" class="mainicon">
-                <div class="menu">
-                    <i class="bi bi-list"></i>
-                </div>
-            </label>
-            <ul>
-                <!-- Navigation menu items with dynamic linking based on current directory -->
-                <li><a href="/">Home</a></li>
-
-                <li><a href="${
-                  isCurrentDirectory() ? "html/recipe.html" : "recipe.html"
-                }">Recipe</a></li>
-                <li><a href="${
-                  isCurrentDirectory() ? "html/quiz.html" : "quiz.html"
-                }">Quiz</a></li>
-                <li><a href="${
-                  isCurrentDirectory()
-                    ? "html/meal_planning.html"
-                    : "meal_planning.html"
-                }">Meal Planning</a></li>
-                <li><a href="${
-                  isCurrentDirectory()
-                    ? "html/community-page.html"
-                    : "community-page.html"
-                }">Community</a></li>
-                                <li><a href="${
-                                  isCurrentDirectory()
-                                    ? "html/Reward.html"
-                                    : "Reward.html"
-                                }">Reward</a></li>
-                 <li><a href="${
-                   isCurrentDirectory() ? "html/profile.html" : "profile.html"
-                 }">Profile</a></li>
-                <li><a href="${
-                  isCurrentDirectory() ? "html/login.html" : "login.html"
-                }">Login</a></li>
-                <li id="points-display" style="color: white;"></li>
-                <div class="main-icon">
-                    <img src="../images/menu-icon.png" class="hamburger">
-                </div>
-                <div class="overlay"></div>
-            </ul>
-        </nav>
-    `;
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory() ? "html/recipe.html" : "recipe.html"
+              }">Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory() ? "html/quiz.html" : "quiz.html"
+              }">Quiz</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory()
+                  ? "html/meal_planning.html"
+                  : "meal_planning.html"
+              }">Meal Planning</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory()
+                  ? "html/community-page.html"
+                  : "community-page.html"
+              }">Community</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory() ? "html/Reward.html" : "Reward.html"
+              }">Reward</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory() ? "html/profile.html" : "profile.html"
+              }">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="${
+                isCurrentDirectory() ? "html/login.html" : "login.html"
+              }">Login</a>
+            </li>
+            <li id="points-display" class="nav-item" style="color: white; padding-top: 8px;"></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  `;
 
   // Insert the header at the beginning of the body
   document.body.insertBefore(header, document.body.firstChild);
 
   // Add click event listener to the hamburger menu icon
-  document.querySelector(".hamburger").addEventListener("click", function () {
-    document.querySelector("ul").classList.toggle("active");
-    document.querySelector(".overlay").classList.toggle("active");
-  });
+  document
+    .querySelector(".navbar-toggler")
+    .addEventListener("click", function () {
+      document.querySelector(".navbar-collapse").classList.toggle("show");
+    });
 
   // Add click event listeners to all navigation menu items
   document.querySelectorAll("nav ul li a").forEach((item) => {
     item.addEventListener("click", () => {
-      document.querySelector("ul").classList.remove("active");
-      document.querySelector(".overlay").classList.remove("active");
+      document.querySelector(".navbar-collapse").classList.remove("show");
     });
   });
 
@@ -93,32 +120,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to handle navigation click events (not implemented in this code)
-  function handleNavClick(event) {
-    incrementPoints(updatePointsDisplay);
-  }
-
-  // Event listener for when the chatbot is loaded
-  document.addEventListener("ChatbotLoaded", () => {
-    let navVisible = true;
-    const navElement = document.querySelector("nav");
-
-    // Toggle navigation visibility when chatbot is toggled
-    chatbotToggler.addEventListener("click", () => {
-      navElement.style.display = navVisible ? "none" : "flex";
-      navVisible = !navVisible;
-    });
-
-    // Show navigation when chatbot is closed
-    closeBtn.addEventListener(
-      "click",
-      () => (navElement.style.display = "flex")
-    );
-  });
-
-  // Update points display when the DOM is fully loaded
+  // Simulate getting user data and updating points display
   document.addEventListener("DOMContentLoaded", () => {
-    const user = getUser();
+    const user = getUser(); // Assume this function gets the user data
     if (user) {
       updatePointsDisplay(user.Points);
     }
