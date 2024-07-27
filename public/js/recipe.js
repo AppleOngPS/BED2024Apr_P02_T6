@@ -353,13 +353,32 @@ function addRecipe(event) {
 }
 
 function showRecipeExistsPrompt(recipeName) {
+  // Remove any existing prompt
+  const existingPrompt = document.querySelector(".recipe-exists-prompt");
+  if (existingPrompt) {
+    existingPrompt.remove();
+  }
+
   const promptDiv = document.createElement("div");
   promptDiv.classList.add("recipe-exists-prompt");
+
+  // Add inline styles to ensure the prompt is above everything
+  promptDiv.style.position = "fixed";
+  promptDiv.style.top = "0";
+  promptDiv.style.left = "0";
+  promptDiv.style.width = "100%";
+  promptDiv.style.height = "100%";
+  promptDiv.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  promptDiv.style.display = "flex";
+  promptDiv.style.justifyContent = "center";
+  promptDiv.style.alignItems = "center";
+  promptDiv.style.zIndex = "100000"; // Very high z-index
+
   promptDiv.innerHTML = `
-    <div class="prompt-content">
+    <div class="prompt-content" style="background-color: white; padding: 20px; border-radius: 5px; text-align: center; max-width: 80%; position: relative; z-index: 100001;">
       <h3>Recipe Already Exists</h3>
       <p>"${recipeName}" has already been added to the database.</p>
-      <button id="closePrompt">OK</button>
+      <button id="closePrompt" style="margin-top: 10px; padding: 5px 10px; background-color: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">OK</button>
     </div>
   `;
 
@@ -367,6 +386,13 @@ function showRecipeExistsPrompt(recipeName) {
 
   document.getElementById("closePrompt").addEventListener("click", () => {
     document.body.removeChild(promptDiv);
+  });
+
+  // Close the prompt when clicking outside the content
+  promptDiv.addEventListener("click", (event) => {
+    if (event.target === promptDiv) {
+      document.body.removeChild(promptDiv);
+    }
   });
 }
 
@@ -563,7 +589,7 @@ function updateRecipe(event) {
     });
 }
 
-function showPrompt(message) {
+function showPrompt(message, type = "info") {
   // Remove any existing prompt
   const existingPrompt = document.querySelector(".prompt-overlay");
   if (existingPrompt) {
@@ -575,7 +601,7 @@ function showPrompt(message) {
   promptOverlay.className = "prompt-overlay";
 
   const promptContent = document.createElement("div");
-  promptContent.className = "prompt-content";
+  promptContent.className = `prompt-content ${type}`;
 
   const messageElement = document.createElement("p");
   messageElement.textContent = message;

@@ -159,7 +159,7 @@ h3 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .recipe-exists-prompt .prompt-content {
@@ -210,7 +210,7 @@ h3 {
 
 .filter-options input,
 .filter-options select {
-  width: 90%;
+  width: 95%;
   padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ced4da;
@@ -491,11 +491,12 @@ h3 {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
+  overflow: hidden; /* Change from auto to hidden */
 }
 
 .modal-content {
   background-color: #fefefe;
-  margin: 10% auto;
+  margin: 5% auto;
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
@@ -558,7 +559,7 @@ form button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10001; /* Higher than modal z-index */
 }
 
 .prompt-content {
@@ -567,6 +568,7 @@ form button:hover {
   border-radius: 5px;
   text-align: center;
   max-width: 80%;
+  z-index: 10002; /* Higher than prompt-overlay z-index */
 }
 
 .prompt-content.success {

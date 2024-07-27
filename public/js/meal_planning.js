@@ -239,18 +239,13 @@ function getMonthName(monthIndex) {
 }
 
 function showDayDetails(year, month, day) {
-  console.log(day);
-  // Create a Date object for the clicked date
   const clickedDate = new Date(year, month, day);
-
-  // Format the date as YYYY-MM-DD
   const formattedDate = `${clickedDate.getFullYear()}-${String(
     clickedDate.getMonth() + 1
   ).padStart(2, "0")}-${String(clickedDate.getDate()).padStart(2, "0")}`;
-  console.log(formattedDate);
+
   let dailyNutrition;
 
-  // Check if the selected date is today
   const today = new Date();
   const isToday =
     year === today.getFullYear() &&
@@ -258,28 +253,24 @@ function showDayDetails(year, month, day) {
     day === today.getDate();
 
   if (isToday) {
-    // Use current day's totals for today
     dailyNutrition = {
-      calories: parseInt(document.getElementById("total-calories").innerText),
-      carbs: parseInt(document.getElementById("total-carbs").innerText),
-      protein: parseInt(document.getElementById("total-protein").innerText),
-      fats: parseInt(document.getElementById("total-fats").innerText),
-      sodium: parseInt(document.getElementById("total-sodium").innerText),
+      calories: consumedNutrition.calories,
+      carbs: consumedNutrition.carbs,
+      protein: consumedNutrition.protein,
+      fats: consumedNutrition.fats,
+      sodium: consumedNutrition.sodium,
     };
   } else {
-    // For past days, use stored data
     const storedData = localStorage.getItem(formattedDate);
-    if (storedData) {
-      dailyNutrition = JSON.parse(storedData);
-    } else {
-      dailyNutrition = {
-        calories: 0,
-        carbs: 0,
-        protein: 0,
-        fats: 0,
-        sodium: 0,
-      };
-    }
+    dailyNutrition = storedData
+      ? JSON.parse(storedData)
+      : {
+          calories: 0,
+          carbs: 0,
+          protein: 0,
+          fats: 0,
+          sodium: 0,
+        };
   }
 
   const modalContent = `
@@ -292,27 +283,27 @@ function showDayDetails(year, month, day) {
       </tr>
       <tr>
         <td>Calories</td>
-        <td>${consumedNutrition.calories} kcal</td>
+        <td>${dailyNutrition.calories} kcal</td>
         <td>${targetNutrition.calories} kcal</td>
       </tr>
       <tr>
         <td>Carbs</td>
-        <td>${consumedNutrition.carbs} g</td>
+        <td>${dailyNutrition.carbs} g</td>
         <td>${targetNutrition.carbs} g</td>
       </tr>
       <tr>
         <td>Protein</td>
-        <td>${consumedNutrition.protein} g</td>
+        <td>${dailyNutrition.protein} g</td>
         <td>${targetNutrition.protein} g</td>
       </tr>
       <tr>
         <td>Fats</td>
-        <td>${consumedNutrition.fats} g</td>
+        <td>${dailyNutrition.fats} g</td>
         <td>${targetNutrition.fats} g</td>
       </tr>
       <tr>
         <td>Sodium</td>
-        <td>${consumedNutrition.sodium} mg</td>
+        <td>${dailyNutrition.sodium} mg</td>
         <td>${targetNutrition.sodium} mg</td>
       </tr>
     </table>
@@ -328,12 +319,19 @@ function fetchCaloriesForDate(year, month, day) {
   const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
     day
   ).padStart(2, "0")}`;
-  const storedData = localStorage.getItem(formattedDate);
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    return parsedData.calories;
+  const today = new Date();
+  const clickedDate = new Date(year, month, day);
+
+  if (clickedDate.toDateString() === today.toDateString()) {
+    return consumedNutrition.calories;
+  } else {
+    const storedData = localStorage.getItem(formattedDate);
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      return parsedData.calories;
+    }
   }
-  return 0; // Return 0 if no data is stored for this date
+  return 0;
 }
 
 function closeNutritionModal() {
@@ -366,9 +364,9 @@ function resetMealData() {
 
   // Clear the stored data for the current date
   const currentDate = new Date();
-  const formattedDate = `${currentDate.getFullYear()}-${
+  const formattedDate = `${currentDate.getFullYear()}-${String(
     currentDate.getMonth() + 1
-  }-${currentDate.getDate()}`;
+  ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
   localStorage.removeItem(formattedDate);
 }
 
