@@ -380,6 +380,15 @@ function openAddFoodModal(mealType) {
 
 function closeAddFoodModal() {
   document.getElementById("addFoodModal").style.display = "none";
+  clearAddFoodForm();
+}
+function clearAddFoodForm() {
+  const form = document.getElementById("addFoodForm");
+  form.reset(); // This will clear all form fields
+
+  // Clear the file input separately (as reset() doesn't clear it in some browsers)
+  const fileInput = document.getElementById("food-image");
+  fileInput.value = "";
 }
 
 function addFood(mealType) {
