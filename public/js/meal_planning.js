@@ -5,8 +5,8 @@ const meals = {
   extras: [],
 };
 
-const apiKey = "66a245d5d135ef7f34c85819";
-const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
+const apiKey = "66a5f9c82212c7f51b8e9a71";
+const baseUrl = "https://bedass1-fc80.restdb.io/rest/meal-planning";
 
 // Calendar variables
 let currentDate = new Date();

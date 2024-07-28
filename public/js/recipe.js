@@ -641,6 +641,9 @@ function deleteRecipe(id) {
 function openAddRecipeModal() {
   document.getElementById("addRecipeModal").style.display = "block";
 }
+function closeEditRecipeModal() {
+  document.getElementById("editRecipeModal").style.display = "none";
+}
 
 function filterByCalories(page = 1, limit = 16) {
   const min = document.getElementById("calorieMin").value;
