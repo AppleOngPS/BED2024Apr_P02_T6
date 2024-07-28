@@ -5,8 +5,8 @@ const meals = {
   extras: [],
 };
 
-const apiKey = "66a245d5d135ef7f34c85819";
-const baseUrl = "https://bed11-f956.restdb.io/rest/meal-planning";
+const apiKey = "66a5f9c82212c7f51b8e9a71";
+const baseUrl = "https://bedass1-fc80.restdb.io/rest/meal-planning";
 
 // Calendar variables
 let currentDate = new Date();
@@ -380,6 +380,15 @@ function openAddFoodModal(mealType) {
 
 function closeAddFoodModal() {
   document.getElementById("addFoodModal").style.display = "none";
+  clearAddFoodForm();
+}
+function clearAddFoodForm() {
+  const form = document.getElementById("addFoodForm");
+  form.reset(); // This will clear all form fields
+
+  // Clear the file input separately (as reset() doesn't clear it in some browsers)
+  const fileInput = document.getElementById("food-image");
+  fileInput.value = "";
 }
 
 function addFood(mealType) {

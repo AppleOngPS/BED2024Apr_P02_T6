@@ -493,8 +493,13 @@ function openEditRecipeModal(recipe) {
     fats: recipe.fats,
   };
 }
-function closeEditRecipeModal() {
-  document.getElementById("editRecipeModal").style.display = "none";
+function closeAddRecipeModal() {
+  document.getElementById("addRecipeModal").style.display = "none";
+  clearAddRecipeForm();
+}
+function clearAddRecipeForm() {
+  document.getElementById("addRecipeForm").reset();
+  document.getElementById("recipe-image").value = "";
 }
 function updateRecipe(event) {
   event.preventDefault();
@@ -636,9 +641,8 @@ function deleteRecipe(id) {
 function openAddRecipeModal() {
   document.getElementById("addRecipeModal").style.display = "block";
 }
-
-function closeAddRecipeModal() {
-  document.getElementById("addRecipeModal").style.display = "none";
+function closeEditRecipeModal() {
+  document.getElementById("editRecipeModal").style.display = "none";
 }
 
 function filterByCalories(page = 1, limit = 16) {
