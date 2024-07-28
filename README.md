@@ -1,5 +1,7 @@
 # BED-Assignment: AMA Health HUB
 
+For our assignment we focused on creating a social impact through promoting healthy eating. The reason we created this website is to promote a healthy lifestyle and make it easier for people to access reliable information and resources. We believe that by providing a platform where users can learn, share, and support each other, we can encourage positive changes in dietary habits and overall well-being. Our goal is to empower individuals to take charge of their health and make informed decisions about their diet and lifestyle.
+
 As a health and fitness-centred website, the application includes multiple elements like user registration, meal planning, user data, recipes, quizzes, community, rewards, and profile. The project will be implemented using HTML, CSS, and JavaScript as the key tools of the implementation process. The entire website is going to be in a green theme as it best represents healthy living. The website we tried to make it as minimalist as possible so that it is easy for users to use.
 
 # Design Process
@@ -43,8 +45,9 @@ Feature 28 - Allows users to delete their own posts.<br/>
 Feature 29 - Allows users to leave comments on their own posts or those of other users.<br/>
 Feature 30 - Allows users to edit and update their own posts.<br/>
 Feature 31 - Allows users to participate in quizzes to test and expand their knowledge of nutrition.<br/>
-Feature 32 - Allows users to earn points that can be redeemed for vouchers on the rewards page.<br/>
+Feature 32 - Allows users to earn points from quiz that can be redeemed for vouchers on the rewards page.<br/>
 Feature 33 - Allow users to like their own posts or other users posts.<br/>
+Feature 34 - Allow users to filter posts in the community page. <br/>
 
 # Technologies Used
 
