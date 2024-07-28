@@ -66,6 +66,7 @@ function createLinks() {
     "Meal Planning",
     "Credits",
     "Login",
+    "Community",
   ];
 
   // Get the current URL
