@@ -6,6 +6,8 @@ const dbConfig = require("./dbConfig");
 const cors = require("cors");
 const fs = require("fs");
 const multer = require("multer");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json"); // Import generated spec
 
 const postController = require("./controllers/postController");
 const usersController = require("./controllers/usersController");
@@ -27,7 +29,7 @@ const imagesDir = path.join(__dirname, "public", "images");
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
-
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
