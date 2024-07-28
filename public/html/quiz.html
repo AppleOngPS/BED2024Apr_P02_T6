@@ -143,6 +143,46 @@
         max-width: 600px;
         margin: auto;
       }
+      /* Media Queries */
+      @media (max-width: 768px) {
+        .quiz-container {
+          width: 90%;
+        }
+
+        .welcome-container {
+          padding: 20px;
+          font-size: 1.2em;
+        }
+
+        .start-button,
+        .submit-button {
+          width: 100%;
+          padding: 10px;
+          font-size: 1.2em;
+        }
+
+        .answer-button {
+          font-size: 0.9em;
+          max-width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .welcome-container {
+          padding: 10px;
+          font-size: 1em;
+        }
+
+        .start-button,
+        .submit-button {
+          padding: 10px;
+          font-size: 1em;
+        }
+
+        .answer-button {
+          font-size: 0.8em;
+        }
+      }
     </style>
   </head>
   <body>
